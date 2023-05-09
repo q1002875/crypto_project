@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'news_bloc.dart';
+import '../bloc/bloc/news_bloc.dart';
+import '../cubit/image_cubit_cubit.dart';
+import '../extension/custom_page_route.dart';
+import 'news_cell_detail.dart';
+import 'news_cell_view.dart';
+import 'news_header_view.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({Key? key}) : super(key: key);
@@ -34,7 +39,7 @@ class _NewsPageState extends State<NewsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('News'),
+        title: const Text(''),
       ),
       body: Column(
         children: [
@@ -47,11 +52,11 @@ class _NewsPageState extends State<NewsPage> {
                 labelText: 'Search',
                 suffixIcon: IconButton(
                   onPressed: () {
-                    // _searchController.clear();
-                    // _searchArticles('');
+                  
                     if (_searchController.text != "") {
                       _searchArticles(_searchController.text);
                     }
+                      // _searchController.clear();
                   },
                   icon: const Icon(Icons.search),
                 ),
@@ -74,10 +79,22 @@ class _NewsPageState extends State<NewsPage> {
                     itemCount: state.articles.length,
                     itemBuilder: (context, index) {
                       final news = state.articles[index];
-                      return ListTile(
-                        title: Text(news.title),
-                        subtitle: Text(news.description),
-                      );
+                      return GestureDetector(
+                        onTap: () {
+                            Navigator.of(context).push(CustomPageRoute(
+                              builder: (_) => NewsDetail( news:news,)
+                            ));
+                        },
+                        child: index == 0
+                          ? NewsHeaderView(news.image, news.title)
+                          : BlocProvider(
+                              create: (context) => ImageCubit(),
+                              child: NewsCellView(news.image, news.title,news.publishedAt))
+                    );
+                      
+                      
+                      
+                    
                     },
                   );
                 } else {
@@ -90,12 +107,6 @@ class _NewsPageState extends State<NewsPage> {
           ),
         ],
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     _searchArticles(_searchController.text);
-      //   },
-      //   child: const Icon(Icons.search),
-      // ),
     );
   }
 }

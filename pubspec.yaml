@@ -38,6 +38,10 @@ dependencies:
   flutter_bloc: ^8.1.2
   http: ^0.13.6
   equatable: ^2.0.5
+  cached_network_image: ^3.2.3
+  webview_flutter: ^2.0.0
+  intl: ^0.18.1
+
 
 dev_dependencies:
   flutter_test:

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'bloc/bloc/news_bloc.dart';
-import 'bloc/bloc/news_view.dart';
+import 'home_page_view/news_view.dart';
 
 
 void main() {

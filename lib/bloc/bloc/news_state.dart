@@ -9,8 +9,6 @@ abstract class NewsState extends Equatable {
 
 class NewsInitial extends NewsState {}
 
-//////////////////
-
 class NewsLoading extends NewsState {}
 
 class NewsLoaded extends NewsState {

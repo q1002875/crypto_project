@@ -29,15 +29,10 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
         } catch (_) {
           emit(NewsError());
         }
-
+        
        }else{
         return;
        }
-
-
-
-     
-
     });
   }
 }
