@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "384807786158",
+    "project_id": "crypto-facc2",
+    "storage_bucket": "crypto-facc2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:384807786158:android:f9be1da1ea8740e9297f3f",
+        "android_client_info": {
+          "package_name": "com.example.crypto_project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "384807786158-bc0a7834h8vqsftt432fnlegsdj3ci2e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUyIXL3vLgA2B3u1xa-EXRZbXdq000B54"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "384807786158-bc0a7834h8vqsftt432fnlegsdj3ci2e.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "384807786158-objm2f9ccui46gg2cpse74r26lr8bdno.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.cryptoProject"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

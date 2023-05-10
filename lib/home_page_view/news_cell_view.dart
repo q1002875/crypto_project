@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import '../cubit/image_cubit_cubit.dart';
 import '../extension/custom_text.dart';
 
@@ -14,7 +13,7 @@ class NewsCellView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     DateTime date = DateTime.parse(dateTime);
-    String formattedDate =  DateFormat("MM-dd'").format(date);
+    // String formattedDate =  DateFormat("MM-dd'").format(date);
     context.read<ImageCubit>().loadImage(imageUrl);
     return Column(
       children: [
@@ -24,31 +23,6 @@ class NewsCellView extends StatelessWidget {
             Flexible(
               flex: 1,
               child: 
-
-              // BlocBuilder<ImageCubit, ImageState>(
-              //   builder: (context, state) {
-              //     if (state is ImageInitial) {
-              //     } else if (state is ImageLoading) {
-              //       return const Center(
-              //         child: CircularProgressIndicator(),
-              //       );
-              //     } else if (state is ImageLoaded) {
-              //       return SizedBox(
-              //           height: 100, width: 100, child: state.image);
-              //     } else if (state is ImageError) {
-              //       return const SizedBox(
-              //         height: 100,
-              //         width: 100,
-              //       );
-              //     }
-
-              //     return const SizedBox(
-              //       height: 100,
-              //       width: 100,
-              //     );
-              //   },
-              // ),
-
               CachedNetworkImage(
                 placeholder: (context, url) =>
                     const CircularProgressIndicator(),
@@ -83,7 +57,7 @@ class NewsCellView extends StatelessWidget {
                           height: 20,
                           width: 80,
                           child:  CustomText(
-                              textContent: formattedDate,
+                              textContent: '${date.month}/${date.day}',
                               textColor: Colors.grey),
                         ))
                   ],
