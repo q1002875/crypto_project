@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../api_model/news_totalModel.dart';
+
 class NewsDetail extends StatelessWidget {
   final ArticleModel news;
   const NewsDetail({super.key, required this.news});
@@ -13,13 +14,14 @@ class NewsDetail extends StatelessWidget {
   }
 }
 
-
 class WebViewContainer extends StatefulWidget {
   final Uri url;
   const WebViewContainer(this.url, {super.key});
   @override
+  // ignore: no_logic_in_create_state
   createState() => _WebViewContainerState(url);
 }
+
 class _WebViewContainerState extends State<WebViewContainer> {
   final _url;
   final _key = UniqueKey();
@@ -34,7 +36,7 @@ class _WebViewContainerState extends State<WebViewContainer> {
                 child: WebView(
                     key: _key,
                     javascriptMode: JavascriptMode.unrestricted,
-                    initialUrl:widget.url.toString()))
+                    initialUrl: widget.url.toString()))
           ],
         ));
   }

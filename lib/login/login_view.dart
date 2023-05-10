@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import '../extension/custom_page_route.dart';
-import '../home_page_view/news_view.dart';
-import 'auth_service.dart';
 import '../extension/image_url.dart';
+import '../routes.dart';
+import 'auth_service.dart';
 
 class GoogleSignInScreen extends StatefulWidget {
   const GoogleSignInScreen({super.key});
@@ -20,35 +19,6 @@ class _GoogleSignInScreenState extends State<GoogleSignInScreen> {
   String mail = '';
   String googlename = '';
   String googleurl = '';
-
-  Future<void> _handleSignIn() async {
-    try {
-      final GoogleSignInAccount? googleSignInAccount =
-          await googleSignIn.signIn();
-      if (googleSignInAccount != null) {
-        // 登錄成功，獲取用戶信息
-        final String email = googleSignInAccount.email;
-        final String name = googleSignInAccount.displayName ?? '';
-        final String photoUrl = googleSignInAccount.photoUrl ?? '';
-        final String mangoUseId = googleSignInAccount.id;
-        // TODO: 將用戶信息保存到 MongoDB
-        setState(() {
-          mail = email;
-          googlename = mangoUseId;
-          googleurl = photoUrl;
-        });
-        Navigator.of(context).push(CustomPageRoute(
-            builder: (_) =>  const NewsPage(),
-        ));
-      }
-    } catch (error) {
-      print('Failed to sign in with Google: $error');
-    }
-  }
-
-  void signIn() {
-    AuthService().singInWithGoogle();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,5 +44,33 @@ class _GoogleSignInScreenState extends State<GoogleSignInScreen> {
         ],
       )),
     ));
+  }
+
+  void signIn() {
+    AuthService().singInWithGoogle();
+  }
+
+  Future<void> _handleSignIn() async {
+    try {
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
+      if (googleSignInAccount != null) {
+        // 登錄成功，獲取用戶信息
+        final String email = googleSignInAccount.email;
+        final String name = googleSignInAccount.displayName ?? '';
+        final String photoUrl = googleSignInAccount.photoUrl ?? '';
+        final String mangoUseId = googleSignInAccount.id;
+        // TODO: 將用戶信息保存到 MongoDB
+        setState(() {
+          mail = email;
+          googlename = mangoUseId;
+          googleurl = photoUrl;
+        });
+        // ignore: use_build_context_synchronously
+        Navigator.pushNamed(context, Routes.newPage);
+      }
+    } catch (error) {
+      print('Failed to sign in with Google: $error');
+    }
   }
 }
