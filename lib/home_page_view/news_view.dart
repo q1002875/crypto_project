@@ -224,14 +224,7 @@ class _NewsPageState extends State<NewsPage> {
       final MongoDBConnection connection;
      connection = MongoDBConnection();
      await connection.connect();
-      // final document = {
-      //   'user': 'user2222222',
-      //   'email': 'user@gmail.2222222',
-      //   'name': 'username12222222',
-      // };
-
         final document = {'name': 'John Doe', 'age': '30'};
-      
 
       // Convert ObjectId to String
       connection.insertDocument(document);
