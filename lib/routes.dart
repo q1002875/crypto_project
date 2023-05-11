@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'api_model/news_totalModel.dart';
-import 'bloc/bloc/news_bloc.dart';
+import 'bloc/bloc/news_Bloc/news_bloc.dart';
 import 'home_page_view/news_view.dart';
-import 'login/login_view.dart';
 import 'news_api.dart';
 
 class Routes {
@@ -18,7 +17,11 @@ class Routes {
     var args = settings.arguments;
     switch (settings.name) {
       case home:
-        return MaterialPageRoute(builder: (_) => const GoogleSignInScreen());
+        // return MaterialPageRoute(builder: (_) => const GoogleSignInScreen());
+         return MaterialPageRoute(
+            builder: (_) => BlocProvider(
+                create: (context) => NewsBloc(newsApi()),
+                child: const NewsPage()));
       case newPage:
         return MaterialPageRoute(
             builder: (_) => BlocProvider(

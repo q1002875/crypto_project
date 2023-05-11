@@ -3,7 +3,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import '../extension/image_url.dart';
 import '../routes.dart';
-import 'auth_service.dart';
 
 class GoogleSignInScreen extends StatefulWidget {
   const GoogleSignInScreen({super.key});
@@ -47,7 +46,7 @@ class _GoogleSignInScreenState extends State<GoogleSignInScreen> {
   }
 
   void signIn() {
-    AuthService().singInWithGoogle();
+    // AuthService().singInWithGoogle();
   }
 
   Future<void> _handleSignIn() async {

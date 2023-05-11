@@ -1,9 +1,16 @@
 import 'package:crypto_project/routes.dart';
 import 'package:flutter/material.dart';
 
+
 // ...
 
-void main() {
+// Future<void> main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   await MongoDatabase.connect();
+//   runApp(const MyApp2());
+// }
+
+void main(){
   runApp(const MyApp2());
 }
 

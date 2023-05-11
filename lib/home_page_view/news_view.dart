@@ -1,9 +1,12 @@
+
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:crypto_project/bloc/bloc/news_Bloc/news_bloc.dart';
 import 'package:crypto_project/extension/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../bloc/bloc/news_bloc.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../cubit/image_cubit_cubit.dart';
+import '../database_mongodb/maongo_database.dart';
 import '../routes.dart';
 import 'new_headerTopic.dart';
 import 'news_cell_view.dart';
@@ -17,9 +20,12 @@ class NewsPage extends StatefulWidget {
 }
 
 class _NewsPageState extends State<NewsPage> {
+  
+  final GoogleSignIn googleSignIn = GoogleSignIn();
   final TextEditingController _searchController = TextEditingController();
   late NewsBloc _newsBloc;
   final HeaderTopic _headerTopic = HeaderTopic('crypto', true);
+  String googleurl = '';
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -40,18 +46,37 @@ class _NewsPageState extends State<NewsPage> {
                       direction: Axis.horizontal,
                       children: [
                         Flexible(
-                          flex: 2,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.black,
-                                width: 2.0,
+                            flex: 2,
+                            child: GestureDetector(
+                              onTap: () {
+                                _connectMongo();
+                               
+                                // _handleSignIn();
+                                // print('sgin in');
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: googleurl == ''
+                                        ? Colors.black
+                                        : Colors.white,
+                                    width: 2.0,
+                                  ),
+                                ),
+                                child: googleurl != ''
+                                    ? ClipOval(
+                                        child: CachedNetworkImage(
+                                          placeholder: (context, url) =>
+                                              const CircularProgressIndicator(),
+                                          imageUrl: googleurl,
+                                          errorWidget: (context, url, error) =>
+                                              const Icon(Icons.person_rounded),
+                                        ),
+                                      )
+                                    : const Icon(Icons.person_rounded),
                               ),
-                            ),
-                            child: const Icon(Icons.person_rounded),
-                          ),
-                        ),
+                            )),
                         Expanded(
                           flex: 10,
                           child: Container(
@@ -168,6 +193,54 @@ class _NewsPageState extends State<NewsPage> {
         ));
   }
 
+  Future<void> _handleSignIn() async {
+    try {
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
+      if (googleSignInAccount != null) {
+        // 登錄成功，獲取用戶信息
+        final String email = googleSignInAccount.email;
+        final String name = googleSignInAccount.displayName ?? '';
+        final String photoUrl = googleSignInAccount.photoUrl ?? '';
+        final String mangoUseId = googleSignInAccount.id;
+        // TODO: 將用戶信息保存到 MongoDB
+
+        setState(() {
+          // mail = email;
+          // googlename = mangoUseId;
+          googleurl = photoUrl;
+        });
+        // ignore: use_build_context_synchronously
+        // Navigator.pushNamed(context, Routes.newPage);
+      }
+    } catch (error) {
+      print('Failed to sign in with Google: $error');
+    }
+  }
+
+
+  Future<void> _connectMongo() async {
+    try {
+      final MongoDBConnection connection;
+     connection = MongoDBConnection();
+     await connection.connect();
+      // final document = {
+      //   'user': 'user2222222',
+      //   'email': 'user@gmail.2222222',
+      //   'name': 'username12222222',
+      // };
+
+        final document = {'name': 'John Doe', 'age': '30'};
+      
+
+      // Convert ObjectId to String
+      connection.insertDocument(document);
+    } catch (error) {
+      print('Failed to sign in with Google: $error');
+    }
+  }
+
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -180,6 +253,8 @@ class _NewsPageState extends State<NewsPage> {
     _newsBloc = context.read<NewsBloc>();
     _newsBloc.add(FetchArtcle());
     _headerTopic.topicListProperty();
+    
+ 
   }
 
   void _onHeaderTopicSelected(int index) {
