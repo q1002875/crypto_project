@@ -1,4 +1,3 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crypto_project/bloc/bloc/news_Bloc/news_bloc.dart';
 import 'package:crypto_project/extension/custom_text.dart';
@@ -20,7 +19,6 @@ class NewsPage extends StatefulWidget {
 }
 
 class _NewsPageState extends State<NewsPage> {
-  
   final GoogleSignIn googleSignIn = GoogleSignIn();
   final TextEditingController _searchController = TextEditingController();
   late NewsBloc _newsBloc;
@@ -29,12 +27,9 @@ class _NewsPageState extends State<NewsPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        color: Colors.white, // 設置容器的背景顏色
+        color: Colors.black, // 設置容器的背景顏色
         child: // 在這裡添加您的 UI 元素
             Scaffold(
-          // appBar: AppBar(
-          //   title: const Text(''),
-          // ),
           body: Column(
             children: [
               Padding(
@@ -49,8 +44,9 @@ class _NewsPageState extends State<NewsPage> {
                             flex: 2,
                             child: GestureDetector(
                               onTap: () {
-                                _connectMongo();
-                               
+                                Navigator.pushNamed(context,Routes.account);
+                                // _connectMongo();
+
                                 // _handleSignIn();
                                 // print('sgin in');
                               },
@@ -81,10 +77,6 @@ class _NewsPageState extends State<NewsPage> {
                           flex: 10,
                           child: Container(
                             margin: const EdgeInsets.all(10),
-                            // decoration: BoxDecoration(
-                            //     color:const Color.fromARGB(129, 133, 161, 175),
-                            //     shape: BoxShape.rectangle,
-                            //     borderRadius: BorderRadius.circular(20.0)),
                             child: TextField(
                               controller: _searchController,
                               onChanged: null,
@@ -106,7 +98,7 @@ class _NewsPageState extends State<NewsPage> {
                     ),
                   )),
               Flexible(
-                  flex: 1,
+                  flex: 2,
                   child: Container(
                     margin: const EdgeInsets.only(left: 3),
                     color: Colors.white,
@@ -118,40 +110,43 @@ class _NewsPageState extends State<NewsPage> {
                       itemBuilder: (context, index) {
                         List<HeaderTopic> topicList = _headerTopic.resultData;
                         return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
                           child: InkWell(
-                            onTap: () {
-                              setState(() {
-                                _searchArticles(topicList[index].topic);
-                                _onHeaderTopicSelected(index);
-                              });
-                            },
-                            child: topicList[index].select
-                                ? Container(
-                                    decoration: const BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(
-                                          color: Colors.red,
-                                          width: 2.5,
+                              onTap: () {
+                                setState(() {
+                                  _searchArticles(topicList[index].topic);
+                                  _onHeaderTopicSelected(index);
+                                });
+                              },
+                              child: topicList[index].select
+                                  ? Container(
+                                      alignment: Alignment.centerLeft,
+                                      decoration: const BoxDecoration(
+                                        border: Border(
+                                          bottom: BorderSide(
+                                            color: Colors.red,
+                                            width: 2.5,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    child: CustomText(
-                                      textContent: topicList[index].topic,
-                                      textColor: Colors.red,
-                                    ),
-                                  )
-                                : CustomText(
-                                    textContent: topicList[index].topic,
-                                    textColor: Colors.grey,
-                                  ),
-                          ),
+                                      child: CustomText(
+                                        textContent: topicList[index].topic,
+                                        textColor: Colors.red,
+                                      ),
+                                    )
+                                  : Container(
+                                      alignment: Alignment.centerLeft,
+                                      child: CustomText(
+                                        textContent: topicList[index].topic,
+                                        textColor: Colors.grey,
+                                      ),
+                                    )),
                         );
                       },
                     ),
                   )),
               Expanded(
-                flex: 12,
+                flex: 14,
                 child: BlocBuilder<NewsBloc, NewsState>(
                   builder: (context, state) {
                     if (state is NewsInitial) {
@@ -194,17 +189,25 @@ class _NewsPageState extends State<NewsPage> {
   }
 
   Future<void> _handleSignIn() async {
+    ///先用本地端記得_id去找雲端茲料
+    ///如果沒有才用google登入
     try {
       final GoogleSignInAccount? googleSignInAccount =
           await googleSignIn.signIn();
       if (googleSignInAccount != null) {
         // 登錄成功，獲取用戶信息
         final String email = googleSignInAccount.email;
-        final String name = googleSignInAccount.displayName ?? '';
+        final String displayName = googleSignInAccount.displayName ?? '';
         final String photoUrl = googleSignInAccount.photoUrl ?? '';
         final String mangoUseId = googleSignInAccount.id;
         // TODO: 將用戶信息保存到 MongoDB
+        final document = {
+          'displayName': displayName,
+          'email': email,
+          'photoUrl': photoUrl,
+        };
 
+        _connectMongo(document);
         setState(() {
           // mail = email;
           // googlename = mangoUseId;
@@ -218,21 +221,16 @@ class _NewsPageState extends State<NewsPage> {
     }
   }
 
-
-  Future<void> _connectMongo() async {
+  Future<void> _connectMongo(Map<String, String> document) async {
     try {
       final MongoDBConnection connection;
-     connection = MongoDBConnection();
-     await connection.connect();
-        final document = {'name': 'John Doe', 'age': '30'};
-
-      // Convert ObjectId to String
+      connection = MongoDBConnection();
+      await connection.connect();
       connection.insertDocument(document);
     } catch (error) {
       print('Failed to sign in with Google: $error');
     }
   }
-
 
   @override
   void dispose() {
@@ -246,8 +244,6 @@ class _NewsPageState extends State<NewsPage> {
     _newsBloc = context.read<NewsBloc>();
     _newsBloc.add(FetchArtcle());
     _headerTopic.topicListProperty();
-    
- 
   }
 
   void _onHeaderTopicSelected(int index) {

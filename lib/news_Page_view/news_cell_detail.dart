@@ -1,3 +1,4 @@
+import 'package:crypto_project/extension/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -29,7 +30,8 @@ class _WebViewContainerState extends State<WebViewContainer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(),
+      // backgroundColor: Colors.amber,
+        appBar: AppBar(title:const CustomText(textContent:'News',textColor: Colors.white,)),
         body: Column(
           children: [
             Expanded(

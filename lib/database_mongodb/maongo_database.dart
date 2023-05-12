@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:mongo_dart/mongo_dart.dart';
 
+import '../api_model/user_infoModel.dart';
+
 // class MongoDatabase {
 //   static connect() async {
 //     var db = await Db.create(MONGO_URL);
@@ -21,21 +23,31 @@ import 'package:mongo_dart/mongo_dart.dart';
 //  print(status);
 //  print(await collection.find().toList());
 
-
 class MongoDBConnection {
   Db? _db;
 
- static const MONGO_URL =
+  static const MONGO_URL =
       'mongodb+srv://q1002875:q1002875@cluster0.enqytre.mongodb.net/crypto?retryWrites=true&w=majority';
-      static const COLLECTION_NAME_crypto = 'crypto';
-  
-  
+  static const COLLECTION_NAME_crypto = 'crypto';
+
   Future<void> connect() async {
     var db = await Db.create(MONGO_URL);
     await db.open();
     inspect(db);
     _db = db;
     print('Connected to MongoDB');
+  }
+
+  Future<User?> getuserdocument(String id) async {
+    final collection = _db?.collection(COLLECTION_NAME_crypto);
+    try {
+      final doc = await collection?.findOne(where.eq('userId', id));
+      return User.fromJson(doc!);
+    } catch (error) {
+      return null;
+    }
+
+    //  print(doc);
   }
 
   Future<void> insertDocument(Map<String, dynamic> document) async {
@@ -66,6 +78,16 @@ class MongoDBConnection {
     await collection?.remove(query);
     print('Document deleted');
   }
+    Future<void> deleteOne(String user,String value) async {
+    final collection = _db?.collection(COLLECTION_NAME_crypto);
+    //範例
+     await collection?.deleteOne(where.eq(user, value));
+    print('Document deleted');
+  }
+
+
+
+
 
   Future<void> close() async {
     await _db?.close();
