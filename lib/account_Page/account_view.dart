@@ -61,6 +61,13 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               );
+            } else if (state is AuthenticationLoginOut) {
+              return ElevatedButton(
+                onPressed: () {
+                  _authBloc.add(LoginEvent());
+                },
+                child: const Text('不是會員按google登入'),
+              );
             } else if (state is UnauthenticatedState) {
               return const Text('失敗');
             } else {
@@ -71,32 +78,6 @@ class _HomePageState extends State<HomePage> {
                 child: const Text('不是會員按google登入'),
               );
             }
-
-            // if (state is AuthenticatedState) {
-            //   return Column(
-            //     mainAxisAlignment: MainAxisAlignment.center,
-            //     children: [
-            //       Text('Welcome, ${state.user.displayName}!'),
-            //       ElevatedButton(
-            //         onPressed: () {
-            //           _authBloc.add(LogoutEvent());
-            //         },
-            //         child: const Text('Sign Out'),
-            //       ),
-            //     ],
-            //   );
-            // } else if (state is AuthenticatedisMember) {
-            //   return state.isMember
-            //       ? Text('是mongo會員${state.user!.displayName}')
-            //       : const Text('不是會員請求登入');
-            // } else {
-            //   return ElevatedButton(
-            //     onPressed: () {
-            //       _authBloc.add(LoginEvent());
-            //     },
-            //     child: const Text('Sign In with Google'),
-            //   );
-            // }
           },
         ),
       ),

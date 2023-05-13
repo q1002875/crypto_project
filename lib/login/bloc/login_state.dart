@@ -13,6 +13,8 @@ class AuthenticatedState extends AuthenticationState {
 
 class AuthenticationLoading extends AuthenticationState {}
 
+class AuthenticationLoginOut extends AuthenticationState {}
+
 abstract class AuthenticationState {}
 
 class InitialState extends AuthenticationState {}

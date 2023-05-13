@@ -14,6 +14,7 @@ part 'login_state.dart';
 class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
   final GoogleSignIn googleSignIn = GoogleSignIn();
+  final MongoDBConnection connection = MongoDBConnection();
 
   AuthenticationBloc() : super(UnauthenticatedState()) {
     on<AuthenticationEvent>((event, emit) async {
@@ -35,15 +36,16 @@ class AuthenticationBloc
             emit(AuthenticatedisMember(false, null));
           }
         } catch (_) {
-          // emit(NewsError());
+          emit(UnauthenticatedState());
         }
       } else if (event is LogoutEvent) {
-        // emit(NewsLoading());
+        emit(AuthenticationLoading());
+
         try {
-          // final arts = await news.getArticleReport(event.quree);
-          // emit(NewsLoaded(articles: arts));
+          _clearUserData();
+          emit(AuthenticationLoginOut());
         } catch (_) {
-          // emit(NewsError());
+          emit(UnauthenticatedState());
         }
       } else {
         return;
@@ -54,10 +56,7 @@ class AuthenticationBloc
   Future<User?> _checkMongoMember() async {
     try {
       final userid = await SharedPreferencesHelper.getString('userId');
-      final MongoDBConnection connection;
-      connection = MongoDBConnection();
       await connection.connect();
-
       return connection.getuserdocument(userid);
     } catch (error) {
       print('Failed to sign in with Google: $error');
@@ -66,14 +65,14 @@ class AuthenticationBloc
   }
 
   Future<void> _clearUserData() async {
-    // final collection = _db.collection('users');
-    // await collection.remove({});
+    final userid = await SharedPreferencesHelper.getString('userId');
+    await connection.connect();
+    connection.deleteOne('userId', userid);
+    await googleSignIn.signOut();
   }
 
   Future<void> _connectMongo(User user) async {
     try {
-      final MongoDBConnection connection;
-      connection = MongoDBConnection();
       await connection.connect();
       final document = {
         '_id': user.id,
@@ -113,11 +112,5 @@ class AuthenticationBloc
       return users;
     }
     return null;
-  }
-
-  Stream<AuthenticationState> _mapLogoutEventToState() async* {
-    // 清除MongoDB中的用户数据
-    await _clearUserData();
-    yield UnauthenticatedState();
   }
 }
