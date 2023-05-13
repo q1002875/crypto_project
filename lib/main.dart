@@ -4,9 +4,9 @@ import 'package:crypto_project/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'account_Page/login/login_view.dart';
 import 'bloc/bloc/news_Bloc/news_bloc.dart';
 import 'crypto_Page/crypto_view_page.dart';
-import 'login/login_view.dart';
 
 void main() {
   runApp(const MyApp());
