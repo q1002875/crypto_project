@@ -4,6 +4,7 @@ import 'package:crypto_project/extension/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
 import '../cubit/image_cubit_cubit.dart';
 import '../database_mongodb/maongo_database.dart';
 import '../routes.dart';
@@ -44,7 +45,8 @@ class _NewsPageState extends State<NewsPage> {
                             flex: 2,
                             child: GestureDetector(
                               onTap: () {
-                                Navigator.pushNamed(context,Routes.account);
+                                Navigator.pushNamed(context, Routes.account);
+
                                 // _connectMongo();
 
                                 // _handleSignIn();
@@ -188,6 +190,31 @@ class _NewsPageState extends State<NewsPage> {
         ));
   }
 
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _newsBloc = context.read<NewsBloc>();
+    _newsBloc.add(FetchArtcle());
+    _headerTopic.topicListProperty();
+  }
+
+  Future<void> _connectMongo(Map<String, String> document) async {
+    try {
+      final MongoDBConnection connection;
+      connection = MongoDBConnection();
+      await connection.connect();
+      connection.insertDocument(document);
+    } catch (error) {
+      print('Failed to sign in with Google: $error');
+    }
+  }
+
   Future<void> _handleSignIn() async {
     ///先用本地端記得_id去找雲端茲料
     ///如果沒有才用google登入
@@ -219,31 +246,6 @@ class _NewsPageState extends State<NewsPage> {
     } catch (error) {
       print('Failed to sign in with Google: $error');
     }
-  }
-
-  Future<void> _connectMongo(Map<String, String> document) async {
-    try {
-      final MongoDBConnection connection;
-      connection = MongoDBConnection();
-      await connection.connect();
-      connection.insertDocument(document);
-    } catch (error) {
-      print('Failed to sign in with Google: $error');
-    }
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _newsBloc = context.read<NewsBloc>();
-    _newsBloc.add(FetchArtcle());
-    _headerTopic.topicListProperty();
   }
 
   void _onHeaderTopicSelected(int index) {

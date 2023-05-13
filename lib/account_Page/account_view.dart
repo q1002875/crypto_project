@@ -1,52 +1,108 @@
 import 'package:flutter/material.dart';
-import '../api_model/user_infoModel.dart';
-import '../extension/custom_text.dart';
-import '../login/auth_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AccountPage extends StatefulWidget {
-  const AccountPage({super.key});
+import '../login/bloc/login_bloc.dart';
+
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<AccountPage> createState() => _AccountPageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _AccountPageState extends State<AccountPage> {
-  AuthRepository authRepository = AuthRepository();
-   User? userinfo  ;
-  @override
-  void initState()async {
-    super.initState();
-   userinfo = await authRepository.checkMember();
-  }
+class _HomePageState extends State<HomePage> {
+  late AuthenticationBloc _authBloc;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        // backgroundColor: Colors.amber,
-        appBar: AppBar(
-            title:  CustomText(
-          textContent: userinfo?.displayName ?? '',
-          textColor: Colors.white,
-        )),
-        body: SizedBox(
-            width: 300,
-            height: 300,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
+      appBar: AppBar(
+        title: const Text('Membership Demo'),
+      ),
+      body: Center(
+        child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+          builder: (context, state) {
+            if (state is AuthenticationLoading) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (state is AuthenticatedisMember) {
+              if (state.isMember) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('已經是mongo會員, ${state.user!.displayName}'),
+                    ElevatedButton(
+                      onPressed: () {
+                        _authBloc.add(LogoutEvent());
+                      },
+                      child: const Text('Sign Out'),
+                    ),
+                  ],
+                );
+              }
+              if (state is AuthenticatedState) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Welcome, ${state.user!.displayName}'),
+                    ElevatedButton(
+                      onPressed: () {
+                        _authBloc.add(LogoutEvent());
+                      },
+                      child: const Text('Sign Out'),
+                    ),
+                  ],
+                );
+              } else {
+                return ElevatedButton(
                   onPressed: () {
-                    authRepository.loginWithGoogle();
+                    _authBloc.add(LoginEvent());
                   },
-                  child: const Text('google登入'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    authRepository.logout();
-                  },
-                  child: const Text('登出'),
-                ),
-              ],
-            )));
+                  child: const Text('不是會員按google登入'),
+                );
+              }
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            // if (state is AuthenticatedState) {
+            //   return Column(
+            //     mainAxisAlignment: MainAxisAlignment.center,
+            //     children: [
+            //       Text('Welcome, ${state.user.displayName}!'),
+            //       ElevatedButton(
+            //         onPressed: () {
+            //           _authBloc.add(LogoutEvent());
+            //         },
+            //         child: const Text('Sign Out'),
+            //       ),
+            //     ],
+            //   );
+            // } else if (state is AuthenticatedisMember) {
+            //   return state.isMember
+            //       ? Text('是mongo會員${state.user!.displayName}')
+            //       : const Text('不是會員請求登入');
+            // } else {
+            //   return ElevatedButton(
+            //     onPressed: () {
+            //       _authBloc.add(LoginEvent());
+            //     },
+            //     child: const Text('Sign In with Google'),
+            //   );
+            // }
+          },
+        ),
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _authBloc = BlocProvider.of<AuthenticationBloc>(context);
+    _authBloc.add(CheckisMember());
   }
 }

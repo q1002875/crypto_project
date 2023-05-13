@@ -4,13 +4,11 @@ import 'package:crypto_project/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'account_Page/account_view.dart';
 import 'bloc/bloc/news_Bloc/news_bloc.dart';
 import 'crypto_Page/crypto_view_page.dart';
+import 'login/login_view.dart';
 
-
-
-void main(){
+void main() {
   runApp(const MyApp());
 }
 
@@ -25,20 +23,13 @@ class _MyAppState extends State<MyApp> {
   int _selectedIndex = 0;
 
   final List<Widget> _widgetOptions = [
-    
     BlocProvider(
       create: (context) => NewsBloc(newsApi()),
       child: const NewsPage(),
     ),
     const CryptoPage(),
-    const AccountPage(),
+    const GoogleSignInScreen(),
   ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +53,7 @@ class _MyAppState extends State<MyApp> {
               icon: Icon(Icons.query_stats_rounded),
               label: 'Crypto',
             ),
-                BottomNavigationBarItem(
+            BottomNavigationBarItem(
               icon: Icon(Icons.account_circle),
               label: 'Account',
             ),
@@ -72,5 +63,11 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
     );
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 }

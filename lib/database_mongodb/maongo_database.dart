@@ -24,11 +24,16 @@ import '../api_model/user_infoModel.dart';
 //  print(await collection.find().toList());
 
 class MongoDBConnection {
-  Db? _db;
-
   static const MONGO_URL =
       'mongodb+srv://q1002875:q1002875@cluster0.enqytre.mongodb.net/crypto?retryWrites=true&w=majority';
-  static const COLLECTION_NAME_crypto = 'crypto';
+
+  static const COLLECTION_NAME_crypto = 'user';
+  Db? _db;
+
+  Future<void> close() async {
+    await _db?.close();
+    print('Disconnected from MongoDB');
+  }
 
   Future<void> connect() async {
     var db = await Db.create(MONGO_URL);
@@ -36,6 +41,21 @@ class MongoDBConnection {
     inspect(db);
     _db = db;
     print('Connected to MongoDB');
+  }
+
+  Future<void> deleteDocument(Map<String, dynamic> query) async {
+    final collection = _db?.collection(COLLECTION_NAME_crypto);
+    //範例
+    //  await collection.deleteOne(where.eq('name', 'username111111111'));
+    await collection?.remove(query);
+    print('Document deleted');
+  }
+
+  Future<void> deleteOne(String user, String value) async {
+    final collection = _db?.collection(COLLECTION_NAME_crypto);
+    //範例
+    await collection?.deleteOne(where.eq(user, value));
+    print('Document deleted');
   }
 
   Future<User?> getuserdocument(String id) async {
@@ -69,28 +89,5 @@ class MongoDBConnection {
     final collection = _db?.collection(COLLECTION_NAME_crypto);
     await collection?.update(query, update);
     print('Document updated');
-  }
-
-  Future<void> deleteDocument(Map<String, dynamic> query) async {
-    final collection = _db?.collection(COLLECTION_NAME_crypto);
-    //範例
-    //  await collection.deleteOne(where.eq('name', 'username111111111'));
-    await collection?.remove(query);
-    print('Document deleted');
-  }
-    Future<void> deleteOne(String user,String value) async {
-    final collection = _db?.collection(COLLECTION_NAME_crypto);
-    //範例
-     await collection?.deleteOne(where.eq(user, value));
-    print('Document deleted');
-  }
-
-
-
-
-
-  Future<void> close() async {
-    await _db?.close();
-    print('Disconnected from MongoDB');
   }
 }

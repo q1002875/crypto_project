@@ -1,13 +1,9 @@
 part of 'login_bloc.dart';
 
-abstract class AuthenticationEvent extends Equatable {
-  const AuthenticationEvent();
+// 登录事件
+abstract class AuthenticationEvent {}
 
-  @override
-  List<Object> get props => [];
-}
-
-class CheckMemberEvent extends AuthenticationEvent {}
+class CheckisMember extends AuthenticationEvent {}
 
 class LoginEvent extends AuthenticationEvent {}
 

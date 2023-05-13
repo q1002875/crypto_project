@@ -1,5 +1,6 @@
 import 'package:crypto_project/account_Page/account_view.dart';
 import 'package:crypto_project/crypto_Page/crypto_view_page.dart';
+import 'package:crypto_project/login/bloc/login_bloc.dart';
 import 'package:crypto_project/news_Page_view/news_cell_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,7 +23,7 @@ class Routes {
     switch (settings.name) {
       case home:
         // return MaterialPageRoute(builder: (_) => const GoogleSignInScreen());
-         return MaterialPageRoute(
+        return MaterialPageRoute(
             builder: (_) => BlocProvider(
                 create: (context) => NewsBloc(newsApi()),
                 child: const NewsPage()));
@@ -36,12 +37,14 @@ class Routes {
           // 將參數傳遞給NewsDetail頁面
           return MaterialPageRoute(builder: (_) => NewsDetail(news: args));
         }
-           return _errorRoute();
-       case account:
-         return MaterialPageRoute(builder: (_) => const AccountPage());
+        return _errorRoute();
+      case account:
+        return MaterialPageRoute(
+            builder: (_) => BlocProvider(
+                create: (context) => AuthenticationBloc(), child: HomePage()));
 
-       case crypto:
-      return  MaterialPageRoute(builder: (_) => const CryptoPage());
+      case crypto:
+        return MaterialPageRoute(builder: (_) => const CryptoPage());
       default:
         return _errorRoute();
     }
