@@ -40,20 +40,6 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 );
-              }
-              if (state is AuthenticatedState) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Welcome, ${state.user!.displayName}'),
-                    ElevatedButton(
-                      onPressed: () {
-                        _authBloc.add(LogoutEvent());
-                      },
-                      child: const Text('Sign Out'),
-                    ),
-                  ],
-                );
               } else {
                 return ElevatedButton(
                   onPressed: () {
@@ -62,9 +48,27 @@ class _HomePageState extends State<HomePage> {
                   child: const Text('不是會員按google登入'),
                 );
               }
+            } else if (state is AuthenticatedState) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Welcome, ${state.user.displayName}'),
+                  ElevatedButton(
+                    onPressed: () {
+                      _authBloc.add(LogoutEvent());
+                    },
+                    child: const Text('Sign Out'),
+                  ),
+                ],
+              );
+            } else if (state is UnauthenticatedState) {
+              return const Text('失敗');
             } else {
-              return const Center(
-                child: CircularProgressIndicator(),
+              return ElevatedButton(
+                onPressed: () {
+                  _authBloc.add(LoginEvent());
+                },
+                child: const Text('不是會員按google登入'),
               );
             }
 
