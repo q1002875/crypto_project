@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../extension/image_url.dart';
-import '../routes.dart';
 
 class GoogleSignInScreen extends StatefulWidget {
   const GoogleSignInScreen({super.key});
@@ -66,7 +65,7 @@ class _GoogleSignInScreenState extends State<GoogleSignInScreen> {
           googleurl = photoUrl;
         });
         // ignore: use_build_context_synchronously
-        Navigator.pushNamed(context, Routes.newPage);
+        // Navigator.pushNamed(context, Routes.newPage);
       }
     } catch (error) {
       print('Failed to sign in with Google: $error');
