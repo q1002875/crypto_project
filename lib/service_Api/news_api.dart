@@ -2,8 +2,7 @@
 
 import 'package:crypto_project/api_model/news_totalModel.dart';
 
-
-import 'http_server.dart';
+import '../http_server.dart';
 
 // ignore: camel_case_types
 class newsApi {
@@ -17,7 +16,6 @@ class newsApi {
     final data = httpService(baseUrl: api);
     final response = await data.getJson();
     final jsonMap = NewsModel.fromJson(response);
-   return jsonMap.articles;
-
+    return jsonMap.articles;
   }
 }

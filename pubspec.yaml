@@ -48,6 +48,8 @@ dependencies:
   # firebase_core: ^2.11.0
   # firebase_auth: ^4.2.2
   mongo_dart: ^0.9.1
+  web_socket_channel: ^2.4.0
+  provider: ^6.0.5
 
 
 dev_dependencies:

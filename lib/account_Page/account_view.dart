@@ -22,62 +22,7 @@ class _HomePageState extends State<HomePage> {
       body: Center(
         child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
           builder: (context, state) {
-            if (state is AuthenticationLoading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (state is AuthenticatedisMember) {
-              if (state.isMember) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('已經是mongo會員, ${state.user!.displayName}'),
-                    ElevatedButton(
-                      onPressed: () {
-                        _authBloc.add(LogoutEvent());
-                      },
-                      child: const Text('Sign Out'),
-                    ),
-                  ],
-                );
-              } else {
-                return ElevatedButton(
-                  onPressed: () {
-                    _authBloc.add(LoginEvent());
-                  },
-                  child: const Text('不是會員按google登入'),
-                );
-              }
-            } else if (state is AuthenticatedState) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Welcome, ${state.user.displayName}'),
-                  ElevatedButton(
-                    onPressed: () {
-                      _authBloc.add(LogoutEvent());
-                    },
-                    child: const Text('Sign Out'),
-                  ),
-                ],
-              );
-            } else if (state is AuthenticationLoginOut) {
-              return ElevatedButton(
-                onPressed: () {
-                  _authBloc.add(LoginEvent());
-                },
-                child: const Text('不是會員按google登入'),
-              );
-            } else if (state is UnauthenticatedState) {
-              return const Text('失敗');
-            } else {
-              return ElevatedButton(
-                onPressed: () {
-                  _authBloc.add(LoginEvent());
-                },
-                child: const Text('不是會員按google登入'),
-              );
-            }
+            return _buildContent(context, state);
           },
         ),
       ),
@@ -89,5 +34,68 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _authBloc = BlocProvider.of<AuthenticationBloc>(context);
     _authBloc.add(CheckisMember());
+  }
+
+  Widget _buildContent(BuildContext context, AuthenticationState state) {
+    switch (state.runtimeType) {
+      case AuthenticationLoading:
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      case AuthenticatedisMember:
+        final isMember = (state as AuthenticatedisMember).isMember;
+        final user = (state).user;
+        if (isMember) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('已經是mongo會員, ${user!.displayName}'),
+              ElevatedButton(
+                onPressed: () {
+                  _authBloc.add(LogoutEvent());
+                },
+                child: const Text('Sign Out'),
+              ),
+            ],
+          );
+        } else {
+          return ElevatedButton(
+            onPressed: () {
+              _authBloc.add(LoginEvent());
+            },
+            child: const Text('不是會員按google登入'),
+          );
+        }
+      case AuthenticatedState:
+        final user = (state as AuthenticatedState).user;
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Welcome, ${user.displayName}'),
+            ElevatedButton(
+              onPressed: () {
+                _authBloc.add(LogoutEvent());
+              },
+              child: const Text('Sign Out'),
+            ),
+          ],
+        );
+      case AuthenticationLoginOut:
+        return ElevatedButton(
+          onPressed: () {
+            _authBloc.add(LoginEvent());
+          },
+          child: const Text('不是會員按google登入'),
+        );
+      case UnauthenticatedState:
+        return const Text('失敗');
+      default:
+        return ElevatedButton(
+          onPressed: () {
+            _authBloc.add(LoginEvent());
+          },
+          child: const Text('不是會員按google登入'),
+        );
+    }
   }
 }

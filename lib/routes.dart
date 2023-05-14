@@ -8,7 +8,7 @@ import 'account_Page/login/bloc/login_bloc.dart';
 import 'api_model/news_totalModel.dart';
 import 'bloc/bloc/news_Bloc/news_bloc.dart';
 import 'news_Page_view/news_view.dart';
-import 'news_api.dart';
+import 'service_Api/news_api.dart';
 
 class Routes {
   // ...
@@ -45,7 +45,7 @@ class Routes {
                 child: const HomePage()));
 
       case crypto:
-        return MaterialPageRoute(builder: (_) => const CryptoPage());
+        return MaterialPageRoute(builder: (_) => const BinanceWebSocket());
       default:
         return _errorRoute();
     }

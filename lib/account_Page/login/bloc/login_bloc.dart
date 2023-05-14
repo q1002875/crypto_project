@@ -31,8 +31,10 @@ class AuthenticationBloc
         try {
           final user = await _checkMongoMember();
           if (user != null) {
+            // event.userProvider.login;
             emit(AuthenticatedisMember(true, user));
           } else {
+            // event.userProvider.logout();
             emit(AuthenticatedisMember(false, null));
           }
         } catch (_) {
