@@ -46,11 +46,7 @@ class _NewsPageState extends State<NewsPage> {
                             child: GestureDetector(
                               onTap: () {
                                 Navigator.pushNamed(context, Routes.account);
-
-                                // _connectMongo();
-
-                                // _handleSignIn();
-                                // print('sgin in');
+                                print('push');
                               },
                               child: Container(
                                 decoration: BoxDecoration(

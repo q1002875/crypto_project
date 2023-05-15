@@ -62,8 +62,7 @@ class MongoDBConnection {
     final collection = _db?.collection(COLLECTION_NAME_crypto);
     try {
       final doc = await collection?.findOne(where.eq('userId', id));
-      print(doc.toString());
-      return User.fromJson(doc!);
+      return doc != null ? User.fromJson(doc) : null;
     } catch (error) {
       return null;
     }

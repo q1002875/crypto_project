@@ -1,10 +1,9 @@
-import 'package:crypto_project/account_Page/account_view.dart';
-import 'package:crypto_project/crypto_Page/crypto_view_page.dart';
+import 'package:crypto_project/account_Page/login/bloc/login_bloc.dart';
 import 'package:crypto_project/news_Page_view/news_cell_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'account_Page/login/bloc/login_bloc.dart';
+import 'account_Page/account_view.dart';
 import 'api_model/news_totalModel.dart';
 import 'bloc/bloc/news_Bloc/news_bloc.dart';
 import 'news_Page_view/news_view.dart';
@@ -39,13 +38,14 @@ class Routes {
         }
         return _errorRoute();
       case account:
+        // return MaterialPageRoute(builder: (_) => const HomePage());
         return MaterialPageRoute(
             builder: (_) => BlocProvider(
                 create: (context) => AuthenticationBloc(),
-                child: const HomePage()));
+                child: const AccountPage()));
 
       case crypto:
-        return MaterialPageRoute(builder: (_) => const BinanceWebSocket());
+        // return MaterialPageRoute(builder: (_) => const BinanceWebSocket());
       default:
         return _errorRoute();
     }

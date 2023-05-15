@@ -3,14 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'login/bloc/login_bloc.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class AccountPage extends StatefulWidget {
+   const AccountPage({super.key});
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _AccountPageState createState() => _AccountPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _AccountPageState extends State<AccountPage> {
   late AuthenticationBloc _authBloc;
 
   @override
@@ -30,7 +30,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
-  void initState() {
+  void initState(){
     super.initState();
     _authBloc = BlocProvider.of<AuthenticationBloc>(context);
     _authBloc.add(CheckisMember());
@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> {
               Text('已經是mongo會員, ${user!.displayName}'),
               ElevatedButton(
                 onPressed: () {
-                  _authBloc.add(LogoutEvent());
+                _authBloc.add(LogoutEvent());
                 },
                 child: const Text('Sign Out'),
               ),
@@ -61,9 +61,9 @@ class _HomePageState extends State<HomePage> {
         } else {
           return ElevatedButton(
             onPressed: () {
-              _authBloc.add(LoginEvent());
+           _authBloc.add(LoginEvent());
             },
-            child: const Text('不是會員按google登入'),
+            child: const Text('不是會員按google登入22'),
           );
         }
       case AuthenticatedState:
@@ -74,7 +74,7 @@ class _HomePageState extends State<HomePage> {
             Text('Welcome, ${user.displayName}'),
             ElevatedButton(
               onPressed: () {
-                _authBloc.add(LogoutEvent());
+             _authBloc.add(LogoutEvent());
               },
               child: const Text('Sign Out'),
             ),
@@ -83,18 +83,18 @@ class _HomePageState extends State<HomePage> {
       case AuthenticationLoginOut:
         return ElevatedButton(
           onPressed: () {
-            _authBloc.add(LoginEvent());
+          _authBloc.add(LoginEvent());
           },
-          child: const Text('不是會員按google登入'),
+          child: const Text('不是會員按google登入33'),
         );
       case UnauthenticatedState:
         return const Text('失敗');
       default:
         return ElevatedButton(
           onPressed: () {
-            _authBloc.add(LoginEvent());
+           _authBloc.add(LoginEvent());
           },
-          child: const Text('不是會員按google登入'),
+          child:  Text('不是會員按google登入${state.runtimeType.toString()}'),
         );
     }
   }

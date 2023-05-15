@@ -15,7 +15,7 @@ class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
   final GoogleSignIn googleSignIn = GoogleSignIn();
   final MongoDBConnection connection = MongoDBConnection();
-
+  var isloginin = false;
   AuthenticationBloc() : super(UnauthenticatedState()) {
     on<AuthenticationEvent>((event, emit) async {
       if (event is LoginEvent) {
@@ -29,16 +29,18 @@ class AuthenticationBloc
       } else if (event is CheckisMember) {
         emit(AuthenticationLoading());
         try {
-          final user = await _checkMongoMember();
+          final user = await  _checkMongoMember();
           if (user != null) {
-            // event.userProvider.login;
+            isloginin = true;
+            // event.userProvider.login();
             emit(AuthenticatedisMember(true, user));
           } else {
+             isloginin = false;
             // event.userProvider.logout();
             emit(AuthenticatedisMember(false, null));
           }
         } catch (_) {
-          emit(UnauthenticatedState());
+          // emit(UnauthenticatedState());
         }
       } else if (event is LogoutEvent) {
         emit(AuthenticationLoading());
@@ -59,7 +61,7 @@ class AuthenticationBloc
     try {
       final userid = await SharedPreferencesHelper.getString('userId');
       await connection.connect();
-      return connection.getuserdocument(userid);
+      return await connection.getuserdocument(userid);
     } catch (error) {
       print('Failed to sign in with Google: $error');
     }
@@ -68,9 +70,10 @@ class AuthenticationBloc
 
   Future<void> _clearUserData() async {
     final userid = await SharedPreferencesHelper.getString('userId');
-    await connection.connect();
+   connection.connect();
     connection.deleteOne('userId', userid);
-    await googleSignIn.signOut();
+     googleSignIn.signOut();
+     SharedPreferencesHelper.setString('userId','');
   }
 
   Future<void> _connectMongo(User user) async {
