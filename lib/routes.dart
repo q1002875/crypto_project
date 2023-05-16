@@ -1,4 +1,5 @@
 import 'package:crypto_project/account_Page/login/bloc/login_bloc.dart';
+import 'package:crypto_project/crypto_Page/crypto_search_page.dart';
 import 'package:crypto_project/news_Page_view/news_cell_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,6 +17,7 @@ class Routes {
   static const String newsDetail = '/newPage/detail';
   static const String crypto = '/cryptoPage';
   static const String account = '/newPage/accountPage';
+  static const String cryptoSearch =  '/cryptoPage/search';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     var args = settings.arguments;
@@ -35,6 +37,12 @@ class Routes {
         if (args is ArticleModel) {
           // 將參數傳遞給NewsDetail頁面
           return MaterialPageRoute(builder: (_) => NewsDetail(news: args));
+        }
+        return _errorRoute();
+         case cryptoSearch:
+        if (args is String) {
+          // 將參數傳遞給NewsDetail頁面
+          return MaterialPageRoute(builder: (_) =>  CryptoSearchPage(args));
         }
         return _errorRoute();
       case account:
