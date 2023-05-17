@@ -62,13 +62,15 @@ class AuthRepository {
     //delemongodb user
   }
 
-  Future<void> _connectMongo(Map<String, String> document) async {
+  Future<bool> _connectMongo(Map<String, String> document) async {
     try {
       final MongoDBConnection connection;
       connection = MongoDBConnection();
       await connection.connect();
       connection.insertDocument(document);
+      return true;
     } catch (error) {
+      return false;
       print('Failed to sign in with Google: $error');
     }
   }

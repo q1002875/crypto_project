@@ -1,10 +1,8 @@
 import 'dart:convert';
 
-import 'package:crypto_project/service_Api/coinbase_api.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../extension/custom_text.dart';
-import '../http_server.dart';
 
 class CryptoSearchPage extends StatefulWidget {
   String userid;
@@ -19,69 +17,61 @@ class CryptoSearchPage extends StatefulWidget {
 class _CryptoSearchPageState extends State<CryptoSearchPage> {
 //  late List<String> data ;
 
+  // Future<String> getEthereumInfo() async {
+  //   const String apiUrl =
+  //       'https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=ETH';
+  //   const String apiKey = '6e35c3bf-1346-4a87-9bae-25fe6ea51136';
 
+  //   final headers = {
+  //     'Content-Type': 'application/json',
+  //     'X-CMC_PRO_API_KEY': apiKey,
+  //   };
 
-Future<String> getEthereumInfo() async {
-    const String apiUrl =
-        'https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=ETH';
-    const String apiKey = '6e35c3bf-1346-4a87-9bae-25fe6ea51136';
+  //   final response = await http.get(Uri.parse(apiUrl), headers: headers);
 
-final headers = {
-  'Content-Type': 'application/json',
-  'X-CMC_PRO_API_KEY': apiKey,
+  //   if (response.statusCode == 200) {
+  //     final data = jsonDecode(response.body);
+  //     debugPrint(data.toString());
+  //     return data;
+  //   } else {
+  //     return '';
+  //     debugPrint(
+  //         'Failed to get Ethereum info. Error code: ${response.statusCode}');
+  //   }
+  // }
 
-};
+  // Future<String> imaaaaaa(String symbol) async {
+  //   const api =
+  //       'https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=ETH&CMC_PRO_API_KEY=6e35c3bf-1346-4a87-9bae-25fe6ea51136';
+  //   final data = httpService(baseUrl: api);
+  //   final response = await data.getJson();
+  //   debugPrint(response.toString());
+  //   return response;
+  // }
 
+  // Future<String> iconImage(String symbol) async {
+  //   var url = Uri.parse(
+  //       'https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=ETH&CMC_PRO_API_KEY=6e35c3bf-1346-4a87-9bae-25fe6ea51136');
+  //   var headers = {
+  //     'Host': '',
+  //     'X-CMC_PRO_API_KEY': '6e35c3bf-1346-4a87-9bae-25fe6ea51136',
+  //   };
+  //   debugPrint('獲取圖示');
+  //   final response = await http.get(url);
+  //   if (response.statusCode == 200) {
+  //     debugPrint(response.toString());
+  //     // var response = await http.get(url);
+  //     debugPrint(response.body);
+  //     var data = jsonDecode(response.body)['data'][symbol]['logo'];
+  //     // return data.toString();
+  //     return data;
+  //   } else {
+  //     debugPrint('fail');
+  //     return '';
+  //   }
+  // }
 
-    final response = await http.get(Uri.parse(apiUrl), headers: headers);
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      print(data.toString());
-      return data;
-    } else {
-      return '';
-      print('Failed to get Ethereum info. Error code: ${response.statusCode}');
-    }
-  }
-
-
-
-
-
-  Future<String> imaaaaaa(String symbol) async {
-    const api =
-        'https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=ETH&CMC_PRO_API_KEY=6e35c3bf-1346-4a87-9bae-25fe6ea51136';
-    final data = httpService(baseUrl: api);
-    final response = await data.getJson();
-    print(response.toString());
-    return response;
-  }
-
-
-
-
-Future<String> iconImage(String symbol) async {
-    var url = Uri.parse(
-        'https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=ETH&CMC_PRO_API_KEY=6e35c3bf-1346-4a87-9bae-25fe6ea51136');
-    var headers = {
-      'X-CMC_PRO_API_KEY': '6e35c3bf-1346-4a87-9bae-25fe6ea51136',
-    };
-    final response = await http
-        .get(url,headers: headers);
-    
-       print('獲取圖示');
-      // var response = await http.get(url);
-      print(response.body);
-      var data = jsonDecode(response.body)['data'][symbol]['logo'];
-      // return data.toString();
-      return data;
-    
-  }
-
-
-
-Future<List<String>> fetchSymbols() async {
+  Future<List<Trickcrypto>> fetchSymbols() async {
     final response = await http
         .get(Uri.parse('https://api.binance.com/api/v3/exchangeInfo'));
 
@@ -93,8 +83,16 @@ Future<List<String>> fetchSymbols() async {
       List<String> filteredList = symbols.where((item) {
         return item.toLowerCase().contains(filterKeyword.toLowerCase());
       }).toList();
+      List<Trickcrypto> filtered = [];
 
-      return filteredList;
+      for (var element in filteredList) {
+        filtered.add(Trickcrypto(element));
+      }
+
+      // filteredList.map((e) =>
+      //   filtered.add(trickcrypto(e))
+      // );
+      return filtered;
     } else {
       throw Exception('Failed to fetch symbols');
     }
@@ -105,7 +103,7 @@ Future<List<String>> fetchSymbols() async {
     // TODO: implement initState
     super.initState();
     // iconImage('ETH');
-    getEthereumInfo();
+    // getEthereumInfo();
   }
 
   @override
@@ -117,46 +115,40 @@ Future<List<String>> fetchSymbols() async {
           textColor: Colors.white,
         )),
         body: Container(
-            color: Colors.amber,
+            color: Colors.white,
             child:
-            // const MyListView()
-            
-            FutureBuilder(
-              future: coinbaseApi.getcoinBaseImageReport(),
+                // const MyListView()
+
+                FutureBuilder(
+              future: fetchSymbols(),
               builder: (context, snapshot) {
                 final symbol = snapshot.data;
                 if (symbol != null) {
-              
-                 return Text(symbol);
-                //  MyListView(symbol);
-
-
+                  return
+                      // Text(symbol);
+                      MyListView(symbol);
                 } else {
                   return const Center(child: CircularProgressIndicator());
                 }
               },
-            )
-            
-            
-            ));
+            )));
   }
 }
 
-
-
 class MyListView extends StatefulWidget {
-  List<String> data ;
-   MyListView(this.data,{super.key});
+  List<Trickcrypto> data;
+  MyListView(this.data, {super.key});
 
   @override
   _MyListViewState createState() => _MyListViewState();
 }
 
 class _MyListViewState extends State<MyListView> {
-  List<String> dataList = [];
+  List<Trickcrypto> dataList = [];
   int loadedCount = 20; // 初始加载的数量
   bool isLoading = false;
   String searchKeyword = '';
+  final bool _isToggled = false;
   @override
   void initState() {
     super.initState();
@@ -168,8 +160,8 @@ class _MyListViewState extends State<MyListView> {
     await Future.delayed(const Duration(seconds: 1));
 
     // 模拟从服务器获取数据
-    List<String> newData = widget.data;
-    
+    List<Trickcrypto> newData = widget.data;
+
     setState(() {
       dataList.clear();
       // 将新数据添加到现有数据列表中
@@ -184,12 +176,12 @@ class _MyListViewState extends State<MyListView> {
   }
 
   bool _onNotification(ScrollNotification notification) {
-    if (!isLoading && notification.metrics.pixels == notification.metrics.maxScrollExtent) {
+    if (!isLoading &&
+        notification.metrics.pixels == notification.metrics.maxScrollExtent) {
       // 当滚动到底部时触发加载更多数据
       setState(() {
         isLoading = true;
       });
-
       fetchData();
     }
     return false;
@@ -197,67 +189,114 @@ class _MyListViewState extends State<MyListView> {
 
   @override
   Widget build(BuildContext context) {
-     List<String> filteredList = dataList.where((item) {
-      return item.toLowerCase().contains(searchKeyword.toLowerCase());
+    List<Trickcrypto> filteredList = dataList.where((item) {
+      return item.coin.toLowerCase().contains(searchKeyword.toLowerCase());
     }).toList();
 
-
     return Scaffold(
-      // appBar: AppBar(
-      //   title:  Text('dataList lenth${dataList.length}'),
-      // ),
-      body: Column(children: [
-           TextField(
-            onChanged: (value) {
-              setState(() {
-                searchKeyword = value;
-              });
-            },
-            decoration:const InputDecoration(
-              hintText: 'Search',
+        body: Column(
+      children: [
+        TextField(
+          onChanged: (value) {
+            setState(() {
+              searchKeyword = value;
+            });
+          },
+          decoration: const InputDecoration(
+            hintText: 'Search',
+          ),
+        ),
+        Expanded(
+          child: NotificationListener<ScrollNotification>(
+            onNotification: _onNotification,
+            child: ListView.builder(
+              itemCount: searchKeyword != ''
+                  ? filteredList.length
+                  : dataList.length + 1, // 加1是为了显示加载更多的提示
+              itemBuilder: (context, index) {
+                if (index < dataList.length && searchKeyword == '') {
+                  // 显示数据项
+                  return listviewCell(dataList[index], index);
+                } else if (searchKeyword != '') {
+                  return listviewCell(filteredList[index], index);
+                } else {
+                  // 显示加载更多的提示
+                  return const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+              },
             ),
           ),
-          Expanded(child:   NotificationListener<ScrollNotification>(
-                onNotification: _onNotification,
-                child: ListView.builder(
-                  itemCount: searchKeyword != ''?filteredList.length :dataList.length + 1, // 加1是为了显示加载更多的提示
-                  itemBuilder: (context, index) {
-                    if (index < dataList.length && searchKeyword == '') {
-                      // 显示数据项
-                      return ListTile(
-                        title: Text(dataList[index]),
-                      );
-                    } else if (searchKeyword != '') {
-                      return ListTile(
-                        title: Text(filteredList[index]),
-                      );
-                    } else {
-                      // 显示加载更多的提示
-                      return const Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Center(child: CircularProgressIndicator()),
-                      );
-                    }
-                  },
-                ),
-              ),
-              
-            ),
-            const Divider(
-      color: Colors.grey,
-      thickness: 1,
-      height: 1,
-    )
-           
+        ),
+        const Divider(
+          color: Colors.grey,
+          thickness: 1,
+          height: 4,
+        )
+      ],
+    ));
+  }
 
-      ],)
+  Widget listviewCell(Trickcrypto data, int index) {
+    return Container(
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.grey,
+            width: 1.0,
+          ),
+        ),
+      ),
+      child: Flex(
+        direction: Axis.horizontal,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Flexible(flex: 1, child: Image.asset('assets/cryptoIcon.png')),
+          Flexible(
+              flex: 4,
+              child: CustomText(
+                textContent: data.coin,
+                textColor: Colors.black,
+                fontSize: 20,
+              )),
+          Flexible(
+              flex: 1,
+              child: IconButton(
+                icon: Icon(data.isAdd ? Icons.check : Icons.add),
+                onPressed: () {
+                  String modifiedString =
+                      data.coin.toLowerCase();
+                  setState(() {
+                    
+                  int index = dataList
+                        .indexWhere((element) => element.coin == data.coin);
+                    if (data.isAdd) {
+                      if (index >= 0) {
+                        dataList[index].isAdd = false;
+                        debugPrint('$modifiedString移除');
+                        // 移除資料
+                      }
+                    } else {
+                      if (index >= 0) {
+                        dataList[index].isAdd = true;
+                      }
+                      debugPrint('$modifiedString新增');
+                      // 新增貨幣
+                    }
+                  });
+                },
+              )),
+        ],
+      ),
     );
   }
 }
 
-
-// import 'package:http/http.dart' as http;
-
-
-
-
+class Trickcrypto {
+  String coin;
+  bool isAdd = false;
+  Trickcrypto(this.coin);
+}

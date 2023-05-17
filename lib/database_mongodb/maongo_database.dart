@@ -70,13 +70,18 @@ class MongoDBConnection {
     //  print(doc);
   }
 
-  Future<void> insertDocument(Map<String, dynamic> document) async {
-    final collection = _db?.collection(COLLECTION_NAME_crypto);
-    final id = ObjectId().toHexString();
-    document['_id'] = id;
-    await collection?.insertOne(document);
-    print('Document inserted');
+ Future<bool> insertDocument(Map<String, dynamic> document) async {
+    try {
+      final collection = _db?.collection(COLLECTION_NAME_crypto);
+      final id = ObjectId().toHexString();
+      document['_id'] = id;
+      await collection?.insertOne(document);
+        return true;
+    } catch (e) {
+       return false;
+    }
   }
+
 
   Future<void> updateDocument(
       Map<String, dynamic> query, Map<String, dynamic> update) async {
