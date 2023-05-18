@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import '../database_mongodb/maongo_database.dart';
 import '../extension/custom_text.dart';
 
 class CryptoSearchPage extends StatefulWidget {
@@ -15,63 +16,8 @@ class CryptoSearchPage extends StatefulWidget {
 // 搜尋完要存到mongo
 
 class _CryptoSearchPageState extends State<CryptoSearchPage> {
-//  late List<String> data ;
 
-  // Future<String> getEthereumInfo() async {
-  //   const String apiUrl =
-  //       'https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=ETH';
-  //   const String apiKey = '6e35c3bf-1346-4a87-9bae-25fe6ea51136';
-
-  //   final headers = {
-  //     'Content-Type': 'application/json',
-  //     'X-CMC_PRO_API_KEY': apiKey,
-  //   };
-
-  //   final response = await http.get(Uri.parse(apiUrl), headers: headers);
-
-  //   if (response.statusCode == 200) {
-  //     final data = jsonDecode(response.body);
-  //     debugPrint(data.toString());
-  //     return data;
-  //   } else {
-  //     return '';
-  //     debugPrint(
-  //         'Failed to get Ethereum info. Error code: ${response.statusCode}');
-  //   }
-  // }
-
-  // Future<String> imaaaaaa(String symbol) async {
-  //   const api =
-  //       'https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=ETH&CMC_PRO_API_KEY=6e35c3bf-1346-4a87-9bae-25fe6ea51136';
-  //   final data = httpService(baseUrl: api);
-  //   final response = await data.getJson();
-  //   debugPrint(response.toString());
-  //   return response;
-  // }
-
-  // Future<String> iconImage(String symbol) async {
-  //   var url = Uri.parse(
-  //       'https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?symbol=ETH&CMC_PRO_API_KEY=6e35c3bf-1346-4a87-9bae-25fe6ea51136');
-  //   var headers = {
-  //     'Host': '',
-  //     'X-CMC_PRO_API_KEY': '6e35c3bf-1346-4a87-9bae-25fe6ea51136',
-  //   };
-  //   debugPrint('獲取圖示');
-  //   final response = await http.get(url);
-  //   if (response.statusCode == 200) {
-  //     debugPrint(response.toString());
-  //     // var response = await http.get(url);
-  //     debugPrint(response.body);
-  //     var data = jsonDecode(response.body)['data'][symbol]['logo'];
-  //     // return data.toString();
-  //     return data;
-  //   } else {
-  //     debugPrint('fail');
-  //     return '';
-  //   }
-  // }
-
-  Future<List<Trickcrypto>> fetchSymbols() async {
+Future<List<Trickcrypto>> fetchSymbols() async {
     final response = await http
         .get(Uri.parse('https://api.binance.com/api/v3/exchangeInfo'));
 
@@ -80,19 +26,12 @@ class _CryptoSearchPageState extends State<CryptoSearchPage> {
       final symbols =
           List<String>.from(data['symbols'].map((symbol) => symbol['symbol']));
       String filterKeyword = 'usdt';
-      List<String> filteredList = symbols.where((item) {
-        return item.toLowerCase().contains(filterKeyword.toLowerCase());
-      }).toList();
-      List<Trickcrypto> filtered = [];
 
-      for (var element in filteredList) {
-        filtered.add(Trickcrypto(element));
-      }
-
-      // filteredList.map((e) =>
-      //   filtered.add(trickcrypto(e))
-      // );
-      return filtered;
+      return symbols
+          .where((element) =>
+              element.toLowerCase().contains(filterKeyword.toLowerCase()))
+          .map((element) => Trickcrypto(element))
+          .toList();
     } else {
       throw Exception('Failed to fetch symbols');
     }
@@ -102,8 +41,6 @@ class _CryptoSearchPageState extends State<CryptoSearchPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // iconImage('ETH');
-    // getEthereumInfo();
   }
 
   @override
@@ -126,7 +63,7 @@ class _CryptoSearchPageState extends State<CryptoSearchPage> {
                 if (symbol != null) {
                   return
                       // Text(symbol);
-                      MyListView(symbol);
+                      MyListView(widget.userid,symbol);
                 } else {
                   return const Center(child: CircularProgressIndicator());
                 }
@@ -137,31 +74,30 @@ class _CryptoSearchPageState extends State<CryptoSearchPage> {
 
 class MyListView extends StatefulWidget {
   List<Trickcrypto> data;
-  MyListView(this.data, {super.key});
+  String userId ;
+  MyListView(this.userId, this.data, {super.key});
 
   @override
   _MyListViewState createState() => _MyListViewState();
 }
 
 class _MyListViewState extends State<MyListView> {
+   MongoDBConnection mongodb = MongoDBConnection();
   List<Trickcrypto> dataList = [];
   int loadedCount = 20; // 初始加载的数量
   bool isLoading = false;
   String searchKeyword = '';
-  final bool _isToggled = false;
   @override
   void initState() {
     super.initState();
+    Future<void> connectMongo() async {await mongodb.connect();}
+    connectMongo();
     fetchData();
   }
 
+  Future<void> connectMongo() async {mongodb.connect();}
   Future<void> fetchData() async {
-    // 模拟异步加载数据
-    await Future.delayed(const Duration(seconds: 1));
-
-    // 模拟从服务器获取数据
     List<Trickcrypto> newData = widget.data;
-
     setState(() {
       dataList.clear();
       // 将新数据添加到现有数据列表中
@@ -215,7 +151,7 @@ class _MyListViewState extends State<MyListView> {
                   : dataList.length + 1, // 加1是为了显示加载更多的提示
               itemBuilder: (context, index) {
                 if (index < dataList.length && searchKeyword == '') {
-                  // 显示数据项
+                  //显示数据项
                   return listviewCell(dataList[index], index);
                 } else if (searchKeyword != '') {
                   return listviewCell(filteredList[index], index);
@@ -277,15 +213,41 @@ class _MyListViewState extends State<MyListView> {
                       if (index >= 0) {
                         dataList[index].isAdd = false;
                         debugPrint('$modifiedString移除');
+
+                        // mongodb.deleteOne('21321', '', ConnectDbName.crypto);
                         // 移除資料
                       }
                     } else {
                       if (index >= 0) {
                         dataList[index].isAdd = true;
+                      
+                        // repositorty.addSubscripCoin({'123':'123'});
                       }
+                    
                       debugPrint('$modifiedString新增');
                       // 新增貨幣
                     }
+                     //庚熹
+                        //  mongodb.insertDocument(
+                        // {'userId': widget.userId}, ConnectDbName.crypto);
+                       
+                      //  mongodb.deleteOne('userId', widget.userId, ConnectDbName.crypto);
+                       final d = dataList.where((element) =>  element.isAdd == true).map((e) => e.coin);
+                       String json = jsonEncode(d.toList());
+                        // mongodb.insertDocument(
+                        //   { 'userid':widget.userId,
+                        //     'crypto': json}, ConnectDbName.crypto);
+                    // mongodb.updateDocument(
+                    //     {'userId': widget.userId},
+                    //     {'userId':'123123132'},
+                    //     ConnectDbName.crypto);
+
+
+                  final returnresult =  mongodb.updateDocument({'userId':widget.userId}, {'userId':widget.userId,'crypto':json}, ConnectDbName.crypto);
+                   // ignore: unrelated_type_equality_checks
+
+                   debugPrint('上傳$returnresult') ;
+                  //  returnresult == true ? debugPrint('上傳成功') : debugPrint('上傳失敗');
                   });
                 },
               )),

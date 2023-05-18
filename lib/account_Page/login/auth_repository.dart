@@ -13,7 +13,7 @@ class AuthRepository {
       final MongoDBConnection connection;
       connection = MongoDBConnection();
       await connection.connect();
-      final data = connection.getuserdocument(userid);
+      final data = connection.getuserdocument(userid,ConnectDbName.user);
       print(data);
     } else {
       return null;
@@ -58,7 +58,7 @@ class AuthRepository {
     final MongoDBConnection connection;
     connection = MongoDBConnection();
     await connection.connect();
-    connection.deleteOne('userId', userid);
+    connection.deleteOne('userId', userid,ConnectDbName.user);
     //delemongodb user
   }
 
@@ -67,7 +67,7 @@ class AuthRepository {
       final MongoDBConnection connection;
       connection = MongoDBConnection();
       await connection.connect();
-      connection.insertDocument(document);
+      connection.insertDocument(document, ConnectDbName.user);
       return true;
     } catch (error) {
       return false;

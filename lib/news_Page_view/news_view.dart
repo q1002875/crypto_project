@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../cubit/image_cubit_cubit.dart';
-import '../database_mongodb/maongo_database.dart';
 import '../routes.dart';
 import 'new_headerTopic.dart';
 import 'news_cell_view.dart';
@@ -200,49 +199,6 @@ class _NewsPageState extends State<NewsPage> {
     _headerTopic.topicListProperty();
   }
 
-  Future<void> _connectMongo(Map<String, String> document) async {
-    try {
-      final MongoDBConnection connection;
-      connection = MongoDBConnection();
-      await connection.connect();
-      connection.insertDocument(document);
-    } catch (error) {
-      print('Failed to sign in with Google: $error');
-    }
-  }
-
-  Future<void> _handleSignIn() async {
-    ///先用本地端記得_id去找雲端茲料
-    ///如果沒有才用google登入
-    try {
-      final GoogleSignInAccount? googleSignInAccount =
-          await googleSignIn.signIn();
-      if (googleSignInAccount != null) {
-        // 登錄成功，獲取用戶信息
-        final String email = googleSignInAccount.email;
-        final String displayName = googleSignInAccount.displayName ?? '';
-        final String photoUrl = googleSignInAccount.photoUrl ?? '';
-        final String mangoUseId = googleSignInAccount.id;
-        // TODO: 將用戶信息保存到 MongoDB
-        final document = {
-          'displayName': displayName,
-          'email': email,
-          'photoUrl': photoUrl,
-        };
-
-        _connectMongo(document);
-        setState(() {
-          // mail = email;
-          // googlename = mangoUseId;
-          googleurl = photoUrl;
-        });
-        // ignore: use_build_context_synchronously
-        // Navigator.pushNamed(context, Routes.newPage);
-      }
-    } catch (error) {
-      print('Failed to sign in with Google: $error');
-    }
-  }
 
   void _onHeaderTopicSelected(int index) {
     setState(() {

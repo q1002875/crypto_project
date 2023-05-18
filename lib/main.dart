@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'bloc/bloc/news_Bloc/news_bloc.dart';
-import 'crypto_Page/crypto_search_page.dart';
+import 'crypto_Page/crypto_view_page.dart';
 
 void main() {
   runApp(
@@ -35,7 +35,8 @@ class _MyAppState extends State<MyApp> {
         create: (context) => NewsBloc(newsApi()),
         child: const NewsPage(),
       ),
-       CryptoSearchPage(''),
+      const BinanceWebSocket(),
+      //  CryptoSearchPage(''),
       // AccountPage(_authBloc)
       BlocProvider(
           create: (context) => AuthenticationBloc(),

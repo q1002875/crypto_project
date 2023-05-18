@@ -61,7 +61,7 @@ class AuthenticationBloc
     try {
       final userid = await SharedPreferencesHelper.getString('userId');
       await connection.connect();
-      return await connection.getuserdocument(userid);
+      return await connection.getuserdocument(userid,ConnectDbName.user);
     } catch (error) {
       print('Failed to sign in with Google: $error');
     }
@@ -71,7 +71,7 @@ class AuthenticationBloc
   Future<void> _clearUserData() async {
     final userid = await SharedPreferencesHelper.getString('userId');
    connection.connect();
-    connection.deleteOne('userId', userid);
+    connection.deleteOne('userId', userid,ConnectDbName.user);
      googleSignIn.signOut();
      SharedPreferencesHelper.setString('userId','');
   }
@@ -86,7 +86,7 @@ class AuthenticationBloc
         'email': user.email,
         'photoUrl': user.photoUrl
       };
-      connection.insertDocument(document);
+      connection.insertDocument(document,ConnectDbName.user);
     } catch (error) {
       print('Failed to sign in with Google: $error');
     }
