@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:crypto_project/api_model/crypto_coinModel.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../database_mongodb/maongo_database.dart';
@@ -83,6 +84,7 @@ class MyListView extends StatefulWidget {
 
 class _MyListViewState extends State<MyListView> {
    MongoDBConnection mongodb = MongoDBConnection();
+   List<String> mongoCryptoList = [];
   List<Trickcrypto> dataList = [];
   int loadedCount = 20; // 初始加载的数量
   bool isLoading = false;
@@ -90,26 +92,66 @@ class _MyListViewState extends State<MyListView> {
   @override
   void initState() {
     super.initState();
-    Future<void> connectMongo() async {await mongodb.connect();}
-    connectMongo();
-    fetchData();
+    init();
   }
 
-  Future<void> connectMongo() async {mongodb.connect();}
-  Future<void> fetchData() async {
-    List<Trickcrypto> newData = widget.data;
+Future<void> init() async {
+  try {
+    mongodb.context = context;
+    await connectMongo();
+    await fetchMongoData();
+    await fetchData();
+    // 所有異步操作完成後的處理
+    // ...
+  } catch (error) {
+    // 異步操作中發生錯誤的處理
+    // ...
+  }
+}
+
+
+
+  Future<void> connectMongo() async {
+   await mongodb.connect();}
+
+  Future<UserCryptoData?> fetchMongoData() async {
+  final cryptoData =
+        await mongodb.getUserCryptoData(widget.userId, ConnectDbName.crypto);
+  if (cryptoData != null){
+    mongoCryptoList = cryptoData.crypto;
+     debugPrint('回傳回來得coin list:$cryptoData');
+   //fetch data
+  }else{
+   mongodb.insertDocument({'userId':widget.userId},ConnectDbName.crypto);
+  }
+  return null;
+
+  }
+
+
+
+Future<void> fetchData() async {
+    // 根據 loadedCount 取得新資料的子列表
+    final newData = widget.data.sublist(0, loadedCount);
+    // 更新 newData 中每個項目的 isAdd 欄位
+    final updatedDataList = newData.map((item) {
+      final isAdded = mongoCryptoList.contains(item.coin);
+      item.isAdd = isAdded;
+      return item;
+    }).toList();
     setState(() {
+      // 清空現有的 dataList
       dataList.clear();
-      // 将新数据添加到现有数据列表中
-      dataList.addAll(newData.getRange(0, loadedCount));
-
-      // 增加加载的数量
+      // 將更新後的項目添加到 dataList 中
+      dataList.addAll(updatedDataList);
+      // 增加已載入的數量
       loadedCount += 20;
-
-      // 停止加载状态
+      // 停止加載狀態
       isLoading = false;
     });
   }
+
+
 
   bool _onNotification(ScrollNotification notification) {
     if (!isLoading &&
@@ -132,16 +174,22 @@ class _MyListViewState extends State<MyListView> {
     return Scaffold(
         body: Column(
       children: [
-        TextField(
-          onChanged: (value) {
-            setState(() {
-              searchKeyword = value;
-            });
-          },
-          decoration: const InputDecoration(
-            hintText: 'Search',
-          ),
-        ),
+  Container(
+    padding: const EdgeInsets.all(10),
+    child:TextField(
+  onChanged: (value) {
+    setState(() {
+      searchKeyword = value;
+    });
+  },
+  decoration: InputDecoration(
+    hintText: 'Search',
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(30.0), // 使用圓角半徑設置橢圓形狀
+    ),
+  ),
+),
+ ),
         Expanded(
           child: NotificationListener<ScrollNotification>(
             onNotification: _onNotification,
@@ -203,51 +251,25 @@ class _MyListViewState extends State<MyListView> {
               child: IconButton(
                 icon: Icon(data.isAdd ? Icons.check : Icons.add),
                 onPressed: () {
-                  String modifiedString =
-                      data.coin.toLowerCase();
                   setState(() {
-                    
-                  int index = dataList
+                    String showText = '';
+                    final index = dataList
                         .indexWhere((element) => element.coin == data.coin);
-                    if (data.isAdd) {
-                      if (index >= 0) {
-                        dataList[index].isAdd = false;
-                        debugPrint('$modifiedString移除');
+                    if (index >= 0) {
+                      dataList[index].isAdd = !data.isAdd;
 
-                        // mongodb.deleteOne('21321', '', ConnectDbName.crypto);
-                        // 移除資料
-                      }
-                    } else {
-                      if (index >= 0) {
-                        dataList[index].isAdd = true;
-                      
-                        // repositorty.addSubscripCoin({'123':'123'});
-                      }
-                    
-                      debugPrint('$modifiedString新增');
-                      // 新增貨幣
+                      dataList[index].isAdd ?showText = '新增${dataList[index].coin}' :showText = '刪除${dataList[index].coin}' ;
                     }
-                     //庚熹
-                        //  mongodb.insertDocument(
-                        // {'userId': widget.userId}, ConnectDbName.crypto);
-                       
-                      //  mongodb.deleteOne('userId', widget.userId, ConnectDbName.crypto);
-                       final d = dataList.where((element) =>  element.isAdd == true).map((e) => e.coin);
-                       String json = jsonEncode(d.toList());
-                        // mongodb.insertDocument(
-                        //   { 'userid':widget.userId,
-                        //     'crypto': json}, ConnectDbName.crypto);
-                    // mongodb.updateDocument(
-                    //     {'userId': widget.userId},
-                    //     {'userId':'123123132'},
-                    //     ConnectDbName.crypto);
+                    final updatedCryptoList = dataList
+                        .where((element) => element.isAdd)
+                        .map((e) => e.coin)
+                        .toList();
 
-
-                  final returnresult =  mongodb.updateDocument({'userId':widget.userId}, {'userId':widget.userId,'crypto':json}, ConnectDbName.crypto);
-                   // ignore: unrelated_type_equality_checks
-
-                   debugPrint('上傳$returnresult') ;
-                  //  returnresult == true ? debugPrint('上傳成功') : debugPrint('上傳失敗');
+                    mongodb.updateDocument(
+                        {'userId': widget.userId},
+                        {'userId': widget.userId, 'crypto': updatedCryptoList},
+                        ConnectDbName.crypto,
+                        showText);
                   });
                 },
               )),

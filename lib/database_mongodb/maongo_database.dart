@@ -1,7 +1,8 @@
 import 'dart:developer';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:mongo_dart/mongo_dart.dart';
+import '../api_model/crypto_coinModel.dart';
 import '../api_model/user_infoModel.dart';
 
 // class MongoDatabase {
@@ -31,7 +32,7 @@ class MongoDBConnection {
 
   static const COLLECTION_NAME_user = 'user';
   static const COLLECTION_NAME_crypto = 'crypto';
-
+  late BuildContext context;
   Db? _db;
 
   Future<void> close() async {
@@ -75,6 +76,20 @@ class MongoDBConnection {
     //  print(doc);
   }
 
+  Future<UserCryptoData?> getUserCryptoData(String id, ConnectDbName dbName) async {
+    final collection = _db?.collection(dbName.name);
+    try {
+      final doc = await collection?.findOne(where.eq('userId', id));
+      debugPrint('拿資料doc:$doc');
+      return doc != null ? UserCryptoData.fromJson(doc) : null;
+    } catch (error) {
+      return null;
+    }
+    //  print(doc);
+  }
+
+//  UserCryptoData
+
   Future<bool> insertDocument(
       Map<String, dynamic> document, ConnectDbName dbName) async {
     try {
@@ -87,20 +102,69 @@ class MongoDBConnection {
       return false;
     }
   }
-Future<bool> updateDocument(Map<String, dynamic> query,
-      Map<String, dynamic> update, ConnectDbName dbName) async {
+
+Future<void> showUpdateResultDialog(
+      BuildContext context, bool isSuccess,String text) async {
+    final message = isSuccess ? text : '資料更新失敗，請稍後再試。';
+
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  '更新結果',
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10.0),
+                Text(
+                  message,
+                  style: const TextStyle(fontSize: 16.0),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20.0),
+                ElevatedButton(
+                  child: const Text(
+                    '確定',
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
+  Future<bool> updateDocument(Map<String, dynamic> query,
+      Map<String, dynamic> update, ConnectDbName dbName,String text) async {
     try {
       final collection = _db?.collection(dbName.name);
       final result = await collection?.update(query, update);
+      final isSuccess = result != null; // 根據 result 是否為 null 判斷是否成功
+      // 顯示彈出視窗提醒更新結果
+      showUpdateResultDialog(context, isSuccess,text);
 
-      debugPrint('${result}ressssssssssssssss');
-      // if (result? == 1) {
-        return true; // 更新成功
-      // } else {
-      //   return false; // 更新失敗
-      // }
+      return isSuccess;
     } catch (error) {
-      return false; // 更新時出現異常
+      // 更新時出現異常，顯示彈出視窗提醒更新失敗
+      showUpdateResultDialog(context, false,'');
+      return false;
     }
   }
 

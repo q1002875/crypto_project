@@ -12,7 +12,7 @@ class newsApi {
 
   Future<List<ArticleModel>> getArticleReport(String search) async {
     final api =
-        'https://gnews.io/api/v4/search?q=$search&lang=en&country=us&max=10&apikey=$authkey2';
+        'https://gnews.io/api/v4/search?q=$search&lang=en&country=us&max=10&apikey=$authkey';
     final data = httpService(baseUrl: api);
     final response = await data.getJson();
     final jsonMap = NewsModel.fromJson(response);
