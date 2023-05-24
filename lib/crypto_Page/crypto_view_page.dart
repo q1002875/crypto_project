@@ -1,15 +1,13 @@
-
-
 import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:web_socket_channel/io.dart';
-
+import 'package:http/http.dart' as http;
 import '../database_mongodb/maongo_database.dart';
 import '../extension/SharedPreferencesHelper.dart';
+import '../extension/crypto_font.dart';
 import '../routes.dart';
-import 'bloc/crypto_response.dart';
+
 class BinanceWebSocket extends StatefulWidget {
   const BinanceWebSocket({Key? key}) : super(key: key);
 
@@ -18,153 +16,142 @@ class BinanceWebSocket extends StatefulWidget {
 }
 
 class _BinanceWebSocketState extends State<BinanceWebSocket> {
-   MongoDBConnection mongodb = MongoDBConnection();
-  final channel =
-      IOWebSocketChannel.connect('wss://stream.binance.com:9443/ws');
+  MongoDBConnection mongodb = MongoDBConnection();
   var showprice = '';
+  var searchCrypto = '';
   List<SymbolCase> tickData = [];
-  StreamSubscription? _streamSubscription;
   String userid = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-  title:const Text('Crypto'),
-  actions: <Widget>[
-    userid != ''?  IconButton(
-      icon:const Icon(Icons.search),
-      onPressed: () {
-          Navigator.pushNamed(context, Routes.cryptoSearch,
+        title: const Text('Crypto'),
+        actions: <Widget>[
+          userid != ''
+              ? IconButton(
+                  icon: const Icon(Icons.search),
+                  onPressed: () {
+                    Navigator.pushNamed(context, Routes.cryptoSearch,
                         arguments: userid);
-      },
-    )
-    :Container()
-  ],
-),
+                  },
+                )
+              : Container()
+        ],
+      ),
       body:
-      
        ListView.builder(
         itemCount: tickData.length,
         itemBuilder: (context, index) {
-          final message = '${tickData[index].symbol}:${tickData[index].price}' ;
-          return ListTile(
-            title: Text(message),
-          );
+          final message = '${tickData[index].symbol}:${tickData[index].price}';
+          final font = CryptoFont.getIcon(tickData[index].symbol);
+          IconData iconData = font;
+          // const d = CryptoFontIcons.ADC;
+          return IconButton(
+      // Bitcoin
+      icon:  Icon(font), onPressed: () {  },
+     );
+          //  ListTile(
+          //   title: Text(message),
+          // );
         },
       ),
-      
-      
-      //  Container(child: Text(showprice))
-      
-      
-      //  StreamBuilder<String>(
-      //   stream: getSharedDataStream(),
-      //   builder: (context, snapshot) {
-      //     if (snapshot.connectionState == ConnectionState.waiting) {
-      //       return const Center(child: CircularProgressIndicator());
-      //     } else if (snapshot.hasError) {
-      //       return Center(child: Text('Error: ${snapshot.error}'));
-      //     } else {
-      //       final data = snapshot.data;
-      //       return Center(
-      //         child: data != null && data.isNotEmpty
-      //             ?  Text(showprice)
-      //             // Container(child: ListView.builder(
-      //             //       scrollDirection: Axis.vertical,
-      //             //       itemCount: tickData.length,
-      //             //       itemBuilder: (context, index) {
-      //             //         final data = tickData[index].prevClosePrice;
-      //             //         return GestureDetector(
-      //             //             onTap: () {
-      //             //               // Navigator.pushNamed(context, Routes.newsDetail,
-      //             //               //     arguments: news);
-      //             //             },
-      //             //             child: );
-      //             //       },
-      //             //     )
-      //             // )
-      //             : ElevatedButton(
-      //                 onPressed: () {
-      //                   Navigator.pushNamed(context, Routes.account);
-      //                 },
-      //                 child: const Text('前往登入'),
-      //               ),
-      //       );
-      //     }
-      //   },
-      // ),
     );
   }
 
   @override
   void dispose() {
-    _streamSubscription?.cancel();
-    channel.sink.close();
     super.dispose();
   }
 
   Future<void> getSharedDataStream() async {
-     userid = await SharedPreferencesHelper.getString('userId');
+    userid = await SharedPreferencesHelper.getString('userId');
     await mongodb.connect();
     final cryptoData =
         await mongodb.getUserCryptoData(userid, ConnectDbName.crypto);
-if (cryptoData != null){
-      for (var element in cryptoData.crypto) {
-        final coin = element.toLowerCase();
-        subscribeToTickerStream('$coin@ticker');
-      }
-}else{
-  debugPrint('cryptoData is null');
-}
-
+    if (cryptoData != null) {
+      String cryptoString = cryptoData.crypto.map((element) {
+        final coin = element.toUpperCase().replaceAll('USDT', '');
+        return coin;
+      }).join(',');
+      searchCrypto = cryptoString;
+     repeatPrice();
+    } else {
+      debugPrint('cryptoData is null');
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    getSharedDataStream();
-// subTest();
-    listenMessage();
+   getSharedDataStream();
   }
 
-  void subTest(){
-     subscribeToTickerStream('btcusdt@ticker');
-      subscribeToTickerStream('ethusdt@ticker');
+  void repeatPrice() {
+    Timer.periodic(const Duration(seconds: 60), (Timer timer) {
+      tickData.clear();
+      fetchMarketData(searchCrypto);
+    });
   }
 
-  void listenMessage() {
-  _streamSubscription = channel.stream.listen((message) {
-    Map<String, dynamic> getJson = jsonDecode(message);
-      debugPrint('$getJson這裡getJson');
-    final data = TickerData.fromJson(getJson);
-    final symbol = data.symbol;
-    final price = data.prevClosePrice;
-    final messageToShow = '$symbol: $price';
-    debugPrint('$messageToShow這裡message');
-    int existingIndex =  tickData.indexWhere((item) => item.symbol == symbol);
-    if (existingIndex != -1) {
-      setState(() {
-         tickData[existingIndex] = SymbolCase(symbol, price); // 更新現有資料
-      });
-    } else {
-      setState(() {
-         tickData.add(SymbolCase(symbol, price)); // 新增新資料
-      });
+  Future<void> fetchMarketData(String p) async {
+    String apiKey = '6e35c3bf-1346-4a87-9bae-25fe6ea51136';
+    String url =
+        'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest';
+    Map<String, String> headers = {
+      'X-CMC_PRO_API_KEY': apiKey,
+    };
+    Map<String, String> parameters = {
+      'symbol': p, // 要获取行情的加密货币符号，用逗号分隔
+      // 'convert': 'USD', // 要将行情转换为的货币单位
+    };
+    try {
+      // 发送 GET 请求
+      var response = await http.get(
+          Uri.parse(url).replace(queryParameters: parameters),
+          headers: headers);
+
+      // 检查响应状态码
+      if (response.statusCode == 200) {
+        // 解析响应数据
+        var data = jsonDecode(response.body);
+        debugPrint('json得資料在這$data');
+        // 提取加密货币行情数据
+        Map<String, dynamic> quotes = data['data'];
+
+        quotes.forEach((symbol, quoteData) {
+          String name = quoteData['symbol'];
+          double price = quoteData['quote']['USD']['price'];
+          String formattedPrice = price.toStringAsFixed(3);
+          tickData.add(SymbolCase(name, formattedPrice));
+        });
+        setState(() {});
+      } else {
+        print('Request failed with status: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error occurred: $error');
     }
-  });
-}
-
-  void subscribeToTickerStream(String symbol) {
-    final tickerStreamPayload =
-        '{"method":"SUBSCRIBE","params":["$symbol"],"id":1}';
-    channel.sink.add(tickerStreamPayload);
   }
+
+  Future<Image> fetchSymbolImage(String symbol) async {
+    final url = 'https://api.coinbase.com/v2/assets/icons/$symbol.png';
+
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final imageData = response.bodyBytes;
+      final image = Image.memory(imageData);
+      return image;
+    } else {
+      throw Exception('Failed to load symbol image');
+    }
+  }
+
 }
 
-
-class SymbolCase{
-String symbol;
-String price;
-SymbolCase(this.symbol,this.price);
+class SymbolCase {
+  String symbol;
+  String price;
+  SymbolCase(this.symbol, this.price);
 }
