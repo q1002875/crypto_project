@@ -3,9 +3,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
 import '../database_mongodb/maongo_database.dart';
 import '../extension/SharedPreferencesHelper.dart';
-import '../extension/crypto_font.dart';
 import '../routes.dart';
 
 class BinanceWebSocket extends StatefulWidget {
@@ -13,6 +13,12 @@ class BinanceWebSocket extends StatefulWidget {
 
   @override
   _BinanceWebSocketState createState() => _BinanceWebSocketState();
+}
+
+class SymbolCase {
+  String symbol;
+  String price;
+  SymbolCase(this.symbol, this.price);
 }
 
 class _BinanceWebSocketState extends State<BinanceWebSocket> {
@@ -39,21 +45,16 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
               : Container()
         ],
       ),
-      body:
-       ListView.builder(
+      body: ListView.builder(
         itemCount: tickData.length,
         itemBuilder: (context, index) {
           final message = '${tickData[index].symbol}:${tickData[index].price}';
-          final font = CryptoFont.getIcon(tickData[index].symbol);
-          IconData iconData = font;
+          // final font = CryptoFont.getIcon(tickData[index].symbol);
+          // IconData iconData = font;
           // const d = CryptoFontIcons.ADC;
-          return IconButton(
-      // Bitcoin
-      icon:  Icon(font), onPressed: () {  },
-     );
-          //  ListTile(
-          //   title: Text(message),
-          // );
+          return ListTile(
+            title: Text(message),
+          );
         },
       ),
     );
@@ -62,36 +63,6 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
   @override
   void dispose() {
     super.dispose();
-  }
-
-  Future<void> getSharedDataStream() async {
-    userid = await SharedPreferencesHelper.getString('userId');
-    await mongodb.connect();
-    final cryptoData =
-        await mongodb.getUserCryptoData(userid, ConnectDbName.crypto);
-    if (cryptoData != null) {
-      String cryptoString = cryptoData.crypto.map((element) {
-        final coin = element.toUpperCase().replaceAll('USDT', '');
-        return coin;
-      }).join(',');
-      searchCrypto = cryptoString;
-     repeatPrice();
-    } else {
-      debugPrint('cryptoData is null');
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-   getSharedDataStream();
-  }
-
-  void repeatPrice() {
-    Timer.periodic(const Duration(seconds: 60), (Timer timer) {
-      tickData.clear();
-      fetchMarketData(searchCrypto);
-    });
   }
 
   Future<void> fetchMarketData(String p) async {
@@ -148,10 +119,33 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
     }
   }
 
-}
+  Future<void> getSharedDataStream() async {
+    userid = await SharedPreferencesHelper.getString('userId');
+    await mongodb.connect();
+    final cryptoData =
+        await mongodb.getUserCryptoData(userid, ConnectDbName.crypto);
+    if (cryptoData != null) {
+      String cryptoString = cryptoData.crypto.map((element) {
+        final coin = element.toUpperCase().replaceAll('USDT', '');
+        return coin;
+      }).join(',');
+      searchCrypto = cryptoString;
+      repeatPrice();
+    } else {
+      debugPrint('cryptoData is null');
+    }
+  }
 
-class SymbolCase {
-  String symbol;
-  String price;
-  SymbolCase(this.symbol, this.price);
+  @override
+  void initState() {
+    super.initState();
+    getSharedDataStream();
+  }
+
+  void repeatPrice() {
+    Timer.periodic(const Duration(seconds: 60), (Timer timer) {
+      tickData.clear();
+      fetchMarketData(searchCrypto);
+    });
+  }
 }
