@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:crypto_project/api_model/crypto_coinModel.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
 import '../database_mongodb/maongo_database.dart';
 import '../extension/custom_text.dart';
+import '../main.dart';
 
 class CryptoSearchPage extends StatefulWidget {
   String userid;
@@ -14,11 +16,53 @@ class CryptoSearchPage extends StatefulWidget {
   State<CryptoSearchPage> createState() => _CryptoSearchPageState();
 }
 
+class MyListView extends StatefulWidget {
+  List<Trickcrypto> data;
+  String userId;
+  MyListView(this.userId, this.data, {super.key});
+
+  @override
+  _MyListViewState createState() => _MyListViewState();
+}
+
+class Trickcrypto {
+  String coin;
+  bool isAdd = false;
+  Trickcrypto(this.coin);
+}
+
 // 搜尋完要存到mongo
 
 class _CryptoSearchPageState extends State<CryptoSearchPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+            title: const CustomText(
+          textContent: 'crypto search',
+          textColor: Colors.white,
+        )),
+        body: Container(
+            color: Colors.white,
+            child:
+                // const MyListView()
 
-Future<List<Trickcrypto>> fetchSymbols() async {
+                FutureBuilder(
+              future: fetchSymbols(),
+              builder: (context, snapshot) {
+                final symbol = snapshot.data;
+                if (symbol != null) {
+                  return
+                      // Text(symbol);
+                      MyListView(widget.userid, symbol);
+                } else {
+                  return const Center(child: CircularProgressIndicator());
+                }
+              },
+            )));
+  }
+
+  Future<List<Trickcrypto>> fetchSymbols() async {
     final response = await http
         .get(Uri.parse('https://api.binance.com/api/v3/exchangeInfo'));
 
@@ -43,128 +87,14 @@ Future<List<Trickcrypto>> fetchSymbols() async {
     // TODO: implement initState
     super.initState();
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-            title: const CustomText(
-          textContent: 'crypto search',
-          textColor: Colors.white,
-        )),
-        body: Container(
-            color: Colors.white,
-            child:
-                // const MyListView()
-
-                FutureBuilder(
-              future: fetchSymbols(),
-              builder: (context, snapshot) {
-                final symbol = snapshot.data;
-                if (symbol != null) {
-                  return
-                      // Text(symbol);
-                      MyListView(widget.userid,symbol);
-                } else {
-                  return const Center(child: CircularProgressIndicator());
-                }
-              },
-            )));
-  }
-}
-
-class MyListView extends StatefulWidget {
-  List<Trickcrypto> data;
-  String userId ;
-  MyListView(this.userId, this.data, {super.key});
-
-  @override
-  _MyListViewState createState() => _MyListViewState();
 }
 
 class _MyListViewState extends State<MyListView> {
-   MongoDBConnection mongodb = MongoDBConnection();
-   List<String> mongoCryptoList = [];
+  List<String> mongoCryptoList = [];
   List<Trickcrypto> dataList = [];
   int loadedCount = 20; // 初始加载的数量
   bool isLoading = false;
   String searchKeyword = '';
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
-
-Future<void> init() async {
-  try {
-    mongodb.context = context;
-    await connectMongo();
-    await fetchMongoData();
-    await fetchData();
-    // 所有異步操作完成後的處理
-    // ...
-  } catch (error) {
-    // 異步操作中發生錯誤的處理
-    // ...
-  }
-}
-
-
-
-  Future<void> connectMongo() async {
-   await mongodb.connect();}
-
-  Future<UserCryptoData?> fetchMongoData() async {
-  final cryptoData =
-        await mongodb.getUserCryptoData(widget.userId, ConnectDbName.crypto);
-  if (cryptoData != null){
-    mongoCryptoList = cryptoData.crypto;
-     debugPrint('回傳回來得coin list:$cryptoData');
-   //fetch data
-  }else{
-   mongodb.insertDocument({'userId':widget.userId},ConnectDbName.crypto);
-  }
-  return null;
-
-  }
-
-
-
-Future<void> fetchData() async {
-    // 根據 loadedCount 取得新資料的子列表
-    final newData = widget.data.sublist(0, loadedCount);
-    // 更新 newData 中每個項目的 isAdd 欄位
-    final updatedDataList = newData.map((item) {
-      final isAdded = mongoCryptoList.contains(item.coin);
-      item.isAdd = isAdded;
-      return item;
-    }).toList();
-    setState(() {
-      // 清空現有的 dataList
-      dataList.clear();
-      // 將更新後的項目添加到 dataList 中
-      dataList.addAll(updatedDataList);
-      // 增加已載入的數量
-      loadedCount += 20;
-      // 停止加載狀態
-      isLoading = false;
-    });
-  }
-
-
-
-  bool _onNotification(ScrollNotification notification) {
-    if (!isLoading &&
-        notification.metrics.pixels == notification.metrics.maxScrollExtent) {
-      // 当滚动到底部时触发加载更多数据
-      setState(() {
-        isLoading = true;
-      });
-      fetchData();
-    }
-    return false;
-  }
-
   @override
   Widget build(BuildContext context) {
     List<Trickcrypto> filteredList = dataList.where((item) {
@@ -174,22 +104,22 @@ Future<void> fetchData() async {
     return Scaffold(
         body: Column(
       children: [
-  Container(
-    padding: const EdgeInsets.all(10),
-    child:TextField(
-  onChanged: (value) {
-    setState(() {
-      searchKeyword = value;
-    });
-  },
-  decoration: InputDecoration(
-    hintText: 'Search',
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(30.0), // 使用圓角半徑設置橢圓形狀
-    ),
-  ),
-),
- ),
+        Container(
+          padding: const EdgeInsets.all(10),
+          child: TextField(
+            onChanged: (value) {
+              setState(() {
+                searchKeyword = value;
+              });
+            },
+            decoration: InputDecoration(
+              hintText: 'Search',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30.0), // 使用圓角半徑設置橢圓形狀
+              ),
+            ),
+          ),
+        ),
         Expanded(
           child: NotificationListener<ScrollNotification>(
             onNotification: _onNotification,
@@ -221,6 +151,58 @@ Future<void> fetchData() async {
         )
       ],
     ));
+  }
+
+  Future<void> fetchData() async {
+    // 根據 loadedCount 取得新資料的子列表
+    final newData = widget.data.sublist(0, loadedCount);
+    // 更新 newData 中每個項目的 isAdd 欄位
+    final updatedDataList = newData.map((item) {
+      final isAdded = mongoCryptoList.contains(item.coin);
+      item.isAdd = isAdded;
+      return item;
+    }).toList();
+    setState(() {
+      // 清空現有的 dataList
+      dataList.clear();
+      // 將更新後的項目添加到 dataList 中
+      dataList.addAll(updatedDataList);
+      // 增加已載入的數量
+      loadedCount += 20;
+      // 停止加載狀態
+      isLoading = false;
+    });
+  }
+
+  Future<UserCryptoData?> fetchMongoData() async {
+    final cryptoData =
+        await mongodb.getUserCryptoData(widget.userId, ConnectDbName.crypto);
+    if (cryptoData != null) {
+      mongoCryptoList = cryptoData.crypto;
+      debugPrint('回傳回來得coin list:$cryptoData');
+      //fetch data
+    } else {
+      mongodb.insertDocument({'userId': widget.userId}, ConnectDbName.crypto);
+    }
+    return null;
+  }
+
+  Future<void> init() async {
+    try {
+      await fetchMongoData();
+      await fetchData();
+      // 所有異步操作完成後的處理
+      // ...
+    } catch (error) {
+      // 異步操作中發生錯誤的處理
+      // ...
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    init();
   }
 
   Widget listviewCell(Trickcrypto data, int index) {
@@ -258,7 +240,9 @@ Future<void> fetchData() async {
                     if (index >= 0) {
                       dataList[index].isAdd = !data.isAdd;
 
-                      dataList[index].isAdd ?showText = '新增${dataList[index].coin}' :showText = '刪除${dataList[index].coin}' ;
+                      dataList[index].isAdd
+                          ? showText = '新增${dataList[index].coin}'
+                          : showText = '刪除${dataList[index].coin}';
                     }
                     final updatedCryptoList = dataList
                         .where((element) => element.isAdd)
@@ -277,10 +261,16 @@ Future<void> fetchData() async {
       ),
     );
   }
-}
 
-class Trickcrypto {
-  String coin;
-  bool isAdd = false;
-  Trickcrypto(this.coin);
+  bool _onNotification(ScrollNotification notification) {
+    if (!isLoading &&
+        notification.metrics.pixels == notification.metrics.maxScrollExtent) {
+      // 当滚动到底部时触发加载更多数据
+      setState(() {
+        isLoading = true;
+      });
+      fetchData();
+    }
+    return false;
+  }
 }

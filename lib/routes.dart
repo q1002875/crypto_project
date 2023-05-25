@@ -17,7 +17,7 @@ class Routes {
   static const String newsDetail = '/newPage/detail';
   static const String crypto = '/cryptoPage';
   static const String account = '/newPage/accountPage';
-  static const String cryptoSearch =  '/cryptoPage/search';
+  static const String cryptoSearch = '//cryptoPage/search';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     var args = settings.arguments;
@@ -39,10 +39,10 @@ class Routes {
           return MaterialPageRoute(builder: (_) => NewsDetail(news: args));
         }
         return _errorRoute();
-         case cryptoSearch:
+      case cryptoSearch:
         if (args is String) {
           // 將參數傳遞給NewsDetail頁面
-          return MaterialPageRoute(builder: (_) =>  CryptoSearchPage(args));
+          return MaterialPageRoute(builder: (_) => CryptoSearchPage(args));
         }
         return _errorRoute();
       case account:
@@ -53,7 +53,7 @@ class Routes {
                 child: const AccountPage()));
 
       case crypto:
-        // return MaterialPageRoute(builder: (_) => const BinanceWebSocket());
+      // return MaterialPageRoute(builder: (_) => const BinanceWebSocket());
       default:
         return _errorRoute();
     }

@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 
 import '../database_mongodb/maongo_database.dart';
 import '../extension/SharedPreferencesHelper.dart';
+import '../main.dart';
 import '../routes.dart';
 
 class BinanceWebSocket extends StatefulWidget {
@@ -22,7 +23,7 @@ class SymbolCase {
 }
 
 class _BinanceWebSocketState extends State<BinanceWebSocket> {
-  MongoDBConnection mongodb = MongoDBConnection();
+  // MongoDBConnection mongodb = MongoDBConnection();
   var showprice = '';
   var searchCrypto = '';
   List<SymbolCase> tickData = [];
@@ -31,33 +32,35 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Crypto'),
-        actions: <Widget>[
-          userid != ''
-              ? IconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: () {
-                    Navigator.pushNamed(context, Routes.cryptoSearch,
-                        arguments: userid);
-                  },
-                )
-              : Container()
-        ],
-      ),
-      body: ListView.builder(
-        itemCount: tickData.length,
-        itemBuilder: (context, index) {
-          final message = '${tickData[index].symbol}:${tickData[index].price}';
-          // final font = CryptoFont.getIcon(tickData[index].symbol);
-          // IconData iconData = font;
-          // const d = CryptoFontIcons.ADC;
-          return ListTile(
-            title: Text(message),
-          );
-        },
-      ),
-    );
+        appBar: AppBar(
+          title: const Text('Crypto'),
+          actions: <Widget>[
+            userid != ''
+                ? IconButton(
+                    icon: const Icon(Icons.search),
+                    onPressed: () {
+                      Navigator.pushNamed(context, Routes.cryptoSearch,
+                          arguments: userid);
+                    },
+                  )
+                : Container()
+          ],
+        ),
+        body: tickData.isNotEmpty
+            ? ListView.builder(
+                itemCount: tickData.length,
+                itemBuilder: (context, index) {
+                  final message =
+                      '${tickData[index].symbol}:${tickData[index].price}';
+                  // final font = CryptoFont.getIcon(tickData[index].symbol);
+                  // IconData iconData = font;
+                  // const d = CryptoFontIcons.ADC;
+                  return ListTile(
+                    title: Text(message),
+                  );
+                },
+              )
+            : const Center(child: CircularProgressIndicator()));
   }
 
   @override
@@ -121,7 +124,7 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
 
   Future<void> getSharedDataStream() async {
     userid = await SharedPreferencesHelper.getString('userId');
-    await mongodb.connect();
+    // await mongodb.connect();
     final cryptoData =
         await mongodb.getUserCryptoData(userid, ConnectDbName.crypto);
     if (cryptoData != null) {
@@ -130,7 +133,10 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
         return coin;
       }).join(',');
       searchCrypto = cryptoString;
-      repeatPrice();
+
+      tickData.clear();
+      fetchMarketData(searchCrypto);
+      // repeatPrice();
     } else {
       debugPrint('cryptoData is null');
     }
