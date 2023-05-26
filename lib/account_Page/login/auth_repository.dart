@@ -1,3 +1,4 @@
+import 'package:crypto_project/main.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../api_model/user_infoModel.dart';
@@ -10,10 +11,8 @@ class AuthRepository {
     final userid =
         await SharedPreferencesHelper.getString('userId', defaultValue: '');
     if (userid != '') {
-      final MongoDBConnection connection;
-      connection = MongoDBConnection();
-      await connection.connect();
-      final data = connection.getuserdocument(userid,ConnectDbName.user);
+      await mongodb.connect();
+      final data = mongodb.getuserdocument(userid, ConnectDbName.user);
       print(data);
     } else {
       return null;
@@ -55,23 +54,16 @@ class AuthRepository {
 
     final userid =
         await SharedPreferencesHelper.getString('userId', defaultValue: '');
-    final MongoDBConnection connection;
-    connection = MongoDBConnection();
-    await connection.connect();
-    connection.deleteOne('userId', userid,ConnectDbName.user);
+    mongodb.deleteOne('userId', userid, ConnectDbName.user);
     //delemongodb user
   }
 
   Future<bool> _connectMongo(Map<String, String> document) async {
     try {
-      final MongoDBConnection connection;
-      connection = MongoDBConnection();
-      await connection.connect();
-      connection.insertDocument(document, ConnectDbName.user);
+      mongodb.insertDocument(document, ConnectDbName.user);
       return true;
     } catch (error) {
       return false;
-      print('Failed to sign in with Google: $error');
     }
   }
 }

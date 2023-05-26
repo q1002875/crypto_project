@@ -52,9 +52,7 @@ class _CryptoSearchPageState extends State<CryptoSearchPage> {
               builder: (context, snapshot) {
                 final symbol = snapshot.data;
                 if (symbol != null) {
-                  return
-                      // Text(symbol);
-                      MyListView(widget.userid, symbol);
+                  return MyListView(widget.userid, symbol);
                 } else {
                   return const Center(child: CircularProgressIndicator());
                 }
@@ -220,7 +218,17 @@ class _MyListViewState extends State<MyListView> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Flexible(flex: 1, child: Image.asset('assets/cryptoIcon.png')),
+          Flexible(
+            flex: 1,
+            child: Image.asset(
+              'assets/crypto/${data.coin.replaceAll('USDT', '')}.png',
+              errorBuilder: (BuildContext context, Object exception,
+                  StackTrace? stackTrace) {
+                // Return any widget that you want to display when the image cannot be loaded
+                return Image.asset('assets/cryptoIcon.png');
+              },
+            ),
+          ),
           Flexible(
               flex: 4,
               child: CustomText(

@@ -1,6 +1,7 @@
 import 'package:crypto_project/account_Page/account_view.dart';
 import 'package:crypto_project/account_Page/login/bloc/login_bloc.dart';
 import 'package:crypto_project/news_Page_view/news_view.dart';
+import 'package:crypto_project/routes.dart';
 import 'package:crypto_project/service_Api/news_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -64,27 +65,30 @@ class _MyAppAfterSplashState extends State<MyAppAfterSplash> {
       BlocProvider(
           create: (context) => AuthenticationBloc(), child: const AccountPage())
     ];
-    return Scaffold(
-      body: Center(child: widgetOptions.elementAt(_selectedIndex)),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.article),
-            label: 'News',
+    return MaterialApp(
+        onGenerateRoute: Routes.generateRoute,
+        initialRoute: Routes.home,
+        home: Scaffold(
+          body: Center(child: widgetOptions.elementAt(_selectedIndex)),
+          bottomNavigationBar: BottomNavigationBar(
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.article),
+                label: 'News',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.query_stats_rounded),
+                label: 'Crypto',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.account_circle),
+                label: 'Account',
+              ),
+            ],
+            currentIndex: _selectedIndex,
+            onTap: _onItemTapped,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.query_stats_rounded),
-            label: 'Crypto',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: 'Account',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-      ),
-    );
+        ));
   }
 
   void _onItemTapped(int index) {

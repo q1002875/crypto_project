@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 
 import '../database_mongodb/maongo_database.dart';
 import '../extension/SharedPreferencesHelper.dart';
+import '../extension/custom_text.dart';
 import '../main.dart';
 import '../routes.dart';
 
@@ -32,35 +33,42 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Crypto'),
-          actions: <Widget>[
-            userid != ''
-                ? IconButton(
-                    icon: const Icon(Icons.search),
-                    onPressed: () {
-                      Navigator.pushNamed(context, Routes.cryptoSearch,
-                          arguments: userid);
-                    },
-                  )
-                : Container()
-          ],
-        ),
-        body: tickData.isNotEmpty
+      appBar: AppBar(
+        title: const Text('Crypto List'),
+        actions: <Widget>[
+          userid != ''
+              ? IconButton(
+                  icon: const Icon(Icons.search),
+                  onPressed: () {
+                    Navigator.pushNamed(context, Routes.cryptoSearch,
+                        arguments: userid);
+                  },
+                )
+              : Container()
+        ],
+      ),
+      body: RefreshIndicator(
+        onRefresh: _refreshData, // 在这里指定你的数据刷新方法
+        child: tickData.isNotEmpty
             ? ListView.builder(
                 itemCount: tickData.length,
                 itemBuilder: (context, index) {
-                  final message =
-                      '${tickData[index].symbol}:${tickData[index].price}';
-                  // final font = CryptoFont.getIcon(tickData[index].symbol);
-                  // IconData iconData = font;
-                  // const d = CryptoFontIcons.ADC;
-                  return ListTile(
-                    title: Text(message),
-                  );
+                  return listviewCell(
+                      Image.asset(
+                        'assets/crypto/${tickData[index].symbol.toUpperCase()}.png',
+                        errorBuilder: (BuildContext context, Object exception,
+                            StackTrace? stackTrace) {
+                          // Return any widget that you want to display when the image cannot be loaded
+                          return Image.asset('assets/cryptoIcon.png');
+                        },
+                      ),
+                      tickData[index].symbol,
+                      tickData[index].price);
                 },
               )
-            : const Center(child: CircularProgressIndicator()));
+            : const Center(child: CircularProgressIndicator()),
+      ),
+    );
   }
 
   @override
@@ -148,10 +156,53 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
     getSharedDataStream();
   }
 
+  Widget listviewCell(Widget imageurl, String symbol, String prince) {
+    return Container(
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.grey,
+            width: 1.0,
+          ),
+        ),
+      ),
+      child: Flex(
+        direction: Axis.horizontal,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Flexible(flex: 1, child: imageurl),
+          const SizedBox(width: 5),
+          Flexible(
+              flex: 2,
+              child: CustomText(
+                textContent: symbol,
+                textColor: Colors.black,
+                fontSize: 17,
+              )),
+          const SizedBox(width: 5),
+          Expanded(
+              flex: 3,
+              child: CustomText(
+                align: TextAlign.center,
+                textContent: prince,
+                textColor: Colors.black,
+                fontSize: 20,
+              )),
+        ],
+      ),
+    );
+  }
+
   void repeatPrice() {
     Timer.periodic(const Duration(seconds: 60), (Timer timer) {
       tickData.clear();
       fetchMarketData(searchCrypto);
     });
+  }
+
+  Future<void> _refreshData() async {
+    getSharedDataStream();
+    setState(() {});
   }
 }

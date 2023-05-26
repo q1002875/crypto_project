@@ -17,7 +17,7 @@ class Routes {
   static const String newsDetail = '/newPage/detail';
   static const String crypto = '/cryptoPage';
   static const String account = '/newPage/accountPage';
-  static const String cryptoSearch = '//cryptoPage/search';
+  static const String cryptoSearch = '/cryptoPage/search';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     var args = settings.arguments;
