@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../cubit/image_cubit_cubit.dart';
+import '../extension/ShimmerText.dart';
 import '../extension/custom_text.dart';
 
 class NewsCellView extends StatelessWidget {
@@ -23,8 +25,7 @@ class NewsCellView extends StatelessWidget {
             Flexible(
               flex: 1,
               child: CachedNetworkImage(
-                  placeholder: (context, url) =>
-                      const CircularProgressIndicator(),
+                  placeholder: (context, url) => const ShimmerBox(),
                   fit: BoxFit.cover,
                   imageUrl: imageUrl,
                   height: 100,

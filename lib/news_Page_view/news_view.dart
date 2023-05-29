@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../cubit/image_cubit_cubit.dart';
+import '../extension/ShimmerText.dart';
 import '../routes.dart';
 import 'new_headerTopic.dart';
 import 'news_cell_view.dart';
@@ -151,8 +152,10 @@ class _NewsPageState extends State<NewsPage> {
                         child: Text('Wait fetch news'),
                       );
                     } else if (state is NewsLoading) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
+                      return const SizedBox(
+                        width: double.maxFinite,
+                        height: double.maxFinite,
+                        child: ShimmerBox(),
                       );
                     } else if (state is NewsLoaded) {
                       return ListView.builder(
@@ -198,7 +201,6 @@ class _NewsPageState extends State<NewsPage> {
     _newsBloc.add(FetchArtcle());
     _headerTopic.topicListProperty();
   }
-
 
   void _onHeaderTopicSelected(int index) {
     setState(() {

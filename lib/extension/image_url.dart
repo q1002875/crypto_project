@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+
+import 'ShimmerText.dart';
+
 class NetworkImageWithPlaceholder extends StatelessWidget {
   final String imageUrl;
   final double width;
   final double height;
 
-  const NetworkImageWithPlaceholder({super.key, 
+  const NetworkImageWithPlaceholder({
+    super.key,
     required this.imageUrl,
     required this.width,
     required this.height,
@@ -25,14 +29,12 @@ class NetworkImageWithPlaceholder extends StatelessWidget {
           if (loadingProgress == null) {
             return child;
           } else {
-            return Center(
-              child: CircularProgressIndicator(
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded /
-                        loadingProgress.expectedTotalBytes!
-                    : null,
-              ),
-            );
+            return const Center(
+                child: SizedBox(
+              width: double.maxFinite,
+              height: double.maxFinite,
+              child: ShimmerBox(),
+            ));
           }
         },
         errorBuilder:

@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 
 import '../database_mongodb/maongo_database.dart';
 import '../extension/SharedPreferencesHelper.dart';
+import '../extension/ShimmerText.dart';
 import '../extension/custom_text.dart';
 import '../main.dart';
 import '../routes.dart';
@@ -66,7 +67,11 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
                       tickData[index].price);
                 },
               )
-            : const Center(child: CircularProgressIndicator()),
+            : const SizedBox(
+                width: double.maxFinite,
+                height: double.maxFinite,
+                child: ShimmerBox(),
+              ),
       ),
     );
   }

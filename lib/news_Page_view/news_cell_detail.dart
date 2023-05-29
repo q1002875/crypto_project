@@ -27,11 +27,16 @@ class _WebViewContainerState extends State<WebViewContainer> {
   final _url;
   final _key = UniqueKey();
   _WebViewContainerState(this._url);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Colors.amber,
-        appBar: AppBar(title:const CustomText(textContent:'News',textColor: Colors.white,)),
+        // backgroundColor: Colors.amber,
+        appBar: AppBar(
+            title: const CustomText(
+          textContent: 'News',
+          textColor: Colors.white,
+        )),
         body: Column(
           children: [
             Expanded(
@@ -41,5 +46,15 @@ class _WebViewContainerState extends State<WebViewContainer> {
                     initialUrl: widget.url.toString()))
           ],
         ));
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WebView(
+        key: _key,
+        javascriptMode: JavascriptMode.unrestricted,
+        initialUrl: widget.url.toString());
   }
 }
