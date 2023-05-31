@@ -1,4 +1,3 @@
-import 'package:crypto_project/extension/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -6,55 +5,69 @@ import '../api_model/news_totalModel.dart';
 
 class NewsDetail extends StatelessWidget {
   final ArticleModel news;
-  const NewsDetail({super.key, required this.news});
+
+  const NewsDetail({Key? key, required this.news}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final Uri myUri = Uri.parse(news.url);
-    return WebViewContainer(myUri);
+    return WebViewContainer(news.url);
   }
 }
 
 class WebViewContainer extends StatefulWidget {
-  final Uri url;
-  const WebViewContainer(this.url, {super.key});
+  final String url;
+
+  const WebViewContainer(this.url, {Key? key}) : super(key: key);
+
   @override
-  // ignore: no_logic_in_create_state
-  createState() => _WebViewContainerState(url);
+  // ignore: library_private_types_in_public_api
+  _WebViewContainerState createState() => _WebViewContainerState();
 }
 
 class _WebViewContainerState extends State<WebViewContainer> {
-  final _url;
-  final _key = UniqueKey();
-  _WebViewContainerState(this._url);
+  final UniqueKey _key = UniqueKey();
+  bool _isLoading = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        // backgroundColor: Colors.amber,
-        appBar: AppBar(
-            title: const CustomText(
-          textContent: 'News',
-          textColor: Colors.white,
-        )),
-        body: Column(
-          children: [
-            Expanded(
-                child: WebView(
-                    key: _key,
-                    javascriptMode: JavascriptMode.unrestricted,
-                    initialUrl: widget.url.toString()))
-          ],
-        ));
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    WebView(
-        key: _key,
-        javascriptMode: JavascriptMode.unrestricted,
-        initialUrl: widget.url.toString());
+      appBar: AppBar(
+        title: const Text(
+          'News',
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
+      body: Stack(
+        children: [
+          WebView(
+            key: _key,
+            javascriptMode: JavascriptMode.unrestricted,
+            initialUrl: widget.url,
+            onPageStarted: (url) {
+              setState(() {
+                _isLoading = true;
+              });
+            },
+            onPageFinished: (url) {
+              setState(() {
+                _isLoading = false;
+              });
+            },
+            onWebResourceError: (error) {
+              setState(() {
+                _isLoading = false;
+              });
+            },
+          ),
+          _isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : const Center(
+                  child: SizedBox(),
+                )
+        ],
+      ),
+    );
   }
 }

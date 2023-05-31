@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:crypto_project/api_model/user_infoModel.dart';
+import 'package:crypto_project/main.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -29,13 +30,13 @@ class AuthenticationBloc
       } else if (event is CheckisMember) {
         emit(AuthenticationLoading());
         try {
-          final user = await  _checkMongoMember();
+          final user = await _checkMongoMember();
           if (user != null) {
             isloginin = true;
             // event.userProvider.login();
             emit(AuthenticatedisMember(true, user));
           } else {
-             isloginin = false;
+            isloginin = false;
             // event.userProvider.logout();
             emit(AuthenticatedisMember(false, null));
           }
@@ -60,8 +61,7 @@ class AuthenticationBloc
   Future<User?> _checkMongoMember() async {
     try {
       final userid = await SharedPreferencesHelper.getString('userId');
-      await connection.connect();
-      return await connection.getuserdocument(userid,ConnectDbName.user);
+      return await mongodb.getuserdocument(userid, ConnectDbName.user);
     } catch (error) {
       print('Failed to sign in with Google: $error');
     }
@@ -70,15 +70,13 @@ class AuthenticationBloc
 
   Future<void> _clearUserData() async {
     final userid = await SharedPreferencesHelper.getString('userId');
-   connection.connect();
-    connection.deleteOne('userId', userid,ConnectDbName.user);
-     googleSignIn.signOut();
-     SharedPreferencesHelper.setString('userId','');
+    mongodb.deleteOne('userId', userid, ConnectDbName.user);
+    googleSignIn.signOut();
+    SharedPreferencesHelper.setString('userId', '');
   }
 
-  Future<void> _connectMongo(User user) async {
+  Future<void> _insertDataToMongo(User user) async {
     try {
-      await connection.connect();
       final document = {
         '_id': user.id,
         'userId': user.userId,
@@ -86,7 +84,7 @@ class AuthenticationBloc
         'email': user.email,
         'photoUrl': user.photoUrl
       };
-      connection.insertDocument(document,ConnectDbName.user);
+      mongodb.insertDocument(document, ConnectDbName.user);
     } catch (error) {
       print('Failed to sign in with Google: $error');
     }
@@ -112,7 +110,7 @@ class AuthenticationBloc
           email: email,
           photoUrl: photoUrl);
 
-      await _connectMongo(users);
+      await _insertDataToMongo(users);
       SharedPreferencesHelper.setString('userId', mangoUseId);
       return users;
     }

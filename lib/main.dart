@@ -4,11 +4,13 @@ import 'package:crypto_project/news_Page_view/news_view.dart';
 import 'package:crypto_project/routes.dart';
 import 'package:crypto_project/service_Api/news_api.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'bloc/bloc/news_Bloc/news_bloc.dart';
-import 'crypto_Page/crypto_view_page.dart';
+import 'crypto_Page/crypto_detail_chart.dart';
 import 'database_mongodb/maongo_database.dart';
+import 'extension/gobal.dart';
 
 Future<void> main() async {
   // Ensure Flutter widget binding
@@ -25,12 +27,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
+      statusBarColor: Colors.transparent, // Transparent status bar
+      statusBarIconBrightness: Brightness.dark, // Dark mode for status bar
+    ));
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
-      home: const SplashScreen(),
+      home: Builder(
+        builder: (context) {
+          setscreenWidth(context);
+          setScreenHeight(context);
+          return const SplashScreen();
+        },
+      ),
     );
   }
 }
@@ -59,9 +71,9 @@ class _MyAppAfterSplashState extends State<MyAppAfterSplash> {
         create: (context) => NewsBloc(newsApi()),
         child: const NewsPage(),
       ),
-      const BinanceWebSocket(),
-      //  CryptoSearchPage(''),
-      // AccountPage(_authBloc)
+      // const BinanceWebSocket(),
+      const LineChartSample2(),
+      // const CryptoChart(),
       BlocProvider(
           create: (context) => AuthenticationBloc(), child: const AccountPage())
     ];
@@ -109,8 +121,8 @@ class _SplashScreenState extends State<SplashScreen> {
                 : Scaffold(
                     body: Center(
                     child: SizedBox(
-                      width: 160,
-                      height: 160,
+                      width: screenWidth / 2,
+                      height: screenHeight / 3,
                       child: Image.asset('assets/cryptoIcon.png'),
                     ),
                   ))));

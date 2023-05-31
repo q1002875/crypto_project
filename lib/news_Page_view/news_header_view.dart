@@ -13,10 +13,9 @@ class NewsHeaderView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Container(
+        SizedBox(
           width: double.infinity,
           height: 200,
-          color: Colors.blue,
           child: NetworkImageWithPlaceholder(
             imageUrl: image_url,
             width: double.infinity,

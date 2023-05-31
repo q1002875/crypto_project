@@ -1,4 +1,5 @@
 import 'package:crypto_project/account_Page/login/bloc/login_bloc.dart';
+import 'package:crypto_project/crypto_Page/crypto_detail_chart.dart';
 import 'package:crypto_project/crypto_Page/crypto_search_page.dart';
 import 'package:crypto_project/news_Page_view/news_cell_detail.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ class Routes {
   static const String crypto = '/cryptoPage';
   static const String account = '/newPage/accountPage';
   static const String cryptoSearch = '/cryptoPage/search';
+  static const String cryptochart = '/cryptoPage/cryptochart';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     var args = settings.arguments;
@@ -51,6 +53,9 @@ class Routes {
             builder: (_) => BlocProvider(
                 create: (context) => AuthenticationBloc(),
                 child: const AccountPage()));
+
+      case cryptochart:
+        return MaterialPageRoute(builder: (_) => const LineChartSample2());
 
       case crypto:
       // return MaterialPageRoute(builder: (_) => const BinanceWebSocket());

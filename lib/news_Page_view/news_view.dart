@@ -1,11 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crypto_project/bloc/bloc/news_Bloc/news_bloc.dart';
 import 'package:crypto_project/extension/custom_text.dart';
+import 'package:crypto_project/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../cubit/image_cubit_cubit.dart';
+import '../database_mongodb/maongo_database.dart';
+import '../extension/SharedPreferencesHelper.dart';
 import '../extension/ShimmerText.dart';
 import '../routes.dart';
 import 'new_headerTopic.dart';
@@ -194,9 +197,22 @@ class _NewsPageState extends State<NewsPage> {
     super.dispose();
   }
 
+  Future<void> fetchUserImage() async {
+    try {
+      final userid = await SharedPreferencesHelper.getString('userId');
+      final user = await mongodb.getuserdocument(userid, ConnectDbName.user);
+      setState(() {
+        user != null ? googleurl = user.photoUrl : googleurl = '';
+      });
+    } catch (error) {
+      debugPrint('Failed to sign in with Google: $error');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    fetchUserImage();
     _newsBloc = context.read<NewsBloc>();
     _newsBloc.add(FetchArtcle());
     _headerTopic.topicListProperty();

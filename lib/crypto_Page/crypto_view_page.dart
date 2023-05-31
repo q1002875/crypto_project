@@ -25,7 +25,6 @@ class SymbolCase {
 }
 
 class _BinanceWebSocketState extends State<BinanceWebSocket> {
-  // MongoDBConnection mongodb = MongoDBConnection();
   var showprice = '';
   var searchCrypto = '';
   List<SymbolCase> tickData = [];
@@ -54,17 +53,22 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
             ? ListView.builder(
                 itemCount: tickData.length,
                 itemBuilder: (context, index) {
-                  return listviewCell(
-                      Image.asset(
-                        'assets/crypto/${tickData[index].symbol.toUpperCase()}.png',
-                        errorBuilder: (BuildContext context, Object exception,
-                            StackTrace? stackTrace) {
-                          // Return any widget that you want to display when the image cannot be loaded
-                          return Image.asset('assets/cryptoIcon.png');
-                        },
-                      ),
-                      tickData[index].symbol,
-                      tickData[index].price);
+                  return GestureDetector(
+                      onTap: () {
+                        print(index);
+                        Navigator.pushNamed(context, Routes.cryptochart);
+                      },
+                      child: listviewCell(
+                          Image.asset(
+                            'assets/crypto/${tickData[index].symbol.toUpperCase()}.png',
+                            errorBuilder: (BuildContext context,
+                                Object exception, StackTrace? stackTrace) {
+                              // Return any widget that you want to display when the image cannot be loaded
+                              return Image.asset('assets/cryptoIcon.png');
+                            },
+                          ),
+                          tickData[index].symbol,
+                          tickData[index].price));
                 },
               )
             : const SizedBox(
