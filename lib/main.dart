@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'bloc/bloc/news_Bloc/news_bloc.dart';
-import 'crypto_Page/crypto_detail_chart.dart';
+import 'crypto_Page/crypto_view_page.dart';
 import 'database_mongodb/maongo_database.dart';
 import 'extension/gobal.dart';
 
@@ -71,8 +71,8 @@ class _MyAppAfterSplashState extends State<MyAppAfterSplash> {
         create: (context) => NewsBloc(newsApi()),
         child: const NewsPage(),
       ),
-      // const BinanceWebSocket(),
-      const LineChartSample2(),
+      const BinanceWebSocket(),
+      // const LineChartSample2(),
       // const CryptoChart(),
       BlocProvider(
           create: (context) => AuthenticationBloc(), child: const AccountPage())
