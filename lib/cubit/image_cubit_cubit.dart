@@ -1,12 +1,11 @@
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
-part 'image_cubit_state.dart';
 
+part 'image_cubit_state.dart';
 
 class ImageCubit extends Cubit<ImageState> {
   ImageCubit() : super(ImageInitial());
@@ -37,7 +36,3 @@ class ImageCubit extends Cubit<ImageState> {
     return uriWithoutQueryParams.toString();
   }
 }
-
-
-
-
