@@ -1,77 +1,34 @@
 import 'dart:convert';
 
-import 'package:crypto_project/extension/gobal.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../extension/custom_text.dart';
+import '../extension/gobal.dart';
+import 'crypto_detail_data_model.dart';
 
-class ChartData {
-  final DateTime date;
-  final double price;
-  final double dateMilliseconds; // 新增字段
-  final double volumes;
-  ChartData(this.date, this.price, this.volumes)
-      : dateMilliseconds =
-            date.millisecondsSinceEpoch.toDouble(); // 在构造函数里转换日期为时间戳
-}
-
-enum CryptoCycleTime {
-  oneDay,
-  oneWeek,
-  oneMonth,
-  threeMonth,
-  sixMonth,
-}
-
-class LineChartSample2 extends StatefulWidget {
-  const LineChartSample2({super.key});
+class LineChartPage extends StatefulWidget {
+  const LineChartPage({Key? key}) : super(key: key);
 
   @override
-  State<LineChartSample2> createState() => _LineChartSample2State();
+  State<LineChartPage> createState() => _LineChartPageState();
 }
 
-class SelectTimeCycle {
-  static List<SelectTimeCycle> selectTimeCycleData = [
-    SelectTimeCycle(
-        timeType: CryptoCycleTime.oneDay, timeTitle: 'Day', select: true),
-    SelectTimeCycle(
-        timeType: CryptoCycleTime.oneWeek, timeTitle: 'Week', select: false),
-    SelectTimeCycle(
-        timeType: CryptoCycleTime.oneMonth, timeTitle: 'Month', select: false),
-    SelectTimeCycle(
-        timeType: CryptoCycleTime.threeMonth,
-        timeTitle: '3Months',
-        select: false),
-    SelectTimeCycle(
-        timeType: CryptoCycleTime.sixMonth,
-        timeTitle: '6Months',
-        select: false),
-  ];
-  CryptoCycleTime timeType;
-  String timeTitle;
-  bool select;
-  SelectTimeCycle(
-      {this.timeType = CryptoCycleTime.oneDay,
-      this.timeTitle = '',
-      this.select = false});
-}
-
-class _LineChartSample2State extends State<LineChartSample2> {
+class _LineChartPageState extends State<LineChartPage> {
+  ////參數及變數
   List<Color> gradientColors = [Colors.red, Colors.redAccent];
-  List<ChartData> data = [];
-  // ignore: prefer_final_fields
+  late List<ChartData> data = [];
   CryptoCycleTime cycleType = CryptoCycleTime.oneDay;
   late List<SelectTimeCycle> _selectTimeCycle;
   bool touchPrice = false;
   String show = '';
   double maxPrice = 0;
-  double maxdate = 0;
-
+  // double maxdate = 0;
   Map<CryptoCycleTime, List<ChartData>> dataResult = {};
-
   final String cryptoSymbol = 'bitcoin';
+
+////widget小區塊畫面
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
     debugPrint('${data.length} value在這');
 
@@ -80,183 +37,189 @@ class _LineChartSample2State extends State<LineChartSample2> {
       CryptoCycleTime.threeMonth: data[value.toInt() - 1].date.month,
       CryptoCycleTime.sixMonth: data[value.toInt() - 1].date.month,
     };
-    return Text(
-        '${timeFormatMap[cycleType] ?? data[value.toInt() - 1].date.day}');
+    final resultText =
+        '${timeFormatMap[cycleType] ?? data[value.toInt() - 1].date.day}';
+
+    return Text(resultText);
   }
 
   @override
   Widget build(BuildContext context) {
-    final lastprice = data.last.price.toStringAsFixed(4);
+    // return Container(
+    //   color: Colors.amber,
+    //   child: const Text('data'),
+    // );
+
     return MaterialApp(
-      home: Scaffold(
-          appBar: AppBar(
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back), // set your color here
-                onPressed: () => Navigator.pop(context),
-              ),
-              title: const CustomText(
-                textContent: 'BTC Price',
-                textColor: Colors.white,
-              )),
-          body: Container(
-              color: Colors.white,
-              child: data == []
-                  ? const CircularProgressIndicator()
-                  : Flex(
-                      direction: Axis.vertical,
-                      children: [
-                        Flexible(
-                            flex: 2,
-                            child: Container(
-                              // color: Colors.yellow,
-                              padding: const EdgeInsets.only(left: 10, top: 5),
-                              alignment: Alignment.centerLeft,
-                              width: double.infinity,
-                              height: double.maxFinite,
-                              child: const Stack(
-                                children: [
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: CustomText(
-                                      textContent: 'BTC-USD',
-                                      align: TextAlign.left,
-                                      fontSize: 34,
-                                      textColor: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )),
-                        Flexible(
-                            flex: 2,
-                            child: Container(
-                              padding: const EdgeInsets.only(left: 10),
-                              // alignment: Alignment.bottomLeft,
-                              color: Colors.white,
-                              // width: double.infinity,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  Container(
-                                    color: Colors.blueGrey,
-                                    width: double.infinity,
-                                    alignment: Alignment.centerLeft,
-                                    child: CustomText(
-                                      textContent: 'USD \$$lastprice',
-                                      // textColor: Colors.black,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                  Container(
-                                    // color: Colors.green,
-                                    width: double.infinity,
-                                    alignment: Alignment.centerLeft,
-                                    child: CustomText(
-                                      textContent:
-                                          'Volume ${data.last.volumes.toInt()}',
-                                      textColor: Colors.grey,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )),
-                        Flexible(
-                            flex: 1,
-                            child: Container(
-                              margin: const EdgeInsets.only(left: 3),
-                              color: Colors.white,
-                              child: ListView.separated(
-                                separatorBuilder: (context, index) =>
-                                    const SizedBox(width: 8.0),
-                                scrollDirection: Axis.horizontal,
-                                itemCount: _selectTimeCycle.length,
-                                itemBuilder: (context, index) {
-                                  // List<HeaderTopic> topicList = _headerTopic.resultData;
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 4.0),
-                                    child: InkWell(
-                                        onTap: () {
-                                          for (var i = 0;
-                                              i < _selectTimeCycle.length;
-                                              i++) {
-                                            if (i == index) {
-                                              _selectTimeCycle[i].select = true;
-                                            } else {
-                                              _selectTimeCycle[i].select =
-                                                  false;
-                                            }
-                                          }
-                                          cycleType =
-                                              CryptoCycleTime.values[index];
-                                          setState(() {
-                                            data = dataResult[
-                                                CryptoCycleTime.values[index]]!;
-                                          });
-                                          // fetchMarketData(cryptoSymbol,
-                                          //     _selectTimeCycle[index].timeType);
-                                        },
-                                        child: _selectTimeCycle[index].select
-                                            ? Container(
-                                                width: screenWidth / 3,
-                                                height: screenWidth / 10,
-                                                alignment: Alignment.center,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.red.withOpacity(
-                                                      0.5), // Light red color
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          30.0), // Circular border
-                                                ),
-                                                child: CustomText(
-                                                  align: TextAlign.center,
-                                                  textContent:
-                                                      _selectTimeCycle[index]
-                                                          .timeTitle,
-                                                  textColor:
-                                                      const Color.fromARGB(
-                                                          255, 49, 39, 38),
-                                                ),
-                                              )
-                                            : Container(
-                                                alignment: Alignment.centerLeft,
-                                                child: CustomText(
-                                                  textContent:
-                                                      _selectTimeCycle[index]
-                                                          .timeTitle,
-                                                  textColor: Colors.grey,
-                                                ),
-                                              )),
-                                  );
+        home: Scaffold(
+      appBar: AppBar(
+          backgroundColor: Colors.blueGrey,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back), // set your color here
+            onPressed: () => Navigator.pop(context),
+          ),
+          title: const CustomText(
+            textContent: '',
+            textColor: Colors.white,
+          )),
+      body: data.isEmpty
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          // : Container(
+          //     color: Colors.black26,
+          //   )
+          : Flex(
+              direction: Axis.vertical,
+              children: [
+                Flexible(
+                    flex: 2,
+                    child: Container(
+                      // color: Colors.yellow,
+                      padding: const EdgeInsets.only(left: 10, top: 5),
+                      alignment: Alignment.centerLeft,
+                      width: double.infinity,
+                      height: double.maxFinite,
+                      child: const Stack(
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: CustomText(
+                              textContent: 'BTC-USD',
+                              align: TextAlign.left,
+                              fontSize: 45,
+                              textColor: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )),
+                Flexible(
+                    flex: 2,
+                    child: Container(
+                      padding: const EdgeInsets.only(left: 10),
+                      // alignment: Alignment.bottomLeft,
+                      color: Colors.white,
+                      // width: double.infinity,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Container(
+                            color: Colors.blueGrey,
+                            width: double.infinity,
+                            alignment: Alignment.centerLeft,
+                            child: CustomText(
+                              textContent:
+                                  'USD \$${data.last.price.toStringAsFixed(4)}',
+                              // textColor: Colors.black,
+                              fontSize: 24,
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(top: 10),
+                            // color: Colors.green,
+                            width: double.infinity,
+                            alignment: Alignment.centerLeft,
+                            child: CustomText(
+                              textContent:
+                                  'Volume ${data.last.volumes.toInt()}',
+                              textColor: Colors.blueGrey,
+                              fontSize: 24,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )),
+                Flexible(
+                    flex: 1,
+                    child: Container(
+                      // padding: const EdgeInsets.only(left: 10),
+                      margin: const EdgeInsets.only(left: 10),
+                      color: Colors.white,
+                      child: ListView.separated(
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(width: 15.0),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _selectTimeCycle.length,
+                        itemBuilder: (context, index) {
+                          // List<HeaderTopic> topicList = _headerTopic.resultData;
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4.0),
+                            child: InkWell(
+                                onTap: () {
+                                  for (var i = 0;
+                                      i < _selectTimeCycle.length;
+                                      i++) {
+                                    if (i == index) {
+                                      _selectTimeCycle[i].select = true;
+                                    } else {
+                                      _selectTimeCycle[i].select = false;
+                                    }
+                                  }
+                                  cycleType = CryptoCycleTime.values[index];
+                                  setState(() {
+                                    data = dataResult[
+                                        CryptoCycleTime.values[index]]!;
+                                  });
+                                  // fetchMarketData(cryptoSymbol,
+                                  //     _selectTimeCycle[index].timeType);
                                 },
-                              ),
-                            )),
-                        Flexible(
-                            flex: 1,
-                            child: Center(
-                              child: CustomText(
-                                textContent: show,
-                                textColor: Colors.black,
-                                fontSize: 16,
-                              ),
-                            )),
-                        Expanded(
-                            flex: 9,
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 20, bottom: 10),
-                              child: LineChart(
-                                mainData(),
-                              ),
-                            ))
-                      ],
-                    ))),
-    );
+                                child: _selectTimeCycle[index].select
+                                    ? Container(
+                                        width: screenWidth / 3,
+                                        height: screenWidth / 10,
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                          color: Colors.blueGrey.withOpacity(
+                                              0.8), // Light red color
+                                          borderRadius: BorderRadius.circular(
+                                              30.0), // Circular border
+                                        ),
+                                        child: CustomText(
+                                          align: TextAlign.center,
+                                          textContent:
+                                              _selectTimeCycle[index].timeTitle,
+                                          textColor: Colors.white,
+                                          fontSize: 20,
+                                        ),
+                                      )
+                                    : Container(
+                                        alignment: Alignment.centerLeft,
+                                        child: CustomText(
+                                          textContent:
+                                              _selectTimeCycle[index].timeTitle,
+                                          textColor: Colors.grey,
+                                          fontSize: 16,
+                                        ),
+                                      )),
+                          );
+                        },
+                      ),
+                    )),
+                Flexible(
+                    flex: 1,
+                    child: Center(
+                      child: CustomText(
+                        textContent: show,
+                        textColor: Colors.black,
+                        fontSize: 18,
+                      ),
+                    )),
+                Expanded(
+                    flex: 9,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 20, bottom: 10),
+                      child: LineChart(
+                        mainData(data),
+                      ),
+                    ))
+              ],
+            ),
+    ));
   }
 
-  /////選取要顯示哪個時段週期
+/////func 方法區塊
   List<int> calculateTimestamps(CryptoCycleTime cycleTime) {
     final DateTime now = DateTime.now();
     final int nowMilliseconds = now.millisecondsSinceEpoch ~/ 1000;
@@ -281,10 +244,16 @@ class _LineChartSample2State extends State<LineChartSample2> {
       default:
         return [];
     }
-
     final int toTimestamp = nowMilliseconds;
     final int fromTimestamp = nowMilliseconds - (daysToSubtract * 86400);
     return [fromTimestamp, toTimestamp];
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    fetchMarketData(cryptoSymbol, CryptoCycleTime.oneDay);
+    downloadApis();
   }
 
   Future<void> downloadApis() async {
@@ -293,11 +262,6 @@ class _LineChartSample2State extends State<LineChartSample2> {
     fetchSaveMarketData(cryptoSymbol, CryptoCycleTime.oneMonth);
     fetchSaveMarketData(cryptoSymbol, CryptoCycleTime.threeMonth);
     fetchSaveMarketData(cryptoSymbol, CryptoCycleTime.sixMonth);
-
-    // for (var cycleTime in CryptoCycleTime.values) {
-    //   fetchSaveMarketData(
-    //       cryptoSymbol, cycleTime); // Replace 'symbol' with the actual symbol
-    // }
 
     debugPrint("${dataResult.keys}dataResult.toString()");
   }
@@ -316,7 +280,6 @@ class _LineChartSample2State extends State<LineChartSample2> {
       final List<dynamic> result = jsonDecode(response.body)['prices'];
       final List<dynamic> resultVolumes =
           jsonDecode(response.body)['total_volumes'];
-
       data = result
           .asMap()
           .entries
@@ -345,7 +308,6 @@ class _LineChartSample2State extends State<LineChartSample2> {
       final List<dynamic> result = jsonDecode(response.body)['prices'];
       final List<dynamic> resultVolumes =
           jsonDecode(response.body)['total_volumes'];
-
       dataResult[cycleTime] = result
           .asMap()
           .entries
@@ -355,18 +317,19 @@ class _LineChartSample2State extends State<LineChartSample2> {
               resultVolumes[entry.key][1] ?? 0)) // entry.key is the index
           .toList();
       debugPrint("${dataResult[cycleTime]}${cycleTime.name}");
-      // setState(() {});
     } else {
       throw Exception('Failed to fetch market data');
     }
   }
 
-  FlTitlesData getFlTitlesData() {
+  FlTitlesData getFlTitlesData(List<ChartData> data) {
     return FlTitlesData(
       show: true,
       rightTitles: AxisTitles(
         sideTitles: SideTitles(
-            showTitles: true, reservedSize: 50, interval: getYtimeArea() / 2.5
+            showTitles: true,
+            reservedSize: 50,
+            interval: getYtimeArea(data) / 2.5
             // getTitlesWidget: rightTitleWidgets
             ),
       ),
@@ -387,7 +350,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
     );
   }
 
-  LineTouchData getLineTouchData() {
+  LineTouchData getLineTouchData(List<ChartData> data) {
     return LineTouchData(
       touchTooltipData: LineTouchTooltipData(
         tooltipBgColor: Colors.red[700],
@@ -449,15 +412,15 @@ class _LineChartSample2State extends State<LineChartSample2> {
     Map<CryptoCycleTime, double> cycleTimeToArea = {
       CryptoCycleTime.oneDay: 48,
       CryptoCycleTime.oneWeek: 48,
-      CryptoCycleTime.oneMonth: 168,
-      CryptoCycleTime.threeMonth: 31,
+      CryptoCycleTime.oneMonth: 240,
+      CryptoCycleTime.threeMonth: 720,
       CryptoCycleTime.sixMonth: 62,
     };
 
     return cycleTimeToArea[cycleType]!;
   }
 
-  double getYtimeArea() {
+  double getYtimeArea(List<ChartData> data) {
     final minPriceData = data.reduce(
         (value, element) => value.price < element.price ? value : element);
     final maxPriceData = data.reduce(
@@ -472,24 +435,12 @@ class _LineChartSample2State extends State<LineChartSample2> {
   void initState() {
     super.initState();
     _selectTimeCycle = SelectTimeCycle.selectTimeCycleData;
-// apidae bitcoin
-
-    fetchMarketData(cryptoSymbol, CryptoCycleTime.oneDay);
-    downloadApis();
-    // for (var cycleTime in CryptoCycleTime.values) {
-    //   fetchSaveMarketData(
-    //       cryptoSymbol, cycleTime); // Replace 'symbol' with the actual symbol
-    // }
-
-    // if (dataResult[cycleType] != null) {
-    //   data = dataResult[cycleType]!;
-    // }
   }
 
-  LineChartData mainData() {
+  LineChartData mainData(List<ChartData> data) {
     return LineChartData(
-      lineTouchData: getLineTouchData(),
-      titlesData: getFlTitlesData(),
+      lineTouchData: getLineTouchData(data),
+      titlesData: getFlTitlesData(data),
       borderData: FlBorderData(
         show: false,
         border: Border.all(color: Colors.white),
@@ -536,12 +487,12 @@ class _LineChartSample2State extends State<LineChartSample2> {
 
   Widget rightTitleWidgets(double value, TitleMeta meta) {
     // debugPrint('${data.length} right Title value在這');
-    final minPriceData = data.reduce(
-        (value, element) => value.price < element.price ? value : element);
-    final maxPriceData = data.reduce(
-        (value, element) => value.price > element.price ? value : element);
+    // final minPriceData = data.reduce(
+    //     (value, element) => value.price < element.price ? value : element);
+    // final maxPriceData = data.reduce(
+    //     (value, element) => value.price > element.price ? value : element);
 
-    maxPrice = maxPriceData.price - minPriceData.price;
+    // maxPrice = maxPriceData.price - minPriceData.price;
     return Text('$value');
   }
 }

@@ -38,10 +38,11 @@ class _CryptoSearchPageState extends State<CryptoSearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+            backgroundColor: Colors.blueGrey,
             title: const CustomText(
-          textContent: 'crypto search',
-          textColor: Colors.white,
-        )),
+              textContent: '',
+              textColor: Colors.white,
+            )),
         body: Container(
             color: Colors.white,
             child:

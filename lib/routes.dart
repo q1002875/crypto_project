@@ -1,5 +1,4 @@
 import 'package:crypto_project/account_Page/login/bloc/login_bloc.dart';
-import 'package:crypto_project/crypto_Page/crypto_detail_chart.dart';
 import 'package:crypto_project/crypto_Page/crypto_search_page.dart';
 import 'package:crypto_project/news_Page_view/news_cell_detail.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'account_Page/account_view.dart';
 import 'api_model/news_totalModel.dart';
 import 'bloc/bloc/news_Bloc/news_bloc.dart';
+import 'crypto_Page/crypto_detail_chart.dart';
 import 'news_Page_view/news_view.dart';
 import 'service_Api/news_api.dart';
 
@@ -55,7 +55,7 @@ class Routes {
                 child: const AccountPage()));
 
       case cryptochart:
-        return MaterialPageRoute(builder: (_) => const LineChartSample2());
+        return MaterialPageRoute(builder: (_) => const LineChartPage());
 
       case crypto:
       // return MaterialPageRoute(builder: (_) => const BinanceWebSocket());

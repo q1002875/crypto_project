@@ -34,8 +34,8 @@ class NewsCellView extends StatelessWidget {
                         color: Colors.white,
                       )),
             ),
-            Flexible(
-                flex: 2,
+            Expanded(
+                flex: 3,
                 child: Stack(
                   children: [
                     Container(

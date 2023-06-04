@@ -10,6 +10,7 @@ import '../extension/ShimmerText.dart';
 import '../extension/custom_text.dart';
 import '../main.dart';
 import '../routes.dart';
+import 'crypto_detail_chart.dart';
 
 class BinanceWebSocket extends StatefulWidget {
   const BinanceWebSocket({Key? key}) : super(key: key);
@@ -24,6 +25,13 @@ class SymbolCase {
   SymbolCase(this.symbol, this.price);
 }
 
+class tttest extends StatefulWidget {
+  const tttest({super.key});
+
+  @override
+  State<tttest> createState() => _tttestState();
+}
+
 class _BinanceWebSocketState extends State<BinanceWebSocket> {
   var showprice = '';
   var searchCrypto = '';
@@ -34,6 +42,7 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blueGrey,
         title: const Text('Crypto List'),
         actions: <Widget>[
           userid != ''
@@ -55,7 +64,12 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
                 itemBuilder: (context, index) {
                   return GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, Routes.cryptochart);
+                        // Navigator.pushNamed(context, Routes.cryptochart);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LineChartPage()),
+                        );
                       },
                       child: listviewCell(
                           Image.asset(
@@ -212,5 +226,12 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
   Future<void> _refreshData() async {
     getSharedDataStream();
     setState(() {});
+  }
+}
+
+class _tttestState extends State<tttest> {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
   }
 }
