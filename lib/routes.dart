@@ -55,8 +55,11 @@ class Routes {
                 child: const AccountPage()));
 
       case cryptochart:
-        return MaterialPageRoute(builder: (_) => const LineChartPage());
-
+        if (args is Trickcrypto) {
+          // 將參數傳遞給NewsDetail頁面
+          return MaterialPageRoute(builder: (_) => LineChartPage(args));
+        }
+        return _errorRoute();
       case crypto:
       // return MaterialPageRoute(builder: (_) => const BinanceWebSocket());
       default:

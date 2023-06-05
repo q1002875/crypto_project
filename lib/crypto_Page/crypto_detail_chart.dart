@@ -1,15 +1,19 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../extension/ShimmerText.dart';
 import '../extension/custom_text.dart';
 import '../extension/gobal.dart';
 import 'crypto_detail_data_model.dart';
+import 'crypto_search_page.dart';
 
 class LineChartPage extends StatefulWidget {
-  const LineChartPage({Key? key}) : super(key: key);
+  final Trickcrypto symbolData;
+  const LineChartPage(this.symbolData, {Key? key}) : super(key: key);
 
   @override
   State<LineChartPage> createState() => _LineChartPageState();
@@ -26,7 +30,7 @@ class _LineChartPageState extends State<LineChartPage> {
   double maxPrice = 0;
   // double maxdate = 0;
   Map<CryptoCycleTime, List<ChartData>> dataResult = {};
-  final String cryptoSymbol = 'bitcoin';
+  String cryptoSymbol = '';
 
 ////widget小區塊畫面
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
@@ -49,7 +53,7 @@ class _LineChartPageState extends State<LineChartPage> {
     //   color: Colors.amber,
     //   child: const Text('data'),
     // );
-
+    String title = widget.symbolData.name;
     return MaterialApp(
         home: Scaffold(
       appBar: AppBar(
@@ -76,16 +80,25 @@ class _LineChartPageState extends State<LineChartPage> {
                     flex: 2,
                     child: Container(
                       // color: Colors.yellow,
-                      padding: const EdgeInsets.only(left: 10, top: 5),
+                      padding: const EdgeInsets.only(left: 5, top: 5),
                       alignment: Alignment.centerLeft,
                       width: double.infinity,
                       height: double.maxFinite,
-                      child: const Stack(
+                      child: Row(
                         children: [
-                          Align(
+                          Container(
+                            margin: const EdgeInsets.all(6),
+                            child: CachedNetworkImage(
+                              placeholder: (context, url) => const ShimmerBox(),
+                              imageUrl: widget.symbolData.image,
+                              errorWidget: (context, url, error) =>
+                                  Image.asset('assets/cryptoIcon.png'),
+                            ),
+                          ),
+                          Container(
                             alignment: Alignment.centerLeft,
                             child: CustomText(
-                              textContent: 'BTC-USD',
+                              textContent: title,
                               align: TextAlign.left,
                               fontSize: 45,
                               textColor: Colors.black,
@@ -125,7 +138,7 @@ class _LineChartPageState extends State<LineChartPage> {
                               textContent:
                                   'Volume ${data.last.volumes.toInt()}',
                               textColor: Colors.blueGrey,
-                              fontSize: 24,
+                              fontSize: 20,
                             ),
                           ),
                         ],
@@ -252,6 +265,7 @@ class _LineChartPageState extends State<LineChartPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    cryptoSymbol = widget.symbolData.id;
     fetchMarketData(cryptoSymbol, CryptoCycleTime.oneDay);
     downloadApis();
   }
@@ -259,9 +273,10 @@ class _LineChartPageState extends State<LineChartPage> {
   Future<void> downloadApis() async {
     // fetchSaveMarketData(cryptoSymbol, CryptoCycleTime.oneDay);
     fetchSaveMarketData(cryptoSymbol, CryptoCycleTime.oneWeek);
-    fetchSaveMarketData(cryptoSymbol, CryptoCycleTime.oneMonth);
-    fetchSaveMarketData(cryptoSymbol, CryptoCycleTime.threeMonth);
-    fetchSaveMarketData(cryptoSymbol, CryptoCycleTime.sixMonth);
+    //太多過載
+    // fetchSaveMarketData(cryptoSymbol, CryptoCycleTime.oneMonth);
+    // fetchSaveMarketData(cryptoSymbol, CryptoCycleTime.threeMonth);
+    // fetchSaveMarketData(cryptoSymbol, CryptoCycleTime.sixMonth);
 
     debugPrint("${dataResult.keys}dataResult.toString()");
   }

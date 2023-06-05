@@ -1,8 +1,10 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crypto_project/api_model/crypto_coinModel.dart';
+import 'package:crypto_project/extension/ShimmerText.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart';
 
 import '../database_mongodb/maongo_database.dart';
 import '../extension/custom_text.dart';
@@ -26,9 +28,12 @@ class MyListView extends StatefulWidget {
 }
 
 class Trickcrypto {
+  String id;
   String coin;
+  String name;
+  String image;
   bool isAdd = false;
-  Trickcrypto(this.coin);
+  Trickcrypto(this.coin, this.id, this.name, this.image);
 }
 
 // 搜尋完要存到mongo
@@ -49,7 +54,7 @@ class _CryptoSearchPageState extends State<CryptoSearchPage> {
                 // const MyListView()
 
                 FutureBuilder(
-              future: fetchSymbols(),
+              future: loadLocalJson(),
               builder: (context, snapshot) {
                 final symbol = snapshot.data;
                 if (symbol != null) {
@@ -61,30 +66,20 @@ class _CryptoSearchPageState extends State<CryptoSearchPage> {
             )));
   }
 
-  Future<List<Trickcrypto>> fetchSymbols() async {
-    final response = await http
-        .get(Uri.parse('https://api.binance.com/api/v3/exchangeInfo'));
+  Future<List<Trickcrypto>> loadLocalJson() async {
+    final String jsonString =
+        await rootBundle.loadString('assets/coindata.json');
+    final List<dynamic> jsonData = json.decode(jsonString);
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final symbols =
-          List<String>.from(data['symbols'].map((symbol) => symbol['symbol']));
-      String filterKeyword = 'usdt';
-
-      return symbols
-          .where((element) =>
-              element.toLowerCase().contains(filterKeyword.toLowerCase()))
-          .map((element) => Trickcrypto(element))
-          .toList();
-    } else {
-      throw Exception('Failed to fetch symbols');
+    List<Trickcrypto> result = [];
+    // Now you can use jsonData in your code.
+    for (final item in jsonData) {
+      result.add(Trickcrypto('${item['symbol']}', '${item['id']}',
+          '${item['name']}', '${item['image']}'));
+      debugPrint(
+          'ID: ${item['id']}, Symbol: ${item['symbol']}, Name: ${item['name']}');
     }
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
+    return result;
   }
 }
 
@@ -97,7 +92,7 @@ class _MyListViewState extends State<MyListView> {
   @override
   Widget build(BuildContext context) {
     List<Trickcrypto> filteredList = dataList.where((item) {
-      return item.coin.toLowerCase().contains(searchKeyword.toLowerCase());
+      return item.name.toLowerCase().contains(searchKeyword.toLowerCase());
     }).toList();
 
     return Scaffold(
@@ -157,7 +152,7 @@ class _MyListViewState extends State<MyListView> {
     final newData = widget.data.sublist(0, loadedCount);
     // 更新 newData 中每個項目的 isAdd 欄位
     final updatedDataList = newData.map((item) {
-      final isAdded = mongoCryptoList.contains(item.coin);
+      final isAdded = mongoCryptoList.contains(item.id);
       item.isAdd = isAdded;
       return item;
     }).toList();
@@ -179,7 +174,6 @@ class _MyListViewState extends State<MyListView> {
     if (cryptoData != null) {
       mongoCryptoList = cryptoData.crypto;
       debugPrint('回傳回來得coin list:$cryptoData');
-      //fetch data
     } else {
       mongodb.insertDocument({'userId': widget.userId}, ConnectDbName.crypto);
     }
@@ -217,23 +211,23 @@ class _MyListViewState extends State<MyListView> {
       child: Flex(
         direction: Axis.horizontal,
         crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Flexible(
-            flex: 1,
-            child: Image.asset(
-              'assets/crypto/${data.coin.replaceAll('USDT', '')}.png',
-              errorBuilder: (BuildContext context, Object exception,
-                  StackTrace? stackTrace) {
-                // Return any widget that you want to display when the image cannot be loaded
-                return Image.asset('assets/cryptoIcon.png');
-              },
-            ),
-          ),
+              flex: 1,
+              child: Container(
+                margin: const EdgeInsets.all(8),
+                child: CachedNetworkImage(
+                  placeholder: (context, url) => const ShimmerBox(),
+                  imageUrl: data.image,
+                  errorWidget: (context, url, error) =>
+                      Image.asset('assets/cryptoIcon.png'),
+                ),
+              )),
           Flexible(
               flex: 4,
               child: CustomText(
-                textContent: data.coin,
+                textContent: '${data.name}(${data.coin})',
                 textColor: Colors.black,
                 fontSize: 20,
               )),
@@ -244,18 +238,18 @@ class _MyListViewState extends State<MyListView> {
                 onPressed: () {
                   setState(() {
                     String showText = '';
-                    final index = dataList
-                        .indexWhere((element) => element.coin == data.coin);
+                    final index =
+                        dataList.indexWhere((element) => element.id == data.id);
                     if (index >= 0) {
                       dataList[index].isAdd = !data.isAdd;
 
                       dataList[index].isAdd
-                          ? showText = '新增${dataList[index].coin}'
-                          : showText = '刪除${dataList[index].coin}';
+                          ? showText = '新增${dataList[index].id}'
+                          : showText = '刪除${dataList[index].id}';
                     }
                     final updatedCryptoList = dataList
                         .where((element) => element.isAdd)
-                        .map((e) => e.coin)
+                        .map((e) => e.id)
                         .toList();
 
                     mongodb.updateDocument(

@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:crypto_project/crypto_Page/crypto_search_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 import '../database_mongodb/maongo_database.dart';
@@ -20,16 +23,12 @@ class BinanceWebSocket extends StatefulWidget {
 }
 
 class SymbolCase {
-  String symbol;
-  String price;
-  SymbolCase(this.symbol, this.price);
-}
+  Trickcrypto symbolData;
+  dynamic price;
+  dynamic changePrice;
+  dynamic changePercent;
 
-class tttest extends StatefulWidget {
-  const tttest({super.key});
-
-  @override
-  State<tttest> createState() => _tttestState();
+  SymbolCase(this.symbolData, this.price, this.changePercent, this.changePrice);
 }
 
 class _BinanceWebSocketState extends State<BinanceWebSocket> {
@@ -64,24 +63,15 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
                 itemBuilder: (context, index) {
                   return GestureDetector(
                       onTap: () {
-                        // Navigator.pushNamed(context, Routes.cryptochart);
+                        // Navigator.pushNamed(context, Routes.cryptochart());
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const LineChartPage()),
+                              builder: (context) =>
+                                  LineChartPage(tickData[index].symbolData)),
                         );
                       },
-                      child: listviewCell(
-                          Image.asset(
-                            'assets/crypto/${tickData[index].symbol.toUpperCase()}.png',
-                            errorBuilder: (BuildContext context,
-                                Object exception, StackTrace? stackTrace) {
-                              // Return any widget that you want to display when the image cannot be loaded
-                              return Image.asset('assets/cryptoIcon.png');
-                            },
-                          ),
-                          tickData[index].symbol,
-                          tickData[index].price));
+                      child: listviewCell(tickData[index]));
                 },
               )
             : const SizedBox(
@@ -99,73 +89,77 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
   }
 
   Future<void> fetchMarketData(String p) async {
-    String apiKey = '6e35c3bf-1346-4a87-9bae-25fe6ea51136';
     String url =
-        'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest';
-    Map<String, String> headers = {
-      'X-CMC_PRO_API_KEY': apiKey,
-    };
-    Map<String, String> parameters = {
-      'symbol': p, // 要获取行情的加密货币符号，用逗号分隔
-      // 'convert': 'USD', // 要将行情转换为的货币单位
-    };
+        'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=$p&order=market_cap_desc&page=1&sparkline=false&locale=en';
     try {
       // 发送 GET 请求
-      var response = await http.get(
-          Uri.parse(url).replace(queryParameters: parameters),
-          headers: headers);
+      var response = await http.get(Uri.parse(url));
 
       // 检查响应状态码
       if (response.statusCode == 200) {
         // 解析响应数据
         var data = jsonDecode(response.body);
-        debugPrint('json得資料在這$data');
+        // debugPrint('json得資料在這$data');
         // 提取加密货币行情数据
-        Map<String, dynamic> quotes = data['data'];
+        // Map<String, dynamic> quotes = data;
 
-        quotes.forEach((symbol, quoteData) {
-          String name = quoteData['symbol'];
-          double price = quoteData['quote']['USD']['price'];
-          String formattedPrice = price.toStringAsFixed(3);
-          tickData.add(SymbolCase(name, formattedPrice));
-        });
+        data.forEach(
+          (element) {
+            final id = element['id'];
+            final symbol = element['symbol'];
+            final name = element['name'];
+            final image = element['image'];
+            final currentPrice = element['current_price'];
+            final changePirce = element['price_change_24h']; //變化的美元
+            final changePercent =
+                element['price_change_percentage_24h']; //變化的百分比
+            final trick = Trickcrypto(symbol, id, name, image);
+
+            tickData.add(
+                SymbolCase(trick, currentPrice, changePercent, changePirce));
+          },
+        );
+
         setState(() {});
       } else {
-        print('Request failed with status: ${response.statusCode}');
+        debugPrint('Request failed with status: ${response.statusCode}');
       }
     } catch (error) {
-      print('Error occurred: $error');
+      debugPrint('Error occurred: $error');
     }
   }
 
-  Future<Image> fetchSymbolImage(String symbol) async {
-    final url = 'https://api.coinbase.com/v2/assets/icons/$symbol.png';
+  Future<Trickcrypto?> fetchSearchCoin(String symbol) async {
+    try {
+      final String jsonString =
+          await rootBundle.loadString('assets/coindata.json');
+      List<dynamic> coins = json.decode(jsonString);
+      Map<String, dynamic> coinMap = {for (var coin in coins) coin['id']: coin};
 
-    final response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-      final imageData = response.bodyBytes;
-      final image = Image.memory(imageData);
-      return image;
-    } else {
-      throw Exception('Failed to load symbol image');
+      String name = coinMap[symbol]['name'];
+      String symbolName = coinMap[symbol]['symbol'];
+      String id = coinMap[symbol]['id'];
+      String image = coinMap[symbol]['image'];
+      return Trickcrypto(symbolName, id, name, image);
+    } catch (error) {
+      return null;
     }
   }
 
   Future<void> getSharedDataStream() async {
     userid = await SharedPreferencesHelper.getString('userId');
-    // await mongodb.connect();
     final cryptoData =
         await mongodb.getUserCryptoData(userid, ConnectDbName.crypto);
     if (cryptoData != null) {
       String cryptoString = cryptoData.crypto.map((element) {
-        final coin = element.toUpperCase().replaceAll('USDT', '');
+        fetchSearchCoin(element);
+        final coin = element.toLowerCase();
         return coin;
       }).join(',');
       searchCrypto = cryptoString;
-
       tickData.clear();
-      fetchMarketData(searchCrypto);
+      fetchMarketData(cryptoString);
+      //看要多久去拿數據
       // repeatPrice();
     } else {
       debugPrint('cryptoData is null');
@@ -176,9 +170,13 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
   void initState() {
     super.initState();
     getSharedDataStream();
+    // repeatPrice();
   }
 
-  Widget listviewCell(Widget imageurl, String symbol, String prince) {
+  Widget listviewCell(SymbolCase data) {
+    final image = data.symbolData.image;
+    final symbol = data.symbolData.coin;
+
     return Container(
       decoration: const BoxDecoration(
         border: Border(
@@ -191,25 +189,66 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
       child: Flex(
         direction: Axis.horizontal,
         crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Flexible(flex: 1, child: imageurl),
+          Flexible(
+              flex: 1,
+              child: Container(
+                margin: const EdgeInsets.all(8),
+                child: CachedNetworkImage(
+                  placeholder: (context, url) => const ShimmerBox(),
+                  imageUrl: image,
+                  errorWidget: (context, url, error) =>
+                      Image.asset('assets/cryptoIcon.png'),
+                ),
+              )),
           const SizedBox(width: 5),
           Flexible(
               flex: 2,
-              child: CustomText(
-                textContent: symbol,
-                textColor: Colors.black,
-                fontSize: 17,
+              child: Container(
+                alignment: Alignment.centerLeft,
+                child: CustomText(
+                  align: TextAlign.start,
+                  textContent: '${symbol.toUpperCase()}USDT',
+                  textColor: Colors.black,
+                  fontSize: 14,
+                ),
               )),
           const SizedBox(width: 5),
           Expanded(
               flex: 3,
-              child: CustomText(
-                align: TextAlign.center,
-                textContent: prince,
-                textColor: Colors.black,
-                fontSize: 20,
+              child: Column(
+                children: [
+                  CustomText(
+                    align: TextAlign.right,
+                    textContent: data.price.toStringAsFixed(4).toString(),
+                    textColor: Colors.black,
+                    fontSize: 16,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      CustomText(
+                        align: TextAlign.right,
+                        textContent: data.changePrice > 0
+                            ? '+${data.changePrice.toStringAsFixed(3)}'
+                            : data.changePrice.toStringAsFixed(3).toString(),
+                        textColor:
+                            data.changePrice > 0 ? Colors.green : Colors.red,
+                        fontSize: 14,
+                      ),
+                      CustomText(
+                        align: TextAlign.right,
+                        textContent: data.changePercent > 0
+                            ? '+${data.changePercent.toStringAsFixed(2)}%'
+                            : '${data.changePercent.toStringAsFixed(2)}%',
+                        textColor:
+                            data.changePercent > 0 ? Colors.green : Colors.red,
+                        fontSize: 14,
+                      ),
+                    ],
+                  )
+                ],
               )),
         ],
       ),
@@ -217,7 +256,7 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
   }
 
   void repeatPrice() {
-    Timer.periodic(const Duration(seconds: 60), (Timer timer) {
+    Timer.periodic(const Duration(seconds: 15), (Timer timer) {
       tickData.clear();
       fetchMarketData(searchCrypto);
     });
@@ -226,12 +265,5 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
   Future<void> _refreshData() async {
     getSharedDataStream();
     setState(() {});
-  }
-}
-
-class _tttestState extends State<tttest> {
-  @override
-  Widget build(BuildContext context) {
-    return Container();
   }
 }

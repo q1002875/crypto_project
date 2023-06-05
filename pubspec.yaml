@@ -84,6 +84,7 @@ flutter:
   assets:
       - assets/
       - assets/crypto/
+      - assets/coindata.json
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
