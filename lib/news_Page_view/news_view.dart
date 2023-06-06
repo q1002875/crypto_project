@@ -10,6 +10,7 @@ import '../cubit/image_cubit_cubit.dart';
 import '../database_mongodb/maongo_database.dart';
 import '../extension/SharedPreferencesHelper.dart';
 import '../extension/ShimmerText.dart';
+import '../extension/gobal.dart';
 import '../routes.dart';
 import 'new_headerTopic.dart';
 import 'news_cell_view.dart';
@@ -101,7 +102,7 @@ class _NewsPageState extends State<NewsPage> {
               Flexible(
                   flex: 2,
                   child: Container(
-                    margin: const EdgeInsets.only(left: 3),
+                    margin: const EdgeInsets.only(left: 10),
                     color: Colors.white,
                     child: ListView.separated(
                       separatorBuilder: (context, index) =>
@@ -121,18 +122,21 @@ class _NewsPageState extends State<NewsPage> {
                               },
                               child: topicList[index].select
                                   ? Container(
-                                      alignment: Alignment.centerLeft,
-                                      decoration: const BoxDecoration(
-                                        border: Border(
-                                          bottom: BorderSide(
-                                            color: Colors.red,
-                                            width: 2.5,
-                                          ),
-                                        ),
+                                      width: topicList[index].select
+                                          ? screenWidth / 2
+                                          : screenWidth / 5,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: Colors.blueGrey.withOpacity(
+                                            0.8), // Light red color
+                                        borderRadius: BorderRadius.circular(
+                                            30.0), // Circular border
                                       ),
                                       child: CustomText(
+                                        align: TextAlign.center,
                                         textContent: topicList[index].topic,
-                                        textColor: Colors.red,
+                                        textColor: Colors.white,
+                                        fontSize: 18,
                                       ),
                                     )
                                   : Container(
@@ -140,6 +144,7 @@ class _NewsPageState extends State<NewsPage> {
                                       child: CustomText(
                                         textContent: topicList[index].topic,
                                         textColor: Colors.grey,
+                                        fontSize: 14,
                                       ),
                                     )),
                         );

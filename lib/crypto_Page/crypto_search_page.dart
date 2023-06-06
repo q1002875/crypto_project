@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crypto_project/api_model/crypto_coinModel.dart';
 import 'package:crypto_project/extension/ShimmerText.dart';
+import 'package:crypto_project/extension/gobal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -200,6 +201,7 @@ class _MyListViewState extends State<MyListView> {
 
   Widget listviewCell(Trickcrypto data, int index) {
     return Container(
+      height: screenHeight / 9,
       decoration: const BoxDecoration(
         border: Border(
           bottom: BorderSide(

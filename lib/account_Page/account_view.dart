@@ -36,7 +36,8 @@ class _AccountPageState extends State<AccountPage> {
                 Flexible(
                     flex: 2,
                     child: Container(
-                      color: const Color.fromARGB(255, 114, 161, 224),
+                      width: double.infinity,
+                      color: Colors.blueGrey,
                       child: _buildContent(context, state),
                     )),
                 Expanded(
@@ -172,73 +173,90 @@ class _AccountPageState extends State<AccountPage> {
 
   Widget _buildMemberView(User user) {
     _login = true;
-    return Flex(direction: Axis.vertical, children: [
-      const SizedBox(
-        height: 10,
-      ),
-      Flexible(
-          flex: 3,
-          child: Container(
-            // color: Colors.pink,
-            child: CustomText(
-              textContent: user.displayName,
-              fontSize: 16,
-              textColor: Colors.black,
-            ),
-          )),
-      Flexible(
-          flex: 4,
-          child: Container(
-              // color: Colors.green,
-              child: Flex(
-            direction: Axis.horizontal,
-            children: [
-              const SizedBox(
-                width: 10,
-              ),
-              ClipOval(
-                child: CachedNetworkImage(
-                  placeholder: (context, url) => const ShimmerBox(),
-                  imageUrl: user.photoUrl,
-                  errorWidget: (context, url, error) =>
-                      const Icon(Icons.person_rounded),
+    return Flex(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        direction: Axis.vertical,
+        children: [
+          const SizedBox(
+            height: 10,
+          ),
+          Flexible(
+              flex: 1,
+              child: Container(
+                // color: Colors.pink,
+                child: CustomText(
+                  textContent: user.displayName,
+                  fontSize: 16,
+                  textColor: Colors.white,
                 ),
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              const CustomText(
-                textContent: 'Crypto Member',
-                textColor: Colors.black,
-                fontSize: 14,
-              ),
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    print('個人檔案');
-                    _authBloc.add(LogoutEvent());
-                  },
-                  child: const CustomText(
-                    textContent: '個人檔案>',
-                    textColor: Colors.black,
-                    fontSize: 14,
-                    align: TextAlign.right,
-                  ),
-                ),
-              ),
-              const SizedBox(
-                width: 5,
-              )
-            ],
-          )
-
-              // child: const Row(),
               )),
-      Flexible(
-          flex: 3,
-          child: Container(
-              // color: Colors.red,
-              ))
-    ]);
+          Flexible(
+              flex: 4,
+              child: Container(
+                  // color: Colors.green,
+                  child: Flex(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                direction: Axis.vertical,
+                children: [
+                  // const SizedBox(
+                  //   width: 10,
+                  // ),
+                  ClipOval(
+                    child: Container(
+                      width: screenWidth / 4.5,
+                      height: screenWidth / 4.5,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.white,
+                          width: 2.0,
+                        ),
+                      ),
+                      child: CachedNetworkImage(
+                        width: screenWidth / 4.5,
+                        height: screenWidth / 4.5,
+                        placeholder: (context, url) => const ShimmerBox(),
+                        imageUrl: user.photoUrl,
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.person_rounded),
+                      ),
+                    ),
+                  ),
+
+                  // const SizedBox(
+                  //   width: 10,
+                  // ),
+                  const CustomText(
+                    textContent: 'Crypto Member',
+                    textColor: Colors.white,
+                    fontSize: 14,
+                  ),
+                  // Expanded(
+                  //   child: GestureDetector(
+                  //     onTap: () {
+                  //       print('個人檔案');
+                  //       _authBloc.add(LogoutEvent());
+                  //     },
+                  //     child: const CustomText(
+                  //       textContent: '個人檔案>',
+                  //       textColor: Colors.white,
+                  //       fontSize: 14,
+                  //       align: TextAlign.right,
+                  //     ),
+                  //   ),
+                  // ),
+                  const SizedBox(
+                    width: 5,
+                  )
+                ],
+              )
+
+                  // child: const Row(),
+                  )),
+          // Flexible(
+          //     flex: 3,
+          //     child: Container(
+          //         // color: Colors.red,
+          //         ))
+        ]);
   }
 }

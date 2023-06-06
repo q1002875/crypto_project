@@ -1,5 +1,7 @@
 import 'package:crypto_project/account_Page/account_view.dart';
 import 'package:crypto_project/account_Page/login/bloc/login_bloc.dart';
+import 'package:crypto_project/calculate_Page/calculatePage.dart';
+import 'package:crypto_project/crypto_Page/bloc/cyrpto_view_bloc_bloc.dart';
 import 'package:crypto_project/news_Page_view/news_view.dart';
 import 'package:crypto_project/routes.dart';
 import 'package:crypto_project/service_Api/news_api.dart';
@@ -71,34 +73,47 @@ class _MyAppAfterSplashState extends State<MyAppAfterSplash> {
         create: (context) => NewsBloc(newsApi()),
         child: const NewsPage(),
       ),
-      const BinanceWebSocket(),
+      // const BinanceWebSocket(),
       // const LineChartSample2(),
       // const CryptoChart(),
+      BlocProvider(
+          create: (context) => CyrptoViewBlocBloc(),
+          child: const BinanceWebSocket()),
+      const CalculatePage(),
       BlocProvider(
           create: (context) => AuthenticationBloc(), child: const AccountPage())
     ];
     return MaterialApp(
         onGenerateRoute: Routes.generateRoute,
         initialRoute: Routes.home,
+        theme: ThemeData(
+          primarySwatch: Colors.indigo, // 設定北警的顏色
+        ),
         home: Scaffold(
           body: Center(child: widgetOptions.elementAt(_selectedIndex)),
           bottomNavigationBar: BottomNavigationBar(
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
-                icon: Icon(Icons.article),
-                label: 'News',
-              ),
+                  icon: Icon(Icons.article),
+                  label: 'News',
+                  backgroundColor: Colors.blueGrey),
               BottomNavigationBarItem(
-                icon: Icon(Icons.query_stats_rounded),
-                label: 'Crypto',
-              ),
+                  icon: Icon(Icons.query_stats_rounded),
+                  label: 'Crypto',
+                  backgroundColor: Colors.blueGrey),
               BottomNavigationBarItem(
-                icon: Icon(Icons.account_circle),
-                label: 'Account',
-              ),
+                  icon: Icon(Icons.calculate),
+                  label: 'Calculate',
+                  backgroundColor: Colors.blueGrey),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.account_circle),
+                  label: 'Account',
+                  backgroundColor: Colors.blueGrey),
             ],
             currentIndex: _selectedIndex,
             onTap: _onItemTapped,
+            selectedItemColor: Colors.white,
+            unselectedItemColor: Colors.black,
           ),
         ));
   }

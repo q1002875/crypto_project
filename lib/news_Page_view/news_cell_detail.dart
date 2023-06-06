@@ -26,12 +26,13 @@ class WebViewContainer extends StatefulWidget {
 
 class _WebViewContainerState extends State<WebViewContainer> {
   final UniqueKey _key = UniqueKey();
-  bool _isLoading = true;
+  final bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blueGrey,
         title: const Text(
           'News',
           style: TextStyle(color: Colors.white),
@@ -43,21 +44,21 @@ class _WebViewContainerState extends State<WebViewContainer> {
             key: _key,
             javascriptMode: JavascriptMode.unrestricted,
             initialUrl: widget.url,
-            onPageStarted: (url) {
-              setState(() {
-                _isLoading = true;
-              });
-            },
-            onPageFinished: (url) {
-              setState(() {
-                _isLoading = false;
-              });
-            },
-            onWebResourceError: (error) {
-              setState(() {
-                _isLoading = false;
-              });
-            },
+            // onPageStarted: (url) {
+            //   setState(() {
+            //     _isLoading = true;
+            //   });
+            // },
+            // onPageFinished: (url) {
+            //   setState(() {
+            //     _isLoading = false;
+            //   });
+            // },
+            // onWebResourceError: (error) {
+            //   setState(() {
+            //     _isLoading = false;
+            //   });
+            // },
           ),
           _isLoading
               ? const Center(
