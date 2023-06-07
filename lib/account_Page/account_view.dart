@@ -77,10 +77,7 @@ class _AccountPageState extends State<AccountPage> {
                                       fontSize: 18,
                                     ),
                                   ],
-                                )
-
-                                // child: const Row(),
-                                )
+                                ))
                             : _login
                                 ? Container(
                                     padding: const EdgeInsets.all(15),
@@ -198,26 +195,26 @@ class _AccountPageState extends State<AccountPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 direction: Axis.vertical,
                 children: [
-                  // const SizedBox(
-                  //   width: 10,
-                  // ),
-                  ClipOval(
-                    child: Container(
-                      width: screenWidth / 4.5,
-                      height: screenWidth / 4.5,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 2.0,
-                        ),
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 2.0,
                       ),
-                      child: CachedNetworkImage(
+                    ),
+                    child: ClipOval(
+                      child: SizedBox(
                         width: screenWidth / 4.5,
                         height: screenWidth / 4.5,
-                        placeholder: (context, url) => const ShimmerBox(),
-                        imageUrl: user.photoUrl,
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.person_rounded),
+                        child: CachedNetworkImage(
+                          width: screenWidth / 4.5,
+                          height: screenWidth / 4.5,
+                          placeholder: (context, url) => const ShimmerBox(),
+                          imageUrl: user.photoUrl,
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.person_rounded),
+                        ),
                       ),
                     ),
                   ),

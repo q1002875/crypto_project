@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:mongo_dart/mongo_dart.dart';
+
 import '../api_model/crypto_coinModel.dart';
 import '../api_model/user_infoModel.dart';
 
@@ -37,7 +38,7 @@ class MongoDBConnection {
 
   Future<void> close() async {
     await _db?.close();
-    print('Disconnected from MongoDB');
+    debugPrint('Disconnected from MongoDB');
   }
 
   Future<void> connect() async {
@@ -45,7 +46,7 @@ class MongoDBConnection {
     await db.open();
     inspect(db);
     _db = db;
-    print('Connected to MongoDB');
+    debugPrint('Connected to MongoDB');
   }
 
   Future<void> deleteDocument(
@@ -54,7 +55,7 @@ class MongoDBConnection {
     //範例
     //  await collection.deleteOne(where.eq('name', 'username111111111'));
     await collection?.remove(query);
-    print('Document deleted');
+    debugPrint('Document deleted');
   }
 
   Future<void> deleteOne(
@@ -62,7 +63,19 @@ class MongoDBConnection {
     final collection = _db?.collection(dbName.name);
     //範例
     await collection?.deleteOne(where.eq(user, value));
-    print('Document deleted');
+    debugPrint('Document deleted');
+  }
+
+  Future<UserCryptoData?> getUserCryptoData(
+      String id, ConnectDbName dbName) async {
+    final collection = _db?.collection(dbName.name);
+    try {
+      final doc = await collection?.findOne(where.eq('userId', id));
+      debugPrint('拿資料doc:$doc');
+      return doc != null ? UserCryptoData.fromJson(doc) : null;
+    } catch (error) {
+      return null;
+    }
   }
 
   Future<User?> getuserdocument(String id, ConnectDbName dbName) async {
@@ -73,19 +86,6 @@ class MongoDBConnection {
     } catch (error) {
       return null;
     }
-    //  print(doc);
-  }
-
-  Future<UserCryptoData?> getUserCryptoData(String id, ConnectDbName dbName) async {
-    final collection = _db?.collection(dbName.name);
-    try {
-      final doc = await collection?.findOne(where.eq('userId', id));
-      debugPrint('拿資料doc:$doc');
-      return doc != null ? UserCryptoData.fromJson(doc) : null;
-    } catch (error) {
-      return null;
-    }
-    //  print(doc);
   }
 
 //  UserCryptoData
@@ -103,8 +103,8 @@ class MongoDBConnection {
     }
   }
 
-Future<void> showUpdateResultDialog(
-      BuildContext context, bool isSuccess,String text) async {
+  Future<void> showUpdateResultDialog(
+      BuildContext context, bool isSuccess, String text) async {
     final message = isSuccess ? text : '資料更新失敗，請稍後再試。';
 
     return showDialog(
@@ -150,22 +150,20 @@ Future<void> showUpdateResultDialog(
     );
   }
 
-
   Future<bool> updateDocument(Map<String, dynamic> query,
-      Map<String, dynamic> update, ConnectDbName dbName,String text) async {
+      Map<String, dynamic> update, ConnectDbName dbName, String text) async {
     try {
       final collection = _db?.collection(dbName.name);
       final result = await collection?.update(query, update);
       final isSuccess = result != null; // 根據 result 是否為 null 判斷是否成功
       // 顯示彈出視窗提醒更新結果
-      showUpdateResultDialog(context, isSuccess,text);
+      // showUpdateResultDialog(context, isSuccess,text);
 
       return isSuccess;
     } catch (error) {
       // 更新時出現異常，顯示彈出視窗提醒更新失敗
-      showUpdateResultDialog(context, false,'');
+      // showUpdateResultDialog(context, false,'');
       return false;
     }
   }
-
 }

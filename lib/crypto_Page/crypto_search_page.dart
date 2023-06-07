@@ -200,71 +200,83 @@ class _MyListViewState extends State<MyListView> {
   }
 
   Widget listviewCell(Trickcrypto data, int index) {
-    return Container(
-      height: screenHeight / 9,
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Colors.grey,
-            width: 1.0,
+    return GestureDetector(
+        onTap: () {
+          if (widget.userId == '') {
+            Navigator.pop(context, data.id);
+          }
+
+          // print(data.id);
+          // SharedPreferencesHelper.setString('coin', mangoUseId);
+        },
+        child: Container(
+          height: screenHeight / 9,
+          decoration: const BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.grey,
+                width: 1.0,
+              ),
+            ),
           ),
-        ),
-      ),
-      child: Flex(
-        direction: Axis.horizontal,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Flexible(
-              flex: 1,
-              child: Container(
-                margin: const EdgeInsets.all(8),
-                child: CachedNetworkImage(
-                  placeholder: (context, url) => const ShimmerBox(),
-                  imageUrl: data.image,
-                  errorWidget: (context, url, error) =>
-                      Image.asset('assets/cryptoIcon.png'),
-                ),
-              )),
-          Flexible(
-              flex: 4,
-              child: CustomText(
-                textContent: '${data.name}(${data.coin})',
-                textColor: Colors.black,
-                fontSize: 20,
-              )),
-          Flexible(
-              flex: 1,
-              child: IconButton(
-                icon: Icon(data.isAdd ? Icons.check : Icons.add),
-                onPressed: () {
-                  setState(() {
-                    String showText = '';
-                    final index =
-                        dataList.indexWhere((element) => element.id == data.id);
-                    if (index >= 0) {
-                      dataList[index].isAdd = !data.isAdd;
+          child: Flex(
+            direction: Axis.horizontal,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                  flex: 1,
+                  child: Container(
+                    margin: const EdgeInsets.all(8),
+                    child: CachedNetworkImage(
+                      placeholder: (context, url) => const ShimmerBox(),
+                      imageUrl: data.image,
+                      errorWidget: (context, url, error) =>
+                          Image.asset('assets/cryptoIcon.png'),
+                    ),
+                  )),
+              Flexible(
+                  flex: 4,
+                  child: CustomText(
+                    textContent: '${data.name}(${data.coin})',
+                    textColor: Colors.black,
+                    fontSize: 20,
+                  )),
+              widget.userId != ''
+                  ? Flexible(
+                      flex: 1,
+                      child: IconButton(
+                        icon: Icon(data.isAdd ? Icons.check : Icons.add),
+                        onPressed: () {
+                          setState(() {
+                            String showText = '';
+                            final index = dataList
+                                .indexWhere((element) => element.id == data.id);
+                            if (index >= 0) {
+                              dataList[index].isAdd = !data.isAdd;
 
-                      dataList[index].isAdd
-                          ? showText = '新增${dataList[index].id}'
-                          : showText = '刪除${dataList[index].id}';
-                    }
-                    final updatedCryptoList = dataList
-                        .where((element) => element.isAdd)
-                        .map((e) => e.id)
-                        .toList();
+                              dataList[index].isAdd
+                                  ? showText = '新增${dataList[index].id}'
+                                  : showText = '刪除${dataList[index].id}';
+                            }
+                            final updatedCryptoList = dataList
+                                .where((element) => element.isAdd)
+                                .map((e) => e.id)
+                                .toList();
 
-                    mongodb.updateDocument(
-                        {'userId': widget.userId},
-                        {'userId': widget.userId, 'crypto': updatedCryptoList},
-                        ConnectDbName.crypto,
-                        showText);
-                  });
-                },
-              )),
-        ],
-      ),
-    );
+                            mongodb.updateDocument({
+                              'userId': widget.userId
+                            }, {
+                              'userId': widget.userId,
+                              'crypto': updatedCryptoList
+                            }, ConnectDbName.crypto, showText);
+                          });
+                        },
+                      ))
+                  : Flexible(flex: 1, child: Container())
+            ],
+          ),
+        ));
   }
 
   bool _onNotification(ScrollNotification notification) {

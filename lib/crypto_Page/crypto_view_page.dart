@@ -3,13 +3,16 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crypto_project/crypto_Page/bloc/cyrpto_view_bloc_bloc.dart';
 import 'package:crypto_project/crypto_Page/crypto_search_page.dart';
+import 'package:crypto_project/extension/custom_alerdialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../database_mongodb/maongo_database.dart';
 import '../extension/SharedPreferencesHelper.dart';
 import '../extension/ShimmerText.dart';
 import '../extension/custom_text.dart';
 import '../extension/gobal.dart';
+import '../main.dart';
 import '../routes.dart';
 import 'crypto_detail_chart.dart';
 
@@ -25,7 +28,6 @@ class SymbolCase {
   dynamic price;
   dynamic changePrice;
   dynamic changePercent;
-
   SymbolCase(this.symbolData, this.price, this.changePercent, this.changePrice);
 }
 
@@ -34,6 +36,8 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
   List<SymbolCase> tickData = [];
   late String localuserid = '';
   late CyrptoViewBlocBloc _cryptoBloc;
+
+  bool edit = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,22 +45,47 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
           backgroundColor: Colors.blueGrey,
           title: const Text('Crypto List'),
           actions: <Widget>[
-            tickData != []
-                ? IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {
-                      // ChartArguments
-                      Navigator.pushNamed(context, Routes.cryptoedit,
-                          arguments: ChartArguments(tickData, localuserid));
-                    },
-                  )
-                : Container(),
             localuserid != ''
                 ? IconButton(
                     icon: const Icon(Icons.search),
                     onPressed: () {
                       Navigator.pushNamed(context, Routes.cryptoSearch,
                           arguments: localuserid);
+                    },
+                  )
+                : Container(),
+            tickData != []
+                ? IconButton(
+                    icon:
+                        edit ? const Icon(Icons.check) : const Icon(Icons.edit),
+                    onPressed: () async {
+                      if (edit) {
+                        final updatedCryptoList =
+                            tickData.map((e) => e.symbolData.id).toList();
+                        await mongodb.updateDocument({
+                          'userId': localuserid
+                        }, {
+                          'userId': localuserid,
+                          'crypto': updatedCryptoList
+                        }, ConnectDbName.crypto, '');
+                        // ignore: use_build_context_synchronously
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return SimpleConfirmDialog(
+                              content: 'Edit Finish',
+                              onConfirmed: () {
+                                Navigator.of(context).pop();
+                              },
+                            );
+                          },
+                        );
+                      }
+                      setState(() {
+                        edit = !edit;
+                      });
+
+                      _refreshData();
                     },
                   )
                 : Container(),
@@ -71,6 +100,53 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Widget editListviewCell(SymbolCase data) {
+    final image = data.symbolData.image;
+    final symbol = data.symbolData.coin;
+
+    return Container(
+      key: Key(data.symbolData.id),
+      height: screenHeight / 9,
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.grey,
+            width: 1.0,
+          ),
+        ),
+      ),
+      child: Flex(
+        direction: Axis.horizontal,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Flexible(
+              flex: 3,
+              child: Container(
+                margin: const EdgeInsets.all(8),
+                child: CachedNetworkImage(
+                  placeholder: (context, url) => const ShimmerBox(),
+                  imageUrl: image,
+                  errorWidget: (context, url, error) =>
+                      Image.asset('assets/cryptoIcon.png'),
+                ),
+              )),
+          Flexible(
+              flex: 4,
+              child: Center(
+                child: CustomText(
+                  align: TextAlign.start,
+                  textContent: '${symbol.toUpperCase()}USDT',
+                  textColor: Colors.black,
+                  fontSize: 14,
+                ),
+              )),
+          const Flexible(flex: 2, child: Center(child: Icon(Icons.menu))),
+        ],
+      ),
+    );
   }
 
   // //先拿到內建
@@ -186,12 +262,15 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
         final fetchInfo = data.data;
         final fetchTickData = data.tickData;
         switch (fetchInfo) {
-          case cryptoPrcess.loadData:
-            // return const MyList();
+          case CryptoPrecess.loadData:
             tickData = fetchTickData;
-            return _mainContent(fetchTickData);
+            return edit
+                ? _editContent(fetchTickData)
+                : _mainContent(fetchTickData);
 
-          case cryptoPrcess.noCreateCoin:
+          //  _
+
+          case CryptoPrecess.noCreateCoin:
             return Center(
                 child: TextButton(
               onPressed: () {
@@ -204,7 +283,7 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
               ),
             ));
 
-          case cryptoPrcess.noUserId:
+          case CryptoPrecess.noUserId:
             return Center(
                 child: TextButton(
               onPressed: () {
@@ -225,6 +304,81 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
         );
     }
     return Container();
+  }
+
+  Widget _editContent(List<SymbolCase> items) {
+    return ReorderableListView.builder(
+      itemCount: items.length,
+      itemBuilder: (BuildContext context, int index) {
+        final item = items[index];
+        return Dismissible(
+          key: Key(item.symbolData.id),
+          background: Container(
+            color: Colors.red,
+            alignment: Alignment.centerRight,
+            child: const Padding(
+              padding: EdgeInsets.only(right: 16.0),
+              child: Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          secondaryBackground: Container(
+            color: Colors.red,
+            alignment: Alignment.centerLeft,
+            child: const Padding(
+              padding: EdgeInsets.only(left: 16.0),
+              child: Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          confirmDismiss: (direction) async {
+            if (direction == DismissDirection.endToStart ||
+                direction == DismissDirection.startToEnd) {
+              return await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text("Confirm"),
+                    content: const Text(
+                        "Are you sure you wish to delete this item?"),
+                    actions: <Widget>[
+                      TextButton(
+                          onPressed: () => Navigator.of(context).pop(true),
+                          child: const Text("DELETE")),
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: const Text("CANCEL"),
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
+            return false;
+          },
+          onDismissed: (direction) {
+            setState(() {
+              items.removeAt(index);
+              ////刪除
+            });
+          },
+          child: editListviewCell(item),
+        );
+      },
+      onReorder: (int oldIndex, int newIndex) {
+        setState(() {
+          if (newIndex > oldIndex) {
+            newIndex -= 1;
+          }
+          final item = items.removeAt(oldIndex);
+          items.insert(newIndex, item);
+        });
+      },
+    );
   }
 
   Widget _mainContent(List<SymbolCase> tickData) {

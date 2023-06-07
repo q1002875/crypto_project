@@ -1,5 +1,4 @@
 import 'package:crypto_project/account_Page/login/bloc/login_bloc.dart';
-import 'package:crypto_project/crypto_Page/crypto_edit_view.dart';
 import 'package:crypto_project/crypto_Page/crypto_search_page.dart';
 import 'package:crypto_project/news_Page_view/news_cell_detail.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +28,6 @@ class Routes {
   static const String account = '/newPage/accountPage';
   static const String cryptoSearch = '/cryptoPage/search';
   static const String cryptochart = '/cryptoPage/cryptochart';
-  static const String cryptoedit = '/cryptoPage/cryptoedit';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     var args = settings.arguments;
@@ -68,12 +66,6 @@ class Routes {
         if (args is Trickcrypto) {
           // 將參數傳遞給NewsDetail頁面
           return MaterialPageRoute(builder: (_) => LineChartPage(args));
-        }
-        return _errorRoute();
-      case cryptoedit:
-        if (args is ChartArguments) {
-          // 將參數傳遞給NewsDetail頁面
-          return MaterialPageRoute(builder: (_) => CryptoEdit(args));
         }
         return _errorRoute();
 

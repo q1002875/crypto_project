@@ -175,8 +175,6 @@ class _LineChartPageState extends State<LineChartPage> {
                                     data = dataResult[
                                         CryptoCycleTime.values[index]]!;
                                   });
-                                  // fetchMarketData(cryptoSymbol,
-                                  //     _selectTimeCycle[index].timeType);
                                 },
                                 child: _selectTimeCycle[index].select
                                     ? Container(

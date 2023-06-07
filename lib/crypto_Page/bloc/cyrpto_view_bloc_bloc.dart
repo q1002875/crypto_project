@@ -15,13 +15,13 @@ import '../crypto_view_page.dart';
 part 'cyrpto_view_bloc_event.dart';
 part 'cyrpto_view_bloc_state.dart';
 
-enum cryptoPrcess { loadData, noCreateCoin, noUserId }
+enum CryptoPrecess { loadData, noCreateCoin, noUserId }
 
 class CyrptoViewBlocBloc
     extends Bloc<CyrptoViewBlocEvent, CyrptoViewBlocState> {
   //  var showprice = '';
   var searchCrypto = '';
-
+  late List<String> cryptolist;
   List<SymbolCase> tickData = [];
   // late String userid = '';
   CyrptoViewBlocBloc() : super(CyrptoViewBlocInitial()) {
@@ -32,23 +32,23 @@ class CyrptoViewBlocBloc
         // ignore: unrelated_type_equality_checks
         if (userid != '') {
           //擊者做
-          final cryptolist = await getLowercaseCryptoList(userid);
+          cryptolist = await getLowercaseCryptoList(userid);
           if (cryptolist.isNotEmpty) {
             //接者做
             await fetchMarketDataForCryptos(cryptolist);
             return emit(CyrptoViewBlocLoaded(
-              data: cryptoPrcess.loadData,
+              data: CryptoPrecess.loadData,
               tickData: tickData,
             ));
           } else {
             return emit(const CyrptoViewBlocLoaded(
-              data: cryptoPrcess.noCreateCoin,
+              data: CryptoPrecess.noCreateCoin,
               tickData: [],
             ));
           }
         } else {
           return emit(const CyrptoViewBlocLoaded(
-              data: cryptoPrcess.noUserId, tickData: []));
+              data: CryptoPrecess.noUserId, tickData: []));
         }
       }
     });
@@ -82,15 +82,25 @@ class CyrptoViewBlocBloc
                 SymbolCase(trick, currentPrice, changePercent, changePirce));
           },
         );
+
+        // 依照cryptolist排序tickData
+        Map<String, int> order = {
+          for (int i = 0; i < cryptolist.length; i++) cryptolist[i]: i,
+        };
+
+        // Sort tickData based on the order map
+        tickData.sort((a, b) =>
+            order[a.symbolData.id]!.compareTo(order[b.symbolData.id]!));
+
         return tickData;
         // setState(() {});
       } else {
-        return [];
         debugPrint('Request failed with status: ${response.statusCode}');
+        return [];
       }
     } catch (error) {
-      return [];
       debugPrint('Error occurred: $error');
+      return [];
     }
   }
 
@@ -131,8 +141,8 @@ class CyrptoViewBlocBloc
 
   Future<void> getSharedDataStream() async {
     final userid = await getUserId(); //回傳沒有
-    final cryptoList = await getLowercaseCryptoList(userid); //回傳還沒有新增貨幣
-    await fetchMarketDataForCryptos(cryptoList); //回傳資料
+    cryptolist = await getLowercaseCryptoList(userid); //回傳還沒有新增貨幣
+    await fetchMarketDataForCryptos(cryptolist); //回傳資料
   }
 
   Future<String> getUserId() async {

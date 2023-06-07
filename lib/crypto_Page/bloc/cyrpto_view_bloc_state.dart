@@ -6,10 +6,11 @@ class CyrptoViewBlocInitial extends CyrptoViewBlocState {}
 
 class CyrptoViewBlocLoaded extends CyrptoViewBlocState {
   final List<SymbolCase> tickData;
-  final cryptoPrcess data;
+  final CryptoPrecess data;
   const CyrptoViewBlocLoaded({required this.data, required this.tickData});
+
   @override
-  List<Object> get props => [tickData];
+  List<Object> get props => [data, tickData];
 }
 
 class CyrptoViewBlocLoading extends CyrptoViewBlocState {}
@@ -20,12 +21,3 @@ abstract class CyrptoViewBlocState extends Equatable {
   @override
   List<Object> get props => [];
 }
-
-
-
-  // final List<ArticleModel> articles;
-
-  // const NewsLoaded({required this.articles});
-
-  // @override
-  // List<Object> get props => [articles];

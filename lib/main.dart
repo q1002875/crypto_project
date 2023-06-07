@@ -79,7 +79,7 @@ class _MyAppAfterSplashState extends State<MyAppAfterSplash> {
       BlocProvider(
           create: (context) => CyrptoViewBlocBloc(),
           child: const BinanceWebSocket()),
-      const CalculatePage(),
+      const CalculatorPage(),
       BlocProvider(
           create: (context) => AuthenticationBloc(), child: const AccountPage())
     ];
