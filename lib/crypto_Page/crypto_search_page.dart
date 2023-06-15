@@ -44,11 +44,20 @@ class _CryptoSearchPageState extends State<CryptoSearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            backgroundColor: Colors.blueGrey,
-            title: const CustomText(
-              textContent: '',
-              textColor: Colors.white,
-            )),
+          backgroundColor: Colors.blueGrey,
+          title: const CustomText(
+            textContent: '',
+            textColor: Colors.white,
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              if (widget.userid == '') {
+                Navigator.pop(context, '');
+              }
+            },
+          ),
+        ),
         body: Container(
             color: Colors.white,
             child:
@@ -204,6 +213,7 @@ class _MyListViewState extends State<MyListView> {
         onTap: () {
           if (widget.userId == '') {
             Navigator.pop(context, data.id);
+            print('${data.id}ddddddd');
           }
 
           // print(data.id);

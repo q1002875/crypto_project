@@ -67,7 +67,10 @@ class _AccountPageState extends State<AccountPage> {
                                       width: 10,
                                     ),
                                     const ClipOval(
-                                        child: Icon(Icons.album_sharp)),
+                                        child: Icon(
+                                      Icons.album_sharp,
+                                      color: Colors.blueGrey,
+                                    )),
                                     const SizedBox(
                                       width: 10,
                                     ),

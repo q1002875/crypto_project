@@ -1,5 +1,6 @@
 import 'package:crypto_project/account_Page/account_view.dart';
 import 'package:crypto_project/account_Page/login/bloc/login_bloc.dart';
+import 'package:crypto_project/calculate_Page/bloc/calculate_bloc_bloc.dart';
 import 'package:crypto_project/calculate_Page/calculatePage.dart';
 import 'package:crypto_project/crypto_Page/bloc/cyrpto_view_bloc_bloc.dart';
 import 'package:crypto_project/news_Page_view/news_view.dart';
@@ -79,7 +80,12 @@ class _MyAppAfterSplashState extends State<MyAppAfterSplash> {
       BlocProvider(
           create: (context) => CyrptoViewBlocBloc(),
           child: const BinanceWebSocket()),
-      const CalculatorPage(),
+
+      BlocProvider(
+        create: (context) => CalculateBlocBloc(),
+        child: const CalculatorPage(),
+      ),
+
       BlocProvider(
           create: (context) => AuthenticationBloc(), child: const AccountPage())
     ];
