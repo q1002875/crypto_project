@@ -257,7 +257,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
   String fetchData(String dateStr) {
     DateTime date = DateTime.parse(dateStr);
     String formattedDate =
-        "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+        "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}/fdcdd${date.hour}:${date.minute}";
     // print(formattedDate); // Output: 2023-06-05
     return formattedDate;
   }

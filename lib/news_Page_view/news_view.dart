@@ -49,7 +49,7 @@ class _NewsPageState extends State<NewsPage> {
                             flex: 2,
                             child: GestureDetector(
                               onTap: () {
-                                Navigator.pushNamed(context, Routes.account);
+                                // Navigator.pushNamed(context, Routes.account);
                                 print('push');
                               },
                               child: Container(

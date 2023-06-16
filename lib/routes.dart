@@ -1,3 +1,5 @@
+import 'package:crypto_project/account_Page/account_about.dart';
+import 'package:crypto_project/account_Page/account_privacy.dart';
 import 'package:crypto_project/account_Page/login/bloc/login_bloc.dart';
 import 'package:crypto_project/crypto_Page/crypto_search_page.dart';
 import 'package:crypto_project/news_Page_view/news_cell_detail.dart';
@@ -28,7 +30,9 @@ class Routes {
   static const String account = '/newPage/accountPage';
   static const String cryptoSearch = '/cryptoPage/search';
   static const String cryptochart = '/cryptoPage/cryptochart';
-
+  static const String accoundAbout = '/newPage/accountPage/about';
+  static const String accountPrivacy = '/newPage/accountPage/privacy';
+  // static const String accountEmail = '/newPage/accountPage/email';
   static Route<dynamic> generateRoute(RouteSettings settings) {
     var args = settings.arguments;
     switch (settings.name) {
@@ -68,9 +72,10 @@ class Routes {
           return MaterialPageRoute(builder: (_) => LineChartPage(args));
         }
         return _errorRoute();
-
-      case crypto:
-      // return MaterialPageRoute(builder: (_) => const BinanceWebSocket());
+      case accountPrivacy:
+        return MaterialPageRoute(builder: (_) => const AccountPrivacy());
+      case accoundAbout:
+        return MaterialPageRoute(builder: (_) => const AccoundAbout());
       default:
         return _errorRoute();
     }
