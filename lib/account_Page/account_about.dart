@@ -17,7 +17,7 @@ class AccoundAbout extends StatelessWidget {
       body: ListView(
         children: const <Widget>[
           ListTile(
-            title: Text('版本號'),
+            title: Text('Version'),
             trailing: Text('1.0.0'), // 將這裡的 '1.0.0' 替換為您的實際版本號
           ),
         ],

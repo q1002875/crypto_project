@@ -123,7 +123,7 @@ class _NewsPageState extends State<NewsPage> {
                               child: topicList[index].select
                                   ? Container(
                                       width: topicList[index].select
-                                          ? screenWidth / 2
+                                          ? screenWidth / 3
                                           : screenWidth / 5,
                                       alignment: Alignment.center,
                                       decoration: BoxDecoration(
@@ -136,7 +136,7 @@ class _NewsPageState extends State<NewsPage> {
                                         align: TextAlign.center,
                                         textContent: topicList[index].topic,
                                         textColor: Colors.white,
-                                        fontSize: 18,
+                                        fontSize: 15,
                                       ),
                                     )
                                   : Container(

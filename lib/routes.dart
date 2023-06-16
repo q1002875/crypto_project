@@ -22,7 +22,6 @@ class ChartArguments {
 }
 
 class Routes {
-  // ...
   static const String home = '/';
   static const String newPage = '/newsPage';
   static const String newsDetail = '/newPage/detail';
@@ -32,12 +31,11 @@ class Routes {
   static const String cryptochart = '/cryptoPage/cryptochart';
   static const String accoundAbout = '/newPage/accountPage/about';
   static const String accountPrivacy = '/newPage/accountPage/privacy';
-  // static const String accountEmail = '/newPage/accountPage/email';
+
   static Route<dynamic> generateRoute(RouteSettings settings) {
     var args = settings.arguments;
     switch (settings.name) {
       case home:
-        // return MaterialPageRoute(builder: (_) => const GoogleSignInScreen());
         return MaterialPageRoute(
             builder: (_) => BlocProvider(
                 create: (context) => NewsBloc(newsApi()),
@@ -49,26 +47,22 @@ class Routes {
                 child: const NewsPage()));
       case newsDetail:
         if (args is ArticleModel) {
-          // 將參數傳遞給NewsDetail頁面
           return MaterialPageRoute(builder: (_) => NewsDetail(news: args));
         }
         return _errorRoute();
       case cryptoSearch:
         if (args is String) {
-          // 將參數傳遞給NewsDetail頁面
           return MaterialPageRoute(builder: (_) => CryptoSearchPage(args));
         }
         return _errorRoute();
       case account:
-        // return MaterialPageRoute(builder: (_) => const HomePage());
         return MaterialPageRoute(
             builder: (_) => BlocProvider(
                 create: (context) => AuthenticationBloc(),
-                child: const AccountPage()));
+                child: AccountPage()));
 
       case cryptochart:
         if (args is Trickcrypto) {
-          // 將參數傳遞給NewsDetail頁面
           return MaterialPageRoute(builder: (_) => LineChartPage(args));
         }
         return _errorRoute();

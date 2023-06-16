@@ -18,7 +18,6 @@ import 'extension/gobal.dart';
 Future<void> main() async {
   // Ensure Flutter widget binding
   WidgetsFlutterBinding.ensureInitialized();
-
   // Run the app with SplashScreen
   runApp(const MyApp());
 }
@@ -31,8 +30,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
-      statusBarColor: Colors.transparent, // Transparent status bar
-      statusBarIconBrightness: Brightness.dark, // Dark mode for status bar
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
     ));
     return MaterialApp(
       title: 'Flutter Demo',
@@ -74,20 +73,15 @@ class _MyAppAfterSplashState extends State<MyAppAfterSplash> {
         create: (context) => NewsBloc(newsApi()),
         child: const NewsPage(),
       ),
-      // const BinanceWebSocket(),
-      // const LineChartSample2(),
-      // const CryptoChart(),
       BlocProvider(
           create: (context) => CyrptoViewBlocBloc(),
           child: const BinanceWebSocket()),
-
       BlocProvider(
         create: (context) => CalculateBlocBloc(),
         child: const CalculatorPage(),
       ),
-
       BlocProvider(
-          create: (context) => AuthenticationBloc(), child: const AccountPage())
+          create: (context) => AuthenticationBloc(), child: AccountPage())
     ];
     return MaterialApp(
         onGenerateRoute: Routes.generateRoute,

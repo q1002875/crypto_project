@@ -55,6 +55,7 @@ class _CryptoSearchPageState extends State<CryptoSearchPage> {
               if (widget.userid == '') {
                 Navigator.pop(context, '');
               }
+              Navigator.pop(context, '更新');
             },
           ),
         ),
@@ -96,7 +97,7 @@ class _CryptoSearchPageState extends State<CryptoSearchPage> {
 class _MyListViewState extends State<MyListView> {
   List<String> mongoCryptoList = [];
   List<Trickcrypto> dataList = [];
-  int loadedCount = 20; // 初始加载的数量
+  int loadedCount = 40; // 初始加载的数量
   bool isLoading = false;
   String searchKeyword = '';
   @override

@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:crypto_project/account_Page/account_view.dart';
 import 'package:crypto_project/crypto_Page/bloc/cyrpto_view_bloc_bloc.dart';
 import 'package:crypto_project/crypto_Page/crypto_search_page.dart';
 import 'package:crypto_project/extension/custom_alerdialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../account_Page/login/bloc/login_bloc.dart';
 import '../database_mongodb/maongo_database.dart';
 import '../extension/SharedPreferencesHelper.dart';
 import '../extension/ShimmerText.dart';
@@ -48,13 +50,19 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
             localuserid != ''
                 ? IconButton(
                     icon: const Icon(Icons.search),
-                    onPressed: () {
+                    onPressed: () async {
                       Navigator.pushNamed(context, Routes.cryptoSearch,
-                          arguments: localuserid);
+                              arguments: localuserid)
+                          .then((value) {
+                        // "value" 是新页面返回的数据，您可以在这里处理
+                        if (value != null) {
+                          _cryptoBloc.add(FetchCryptoProcess());
+                        }
+                      });
                     },
                   )
                 : Container(),
-            tickData != []
+            tickData != [] && localuserid != ''
                 ? IconButton(
                     icon:
                         edit ? const Icon(Icons.check) : const Icon(Icons.edit),
@@ -287,7 +295,17 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
             return Center(
                 child: TextButton(
               onPressed: () {
-                Navigator.pushNamed(context, Routes.account);
+                // Navigator.pushNamed(context, Routes.account);
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => BlocProvider(
+                          create: (context) => AuthenticationBloc(),
+                          child: AccountPage(
+                            needtologin: true,
+                          ))),
+                );
               },
               child: const CustomText(
                 textContent: 'Not yet login',
@@ -385,21 +403,62 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
     return RefreshIndicator(
       onRefresh: _refreshData, // 在这里指定你的数据刷新方法
       child: tickData.isNotEmpty
-          ? ListView.builder(
-              itemCount: tickData.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                    onTap: () {
-                      // Navigator.pushNamed(context, Routes.cryptochart());
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
+          ? ListView(
+              scrollDirection: Axis.vertical,
+              children: [
+                ListView.builder(
+                  shrinkWrap: true, // Add this
+                  physics: const NeverScrollableScrollPhysics(), // And this
+                  itemCount: tickData.length,
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        // Navigator.pushNamed(context, Routes.cryptochart());
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
                             builder: (context) =>
-                                LineChartPage(tickData[index].symbolData)),
-                      );
-                    },
-                    child: listviewCell(tickData[index]));
-              },
+                                LineChartPage(tickData[index].symbolData),
+                          ),
+                        );
+                      },
+                      child: listviewCell(tickData[index]),
+                    );
+                  },
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, Routes.cryptoSearch,
+                            arguments: localuserid)
+                        .then((value) {
+                      // "value" 是新页面返回的数据，您可以在这里处理
+                      if (value != null) {
+                        _cryptoBloc.add(FetchCryptoProcess());
+                      }
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 0),
+                    alignment: Alignment.center,
+                    width: double.infinity,
+                    height: screenHeight / 10,
+                    color: Colors.white,
+                    child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.search,
+                            color: Colors.blue,
+                          ),
+                          CustomText(
+                            textContent: 'Add Crypto',
+                            textColor: Colors.blue,
+                            fontSize: 16,
+                          )
+                        ]),
+                  ),
+                )
+              ],
             )
           : const SizedBox(
               width: double.maxFinite,
@@ -408,13 +467,6 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
             ),
     );
   }
-
-  // void repeatPrice() {
-  //   Timer.periodic(const Duration(seconds: 15), (Timer timer) {
-  //     tickData.clear();
-  //     fetchMarketData(searchCrypto);
-  //   });
-  // }
 
   Future<void> _refreshData() async {
     _cryptoBloc.add(FetchCryptoProcess());
