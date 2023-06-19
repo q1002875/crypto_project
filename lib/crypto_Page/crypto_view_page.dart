@@ -413,7 +413,6 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onTap: () {
-                        // Navigator.pushNamed(context, Routes.cryptochart());
                         Navigator.push(
                           context,
                           MaterialPageRoute(

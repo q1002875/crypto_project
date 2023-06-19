@@ -12,7 +12,7 @@ import '../routes.dart';
 import 'login/bloc/login_bloc.dart';
 
 class AccountPage extends StatefulWidget {
-  bool needtologin = false;
+  bool needtologin;
   AccountPage({super.key, this.needtologin = false});
 
   @override

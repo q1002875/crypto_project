@@ -6,25 +6,6 @@ import 'package:mongo_dart/mongo_dart.dart';
 import '../api_model/crypto_coinModel.dart';
 import '../api_model/user_infoModel.dart';
 
-// class MongoDatabase {
-//   static connect() async {
-//     var db = await Db.create(MONGO_URL);
-//     await db.open();
-//     inspect(db);
-//     var collection = db.collection('crypto');
-//     await collection.update(where.eq('user', 'user'),modify.set('email', 'dafsd@ffdsf'));
-//     await collection.insertOne({
-//       'user': 'user',
-//       'email': 'user@gmail.com1111111',
-//       'name': 'username111111111',
-//     });
-//     await collection.deleteOne({"name":"username111111111"});
-//   }
-// }
-// var status = db.serverStatus();
-//  print(status);
-//  print(await collection.find().toList());
-
 enum ConnectDbName { user, crypto }
 
 class MongoDBConnection {

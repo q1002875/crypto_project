@@ -37,8 +37,6 @@ class Trickcrypto {
   Trickcrypto(this.coin, this.id, this.name, this.image);
 }
 
-// 搜尋完要存到mongo
-
 class _CryptoSearchPageState extends State<CryptoSearchPage> {
   @override
   Widget build(BuildContext context) {
@@ -214,11 +212,7 @@ class _MyListViewState extends State<MyListView> {
         onTap: () {
           if (widget.userId == '') {
             Navigator.pop(context, data.id);
-            print('${data.id}ddddddd');
           }
-
-          // print(data.id);
-          // SharedPreferencesHelper.setString('coin', mangoUseId);
         },
         child: Container(
           height: screenHeight / 9,
