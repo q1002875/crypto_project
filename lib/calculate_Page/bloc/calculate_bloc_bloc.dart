@@ -97,17 +97,7 @@ class CalculateBlocBloc extends Bloc<CalculateBlocEvent, CalculateBlocState> {
       // 检查响应状态码
       if (response.statusCode == 200) {
         // 解析响应数据
-        var data = jsonDecode(response.body);
-        final id = data[0]['id'];
-        final symbol = data[0]['symbol'];
-        final name = data[0]['name'];
-        final image = data[0]['image'];
-        final currentPrice = data[0]['current_price'];
-        final changePirce = data[0]['price_change_24h']; //變化的美元
-        final changePercent = data[0]["last_updated"]; //變化的百分比
-        final trick = Trickcrypto(symbol, id, name, image);
-
-        return SymbolCase(trick, currentPrice, changePercent, changePirce);
+        return parseResponseData(jsonDecode(response.body));
       } else {
         debugPrint('Request failed with status: ${response.statusCode}');
         return null;
@@ -116,7 +106,6 @@ class CalculateBlocBloc extends Bloc<CalculateBlocEvent, CalculateBlocState> {
       debugPrint('Error occurred: $error');
       return null;
     }
-    return null;
   }
 
   Future<SymbolCase> getCoinData(String coinId, String defaultCoin) async {
@@ -126,6 +115,25 @@ class CalculateBlocBloc extends Bloc<CalculateBlocEvent, CalculateBlocState> {
     }
     final coinData = await fetchMarketData(coin);
     return coinData!;
+  }
+
+  SymbolCase? parseResponseData(List<dynamic> data) {
+    if (data.isNotEmpty) {
+      final item = data[0];
+      final id = item['id'];
+      final symbol = item['symbol'];
+      final name = item['name'];
+      final image = item['image'];
+      final currentPrice = item['current_price'];
+      final changePrice = item['price_change_24h']; //變化的美元
+      final changePercent = item["last_updated"]; //變化的百分比
+      final trick = Trickcrypto(symbol, id, name, image);
+
+      return SymbolCase(trick, currentPrice, changePercent, changePrice);
+    } else {
+      debugPrint('No data received');
+      return null;
+    }
   }
 
   void _buttonPressed(String buttonText) {

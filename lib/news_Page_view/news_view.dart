@@ -31,169 +31,209 @@ class _NewsPageState extends State<NewsPage> {
   String googleurl = '';
   @override
   Widget build(BuildContext context) {
-    return Container(
-        color: Colors.black, // 設置容器的背景顏色
-        child: // 在這裡添加您的 UI 元素
-            Scaffold(
-          body: Column(
-            children: [
-              Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    color: Colors.white,
+    return SafeArea(
+        child: Container(
+            color: Colors.black, // 設置容器的背景顏色
+            child: // 在這裡添加您的 UI 元素
+                Scaffold(
+              body: Column(
+                children: [
+                  Flexible(
+                    flex: 4,
                     child: Flex(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      direction: Axis.horizontal,
-                      children: [
-                        Flexible(
-                            flex: 2,
-                            child: GestureDetector(
-                              onTap: () {
-                                // Navigator.pushNamed(context, Routes.account);
-                                print('push');
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: googleurl == ''
-                                        ? Colors.black
-                                        : Colors.white,
-                                    width: 2.0,
-                                  ),
-                                ),
-                                child: googleurl != ''
-                                    ? ClipOval(
-                                        child: CachedNetworkImage(
-                                          placeholder: (context, url) =>
-                                              const CircularProgressIndicator(),
-                                          imageUrl: googleurl,
-                                          errorWidget: (context, url, error) =>
-                                              const Icon(Icons.person_rounded),
-                                        ),
-                                      )
-                                    : const Icon(Icons.person_rounded),
-                              ),
-                            )),
-                        Expanded(
-                          flex: 10,
-                          child: Container(
-                            margin: const EdgeInsets.all(10),
-                            child: TextField(
-                              controller: _searchController,
-                              onChanged: null,
-                              decoration: InputDecoration(
-                                labelText: 'Search',
-                                suffixIcon: IconButton(
-                                  onPressed: () {
-                                    if (_searchController.text != "") {
-                                      _searchArticles(_searchController.text);
-                                    }
-                                  },
-                                  icon: const Icon(Icons.search),
-                                ),
-                              ),
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        direction: Axis.vertical,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.only(left: 10),
+                            color: Colors.white,
+                            width: double.infinity,
+                            child: const CustomText(
+                              textContent: 'Discover',
+                              textColor: Colors.black,
+                              fontSize: 38,
+                              align: TextAlign.left,
                             ),
                           ),
-                        )
-                      ],
-                    ),
-                  )),
-              Flexible(
-                  flex: 2,
-                  child: Container(
-                    margin: const EdgeInsets.only(left: 10),
-                    color: Colors.white,
-                    child: ListView.separated(
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(width: 8.0),
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _headerTopic.resultData.length,
-                      itemBuilder: (context, index) {
-                        List<HeaderTopic> topicList = _headerTopic.resultData;
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4.0),
-                          child: InkWell(
-                              onTap: () {
-                                setState(() {
-                                  _searchArticles(topicList[index].topic);
-                                  _onHeaderTopicSelected(index);
-                                });
-                              },
-                              child: topicList[index].select
-                                  ? Container(
-                                      width: topicList[index].select
-                                          ? screenWidth / 3
-                                          : screenWidth / 5,
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                        color: Colors.blueGrey.withOpacity(
-                                            0.8), // Light red color
-                                        borderRadius: BorderRadius.circular(
-                                            30.0), // Circular border
+                          Container(
+                            padding: const EdgeInsets.only(
+                              left: 10,
+                            ),
+                            color: Colors.white,
+                            width: double.infinity,
+                            child: const CustomText(
+                              textContent: 'news from all over the world',
+                              textColor: Colors.grey,
+                              fontSize: 14,
+                              align: TextAlign.left,
+                            ),
+                          ),
+                        ]),
+                  ),
+                  Padding(
+                      padding:
+                          const EdgeInsets.only(left: 8, right: 8, bottom: 8),
+                      child: Container(
+                        color: Colors.white,
+                        child: Flex(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          direction: Axis.horizontal,
+                          children: [
+                            Flexible(
+                                flex: 2,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    // Navigator.pushNamed(context, Routes.account);
+                                    print('push');
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: googleurl == ''
+                                            ? Colors.black
+                                            : Colors.white,
+                                        width: 2.0,
                                       ),
-                                      child: CustomText(
-                                        align: TextAlign.center,
-                                        textContent: topicList[index].topic,
-                                        textColor: Colors.white,
-                                        fontSize: 15,
-                                      ),
-                                    )
-                                  : Container(
-                                      alignment: Alignment.centerLeft,
-                                      child: CustomText(
-                                        textContent: topicList[index].topic,
-                                        textColor: Colors.grey,
-                                        fontSize: 14,
-                                      ),
-                                    )),
-                        );
+                                    ),
+                                    child: googleurl != ''
+                                        ? ClipOval(
+                                            child: CachedNetworkImage(
+                                              placeholder: (context, url) =>
+                                                  const CircularProgressIndicator(),
+                                              imageUrl: googleurl,
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      const Icon(
+                                                          Icons.person_rounded),
+                                            ),
+                                          )
+                                        : const Icon(Icons.person_rounded),
+                                  ),
+                                )),
+                            Expanded(
+                              flex: 10,
+                              child: Container(
+                                margin: const EdgeInsets.all(10),
+                                child: TextField(
+                                  controller: _searchController,
+                                  onChanged: null,
+                                  decoration: InputDecoration(
+                                    labelText: 'Search',
+                                    suffixIcon: IconButton(
+                                      onPressed: () {
+                                        if (_searchController.text != "") {
+                                          _searchArticles(
+                                              _searchController.text);
+                                        }
+                                      },
+                                      icon: const Icon(Icons.search),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      )),
+                  Flexible(
+                      flex: 2,
+                      child: Container(
+                        margin: const EdgeInsets.only(left: 10),
+                        color: Colors.white,
+                        child: ListView.separated(
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(width: 8.0),
+                          scrollDirection: Axis.horizontal,
+                          itemCount: _headerTopic.resultData.length,
+                          itemBuilder: (context, index) {
+                            List<HeaderTopic> topicList =
+                                _headerTopic.resultData;
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 4.0),
+                              child: InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      _searchArticles(topicList[index].topic);
+                                      _onHeaderTopicSelected(index);
+                                    });
+                                  },
+                                  child: topicList[index].select
+                                      ? Container(
+                                          width: topicList[index].select
+                                              ? screenWidth / 3
+                                              : screenWidth / 5,
+                                          alignment: Alignment.center,
+                                          decoration: BoxDecoration(
+                                            color: Colors.blueGrey.withOpacity(
+                                                0.8), // Light red color
+                                            borderRadius: BorderRadius.circular(
+                                                30.0), // Circular border
+                                          ),
+                                          child: CustomText(
+                                            align: TextAlign.center,
+                                            textContent: topicList[index].topic,
+                                            textColor: Colors.white,
+                                            fontSize: 15,
+                                          ),
+                                        )
+                                      : Container(
+                                          alignment: Alignment.centerLeft,
+                                          child: CustomText(
+                                            textContent: topicList[index].topic,
+                                            textColor: Colors.grey,
+                                            fontSize: 14,
+                                          ),
+                                        )),
+                            );
+                          },
+                        ),
+                      )),
+                  Expanded(
+                    flex: 14,
+                    child: BlocBuilder<NewsBloc, NewsState>(
+                      builder: (context, state) {
+                        if (state is NewsInitial) {
+                          return const Center(
+                            child: Text('Wait fetch news'),
+                          );
+                        } else if (state is NewsLoading) {
+                          return const SizedBox(
+                            width: double.maxFinite,
+                            height: double.maxFinite,
+                            child: ShimmerBox(),
+                          );
+                        } else if (state is NewsLoaded) {
+                          return ListView.builder(
+                            itemCount: state.articles.length,
+                            itemBuilder: (context, index) {
+                              final news = state.articles[index];
+                              return GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                        context, Routes.newsDetail,
+                                        arguments: news);
+                                  },
+                                  child: index == 0
+                                      ? NewsHeaderView(news.image, news.title)
+                                      : BlocProvider(
+                                          create: (context) => ImageCubit(),
+                                          child: NewsCellView(news.image,
+                                              news.title, news.publishedAt)));
+                            },
+                          );
+                        } else {
+                          return const Center(
+                            child: Text('Failed to fetch news'),
+                          );
+                        }
                       },
                     ),
-                  )),
-              Expanded(
-                flex: 14,
-                child: BlocBuilder<NewsBloc, NewsState>(
-                  builder: (context, state) {
-                    if (state is NewsInitial) {
-                      return const Center(
-                        child: Text('Wait fetch news'),
-                      );
-                    } else if (state is NewsLoading) {
-                      return const SizedBox(
-                        width: double.maxFinite,
-                        height: double.maxFinite,
-                        child: ShimmerBox(),
-                      );
-                    } else if (state is NewsLoaded) {
-                      return ListView.builder(
-                        itemCount: state.articles.length,
-                        itemBuilder: (context, index) {
-                          final news = state.articles[index];
-                          return GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, Routes.newsDetail,
-                                    arguments: news);
-                              },
-                              child: index == 0
-                                  ? NewsHeaderView(news.image, news.title)
-                                  : BlocProvider(
-                                      create: (context) => ImageCubit(),
-                                      child: NewsCellView(news.image,
-                                          news.title, news.publishedAt)));
-                        },
-                      );
-                    } else {
-                      return const Center(
-                        child: Text('Failed to fetch news'),
-                      );
-                    }
-                  },
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ));
+            )));
   }
 
   @override

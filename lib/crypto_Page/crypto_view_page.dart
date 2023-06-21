@@ -292,26 +292,30 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
             ));
 
           case CryptoPrecess.noUserId:
-            return Center(
-                child: TextButton(
-              onPressed: () {
-                // Navigator.pushNamed(context, Routes.account);
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => BlocProvider(
-                          create: (context) => AuthenticationBloc(),
-                          child: AccountPage(
-                            needtologin: true,
-                          ))),
-                );
-              },
-              child: const CustomText(
-                textContent: 'Not yet login',
-                textColor: Colors.blueGrey,
-              ),
-            ));
+            return RefreshIndicator(
+                onRefresh: _refreshData,
+                child: Center(
+                    child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => BlocProvider(
+                              create: (context) => AuthenticationBloc(),
+                              child: AccountPage(
+                                needtologin: true,
+                              ))),
+                    ).then((value) {
+                      if (value != null) {
+                        _refreshData();
+                      }
+                    });
+                  },
+                  child: const CustomText(
+                    textContent: 'Not yet login',
+                    textColor: Colors.blueGrey,
+                  ),
+                )));
         }
 
       case CyrptoViewBlocError:

@@ -11,11 +11,13 @@ import '../extension/gobal.dart';
 import '../routes.dart';
 import 'login/bloc/login_bloc.dart';
 
+// ignore: must_be_immutable
 class AccountPage extends StatefulWidget {
   bool needtologin;
   AccountPage({super.key, this.needtologin = false});
 
   @override
+  // ignore: library_private_types_in_public_api
   _AccountPageState createState() => _AccountPageState();
 }
 
@@ -144,7 +146,7 @@ class _AccountPageState extends State<AccountPage> {
                   // color: Colors.green,
                   child: GestureDetector(
                       onTap: () {
-                        Navigator.pop(context);
+                        Navigator.pop(context, "");
                       },
                       child: const Icon(Icons.arrow_back_ios_new_sharp)),
                 ),
@@ -204,15 +206,15 @@ class _AccountPageState extends State<AccountPage> {
           children: [
             const SizedBox(height: 10),
             const CustomText(
-              textContent: '歡迎加入 加密報',
+              textContent: 'Welcome to Login Crypto',
               fontSize: 24,
-              textColor: Colors.black,
+              textColor: Colors.white,
             ),
             ElevatedButton(
               onPressed: () {
                 _authBloc.add(LoginEvent());
               },
-              child: const Text('Google登入'),
+              child: const Text('Google Login'),
             )
           ],
         ));

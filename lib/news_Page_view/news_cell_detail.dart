@@ -26,7 +26,7 @@ class WebViewContainer extends StatefulWidget {
 
 class _WebViewContainerState extends State<WebViewContainer> {
   final UniqueKey _key = UniqueKey();
-  final bool _isLoading = false;
+  bool _isLoading = true;
 
   @override
   Widget build(BuildContext context) {
@@ -44,29 +44,18 @@ class _WebViewContainerState extends State<WebViewContainer> {
             key: _key,
             javascriptMode: JavascriptMode.unrestricted,
             initialUrl: widget.url,
-            // onPageStarted: (url) {
-            //   setState(() {
-            //     _isLoading = true;
-            //   });
-            // },
-            // onPageFinished: (url) {
-            //   setState(() {
-            //     _isLoading = false;
-            //   });
-            // },
-            // onWebResourceError: (error) {
-            //   setState(() {
-            //     _isLoading = false;
-            //   });
-            // },
+            onPageStarted: (String url) {
+              setState(() {
+                _isLoading = true;
+              });
+            },
+            onPageFinished: (String url) {
+              setState(() {
+                _isLoading = false;
+              });
+            },
           ),
-          _isLoading
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
-              : const Center(
-                  child: SizedBox(),
-                )
+          _isLoading ? const LinearProgressIndicator() : Container()
         ],
       ),
     );

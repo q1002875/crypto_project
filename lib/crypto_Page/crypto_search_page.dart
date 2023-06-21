@@ -52,17 +52,15 @@ class _CryptoSearchPageState extends State<CryptoSearchPage> {
             onPressed: () {
               if (widget.userid == '') {
                 Navigator.pop(context, '');
+              } else {
+                Navigator.pop(context, '更新');
               }
-              Navigator.pop(context, '更新');
             },
           ),
         ),
         body: Container(
             color: Colors.white,
-            child:
-                // const MyListView()
-
-                FutureBuilder(
+            child: FutureBuilder(
               future: loadLocalJson(),
               builder: (context, snapshot) {
                 final symbol = snapshot.data;
