@@ -74,48 +74,56 @@ class _MyAppAfterSplashState extends State<MyAppAfterSplash> {
         child: const NewsPage(),
       ),
       BlocProvider(
-          create: (context) => CyrptoViewBlocBloc(),
-          child: const BinanceWebSocket()),
+        create: (context) => CyrptoViewBlocBloc(),
+        child: const BinanceWebSocket(),
+      ),
       BlocProvider(
         create: (context) => CalculateBlocBloc(),
         child: const CalculatorPage(),
       ),
       BlocProvider(
-          create: (context) => AuthenticationBloc(), child: AccountPage())
+        create: (context) => AuthenticationBloc(),
+        child: AccountPage(),
+      )
     ];
+
     return MaterialApp(
-        onGenerateRoute: Routes.generateRoute,
-        initialRoute: Routes.home,
-        theme: ThemeData(
-          primarySwatch: Colors.indigo, // 設定北警的顏色
+      onGenerateRoute: Routes.generateRoute,
+      initialRoute: Routes.home,
+      theme: ThemeData(
+        primarySwatch: Colors.indigo,
+      ),
+      home: Scaffold(
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: widgetOptions,
         ),
-        home: Scaffold(
-          body: Center(child: widgetOptions.elementAt(_selectedIndex)),
-          bottomNavigationBar: BottomNavigationBar(
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.article),
-                  label: 'News',
-                  backgroundColor: Colors.blueGrey),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.query_stats_rounded),
-                  label: 'Crypto',
-                  backgroundColor: Colors.blueGrey),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.calculate),
-                  label: 'Calculate',
-                  backgroundColor: Colors.blueGrey),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.account_circle),
-                  label: 'Account',
-                  backgroundColor: Colors.blueGrey),
-            ],
-            currentIndex: _selectedIndex,
-            onTap: _onItemTapped,
-            selectedItemColor: Colors.white,
-            unselectedItemColor: Colors.black,
-          ),
-        ));
+        bottomNavigationBar: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+                icon: Icon(Icons.article),
+                label: 'News',
+                backgroundColor: Colors.blueGrey),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.query_stats_rounded),
+                label: 'Crypto',
+                backgroundColor: Colors.blueGrey),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.calculate),
+                label: 'Calculate',
+                backgroundColor: Colors.blueGrey),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.account_circle),
+                label: 'Account',
+                backgroundColor: Colors.blueGrey),
+          ],
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.black,
+        ),
+      ),
+    );
   }
 
   void _onItemTapped(int index) {
