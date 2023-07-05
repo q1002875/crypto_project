@@ -1,10 +1,9 @@
-
-import 'dart:convert';
 import 'package:http/http.dart' as http;
+
+import 'common.dart';
 
 // ignore: camel_case_types
 class httpService {
-
   final String baseUrl;
 
   httpService({required this.baseUrl});
@@ -19,15 +18,15 @@ class httpService {
     }
   }
 
-Future<dynamic> getJson() async {
-  final response = await http.get(Uri.parse(baseUrl));
+  Future<dynamic> getJson() async {
+    final response = await http.get(Uri.parse(baseUrl));
 
-  if (response.statusCode == 200) {
-    return json.decode(response.body);
-  } else {
-    throw Exception('Failed to load data');
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to load data');
+    }
   }
-}
 
   Future<dynamic> post(String endpoint, dynamic body) async {
     final response = await http.post(

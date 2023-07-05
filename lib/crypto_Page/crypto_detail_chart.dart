@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 import '../extension/ShimmerText.dart';
 import '../extension/custom_text.dart';
@@ -271,7 +272,7 @@ class _LineChartPageState extends State<LineChartPage> {
   Future<void> downloadApis() async {
     // fetchSaveMarketData(cryptoSymbol, CryptoCycleTime.oneDay);
     fetchSaveMarketData(cryptoSymbol, CryptoCycleTime.oneWeek);
-    //太多過載
+    //太多過載所以現在只取兩個 後面站不開放
     // fetchSaveMarketData(cryptoSymbol, CryptoCycleTime.oneMonth);
     // fetchSaveMarketData(cryptoSymbol, CryptoCycleTime.threeMonth);
     // fetchSaveMarketData(cryptoSymbol, CryptoCycleTime.sixMonth);
@@ -305,6 +306,22 @@ class _LineChartPageState extends State<LineChartPage> {
       setState(() {});
     } else {
       throw Exception('Failed to fetch market data');
+    }
+  }
+
+  String fetchPrintAfterFour(double value) {
+    // double price = value;
+    final v = value.toInt();
+    if (v < 0) {
+      NumberFormat format = NumberFormat("#,##0.00000000", "en_US");
+      String formattedPrice = format.format(value);
+      print(formattedPrice);
+      return formattedPrice;
+    } else {
+      NumberFormat format = NumberFormat("#,##0.0000", "en_US");
+      String formattedPrice = format.format(value);
+      print(formattedPrice);
+      return formattedPrice;
     }
   }
 
@@ -375,7 +392,7 @@ class _LineChartPageState extends State<LineChartPage> {
               fontSize: 14,
             );
             return LineTooltipItem(
-              '${touchedSpot.y}',
+              fetchPrintAfterFour(touchedSpot.y),
               textStyle,
             );
           }).toList();

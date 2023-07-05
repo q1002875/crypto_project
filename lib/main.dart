@@ -6,18 +6,19 @@ import 'package:crypto_project/crypto_Page/bloc/cyrpto_view_bloc_bloc.dart';
 import 'package:crypto_project/news_Page_view/news_view.dart';
 import 'package:crypto_project/routes.dart';
 import 'package:crypto_project/service_Api/news_api.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'bloc/bloc/news_Bloc/news_bloc.dart';
+import 'common.dart';
 import 'crypto_Page/crypto_view_page.dart';
 import 'database_mongodb/maongo_database.dart';
 import 'extension/gobal.dart';
+import 'lifecrycle.dart';
 
 Future<void> main() async {
   // Ensure Flutter widget binding
   WidgetsFlutterBinding.ensureInitialized();
+  final observer = AppLifecycleObserver();
+  WidgetsBinding.instance.addObserver(observer);
   // Run the app with SplashScreen
   runApp(const MyApp());
 }
@@ -29,10 +30,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-    ));
+    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
+    //   statusBarColor: Colors.transparent,
+    //   statusBarIconBrightness: Brightness.dark,
+    // ));
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(

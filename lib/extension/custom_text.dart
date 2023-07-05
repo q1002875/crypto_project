@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import '../common.dart';
 
 class CustomText extends StatelessWidget {
   final String textContent;

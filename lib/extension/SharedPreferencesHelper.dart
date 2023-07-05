@@ -1,4 +1,4 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import '../common.dart';
 
 class SharedPreferencesHelper {
   static Future<String> getString(String key,

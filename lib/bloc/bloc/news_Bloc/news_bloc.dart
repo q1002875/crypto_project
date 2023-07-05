@@ -1,7 +1,8 @@
-import 'package:bloc/bloc.dart';
 import 'package:crypto_project/api_model/news_totalModel.dart';
 import 'package:crypto_project/service_Api/news_api.dart';
 import 'package:equatable/equatable.dart';
+
+import '../../../common.dart';
 
 part 'news_event.dart';
 part 'news_state.dart';

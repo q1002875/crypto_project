@@ -1,11 +1,7 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crypto_project/calculate_Page/bloc/calculate_bloc_bloc.dart';
 import 'package:crypto_project/extension/custom_text.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shimmer/shimmer.dart';
 
+import '../common.dart';
 import '../crypto_Page/crypto_view_page.dart';
 import '../extension/ShimmerText.dart';
 import '../extension/gobal.dart';
@@ -26,10 +22,6 @@ class _CalculatorPageState extends State<CalculatorPage> {
   late CalculateBlocBloc _calculateBloc;
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
-      statusBarColor: Colors.blueGrey, // Transparent status bar
-      statusBarIconBrightness: Brightness.dark, // Dark mode for status bar
-    ));
     return Scaffold(
         // appBar: AppBar(backgroundColor: Colors.blueGrey),
         body: BlocBuilder<CalculateBlocBloc, CalculateBlocState>(

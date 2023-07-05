@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-
+import '../common.dart';
 import '../extension/custom_text.dart';
 import '../extension/image_url.dart';
 

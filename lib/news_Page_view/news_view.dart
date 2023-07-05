@@ -2,10 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crypto_project/bloc/bloc/news_Bloc/news_bloc.dart';
 import 'package:crypto_project/extension/custom_text.dart';
 import 'package:crypto_project/main.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../common.dart';
 import '../cubit/image_cubit_cubit.dart';
 import '../database_mongodb/maongo_database.dart';
 import '../extension/SharedPreferencesHelper.dart';
@@ -39,35 +38,36 @@ class _NewsPageState extends State<NewsPage> {
               body: Column(
                 children: [
                   Flexible(
-                    flex: 4,
+                    flex: 3,
                     child: Flex(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         direction: Axis.vertical,
                         children: [
                           Container(
-                            padding: const EdgeInsets.only(left: 10),
-                            color: Colors.white,
+                            padding: const EdgeInsets.only(left: 10, top: 10),
+                            color: Colors.blueGrey
+                                .withOpacity(0.8), // Light red color,
                             width: double.infinity,
                             child: const CustomText(
-                              textContent: 'Discover',
-                              textColor: Colors.black,
+                              textContent: 'News',
+                              textColor: Colors.white,
                               fontSize: 38,
                               align: TextAlign.left,
                             ),
                           ),
-                          Container(
-                            padding: const EdgeInsets.only(
-                              left: 10,
-                            ),
-                            color: Colors.white,
-                            width: double.infinity,
-                            child: const CustomText(
-                              textContent: 'news from all over the world',
-                              textColor: Colors.grey,
-                              fontSize: 14,
-                              align: TextAlign.left,
-                            ),
-                          ),
+                          // Container(
+                          //   padding: const EdgeInsets.only(
+                          //     left: 10,
+                          //   ),
+                          //   color: Colors.white,
+                          //   width: double.infinity,
+                          //   child: const CustomText(
+                          //     textContent: 'news from all over the world',
+                          //     textColor: Colors.grey,
+                          //     fontSize: 14,
+                          //     align: TextAlign.left,
+                          //   ),
+                          // ),
                         ]),
                   ),
                   Padding(
@@ -257,6 +257,13 @@ class _NewsPageState extends State<NewsPage> {
   @override
   void initState() {
     super.initState();
+    //  StatusBar.color(const Color(0xFF00FF00));
+
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
+      statusBarColor: Colors.blueGrey.withOpacity(0.8), // , // 設置狀態列背景為透明
+      statusBarIconBrightness: Brightness.light, // 設置狀態列文字顏色為深色
+    ));
+
     fetchUserImage();
     _newsBloc = context.read<NewsBloc>();
     _newsBloc.add(FetchArtcle());

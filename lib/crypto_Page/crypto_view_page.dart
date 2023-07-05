@@ -5,10 +5,9 @@ import 'package:crypto_project/account_Page/account_view.dart';
 import 'package:crypto_project/crypto_Page/bloc/cyrpto_view_bloc_bloc.dart';
 import 'package:crypto_project/crypto_Page/crypto_search_page.dart';
 import 'package:crypto_project/extension/custom_alerdialog.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../account_Page/login/bloc/login_bloc.dart';
+import '../common.dart';
 import '../database_mongodb/maongo_database.dart';
 import '../extension/SharedPreferencesHelper.dart';
 import '../extension/ShimmerText.dart';
@@ -42,67 +41,73 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
   bool edit = false;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.blueGrey,
-          title: const Text('Crypto List'),
-          actions: <Widget>[
-            localuserid != ''
-                ? IconButton(
-                    icon: const Icon(Icons.search),
-                    onPressed: () async {
-                      Navigator.pushNamed(context, Routes.cryptoSearch,
-                              arguments: localuserid)
-                          .then((value) {
-                        // "value" 是新页面返回的数据，您可以在这里处理
-                        if (value != null) {
-                          _cryptoBloc.add(FetchCryptoProcess());
-                        }
-                      });
-                    },
-                  )
-                : Container(),
-            tickData != [] && localuserid != ''
-                ? IconButton(
-                    icon:
-                        edit ? const Icon(Icons.check) : const Icon(Icons.edit),
-                    onPressed: () async {
-                      if (edit) {
-                        final updatedCryptoList =
-                            tickData.map((e) => e.symbolData.id).toList();
-                        await mongodb.updateDocument({
-                          'userId': localuserid
-                        }, {
-                          'userId': localuserid,
-                          'crypto': updatedCryptoList
-                        }, ConnectDbName.crypto, '');
-                        // ignore: use_build_context_synchronously
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return SimpleConfirmDialog(
-                              content: 'Edit Finish',
-                              onConfirmed: () {
-                                Navigator.of(context).pop();
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light.copyWith(
+          statusBarColor: Colors.white, // 設置狀態列背景為透明
+          statusBarIconBrightness: Brightness.light, // 設置狀態列文字顏色為深色
+        ),
+        child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.blueGrey,
+              title: const Text('Crypto List'),
+              actions: <Widget>[
+                localuserid != ''
+                    ? IconButton(
+                        icon: const Icon(Icons.search),
+                        onPressed: () async {
+                          Navigator.pushNamed(context, Routes.cryptoSearch,
+                                  arguments: localuserid)
+                              .then((value) {
+                            // "value" 是新页面返回的数据，您可以在这里处理
+                            if (value != null) {
+                              _cryptoBloc.add(FetchCryptoProcess());
+                            }
+                          });
+                        },
+                      )
+                    : Container(),
+                tickData != [] && localuserid != ''
+                    ? IconButton(
+                        icon: edit
+                            ? const Icon(Icons.check)
+                            : const Icon(Icons.edit),
+                        onPressed: () async {
+                          if (edit) {
+                            final updatedCryptoList =
+                                tickData.map((e) => e.symbolData.id).toList();
+                            await mongodb.updateDocument({
+                              'userId': localuserid
+                            }, {
+                              'userId': localuserid,
+                              'crypto': updatedCryptoList
+                            }, ConnectDbName.crypto, '');
+                            // ignore: use_build_context_synchronously
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return SimpleConfirmDialog(
+                                  content: 'Edit Finish',
+                                  onConfirmed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                );
                               },
                             );
-                          },
-                        );
-                      }
-                      setState(() {
-                        edit = !edit;
-                      });
+                          }
+                          setState(() {
+                            edit = !edit;
+                          });
 
-                      _refreshData();
-                    },
-                  )
-                : Container(),
-          ],
-        ),
-        body: BlocBuilder<CyrptoViewBlocBloc, CyrptoViewBlocState>(
-            builder: (context, state) {
-          return _buildContent(context, state);
-        }));
+                          _refreshData();
+                        },
+                      )
+                    : Container(),
+              ],
+            ),
+            body: BlocBuilder<CyrptoViewBlocBloc, CyrptoViewBlocState>(
+                builder: (context, state) {
+              return _buildContent(context, state);
+            })));
   }
 
   @override
