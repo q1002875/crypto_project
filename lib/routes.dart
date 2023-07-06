@@ -3,6 +3,7 @@ import 'package:crypto_project/account_Page/account_privacy.dart';
 import 'package:crypto_project/account_Page/login/bloc/login_bloc.dart';
 import 'package:crypto_project/crypto_Page/crypto_search_page.dart';
 import 'package:crypto_project/news_Page_view/news_cell_detail.dart';
+import 'package:crypto_project/sentiment_Page/sentimentPage.dart';
 
 import 'account_Page/account_view.dart';
 import 'api_model/news_totalModel.dart';
@@ -28,6 +29,9 @@ class Routes {
   static const String account = '/newPage/accountPage';
   static const String cryptoSearch = '/cryptoPage/search';
   static const String cryptochart = '/cryptoPage/cryptochart';
+
+  static const String sentiment = '/sentiment';
+
   static const String accoundAbout = '/newPage/accountPage/about';
   static const String accountPrivacy = '/newPage/accountPage/privacy';
 
@@ -65,6 +69,9 @@ class Routes {
           return MaterialPageRoute(builder: (_) => LineChartPage(args));
         }
         return _errorRoute();
+
+      case sentiment:
+        return MaterialPageRoute(builder: (_) => const sentimentPage());
       case accountPrivacy:
         return MaterialPageRoute(builder: (_) => AccountPrivacy());
       case accoundAbout:

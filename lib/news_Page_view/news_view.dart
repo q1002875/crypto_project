@@ -71,7 +71,7 @@ class _NewsPageState extends State<NewsPage> {
                                   child: GestureDetector(
                                     onTap: () {
                                       // Navigator.pushNamed(context, Routes.account);
-                                      print('push');
+                                      // print('push');
                                     },
                                     child: Container(
                                       decoration: BoxDecoration(
