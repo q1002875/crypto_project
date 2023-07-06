@@ -66,7 +66,7 @@ class Routes {
         }
         return _errorRoute();
       case accountPrivacy:
-        return MaterialPageRoute(builder: (_) => const AccountPrivacy());
+        return MaterialPageRoute(builder: (_) => AccountPrivacy());
       case accoundAbout:
         return MaterialPageRoute(builder: (_) => const AccoundAbout());
       default:

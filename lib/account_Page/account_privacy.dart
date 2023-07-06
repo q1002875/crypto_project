@@ -1,8 +1,17 @@
+import 'package:crypto_project/extension/custom_text.dart';
 import 'package:flutter/material.dart';
 
 class AccountPrivacy extends StatelessWidget {
-  const AccountPrivacy({Key? key}) : super(key: key);
+  final List<String> privacyPolicyContents = [
+    '# "Your Application Name" respects your privacy and is committed to protecting your personal data. This privacy policy will inform you as to how we handle your personal data and explain your privacy rights.\n\n',
+    '## What information do we collect?\n\nWhen you use our application, we may collect the following information:\n\n1. Information you give us, such as your name, Google information.\n2. Usage information, such as your behavior on our application.\n',
+    '### How do we use your information?\n\nWe use your information to provide, improve, and customize our services.\n\n',
+    '#### Who do we share your information with?\n\nUnless we have your permission, we will not share your personal data with third parties. We may share your information with our service providers to assist us in providing and improving our services.\n\n',
+    '##### Your Rights\n\nYou have the right to access, correct or delete your personal data at any time. You can also choose not to receive our email advertisements.\n\n',
+    '###### How to contact us\n\nIf you have any questions about this privacy policy, please contact us at: q1002875@gmail.com\n\n',
+  ];
 
+  AccountPrivacy({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -22,35 +31,18 @@ class AccountPrivacy extends StatelessWidget {
               ),
               backgroundColor: Colors.blueGrey,
             ),
-            body: ListView(
-              children: const [
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  '## "Your Application Name" respects your privacy and is committed to protecting your personal data. This privacy policy will inform you as to how we handle your personal data and explain your privacy rights.\n\n',
-                ),
-                Text('### What information do we collect?\n\n'
-                    'When you use our application, we may collect the following information:\n\n'
-                    '1. Information you give us, such as your name, Google information.\n'
-                    '2. Usage information, such as your behavior on our application.\n'),
-                Text(
-                  '### How do we use your information?\n\n'
-                  'We use your information to provide, improve, and customize our services.\n\n',
-                ),
-                Text(
-                  '### Who do we share your information with?\n\n'
-                  'Unless we have your permission, we will not share your personal data with third parties. We may share your information with our service providers to assist us in providing and improving our services.\n\n',
-                ),
-                Text(
-                  '### Your Rights\n\n'
-                  'You have the right to access, correct or delete your personal data at any time. You can also choose not to receive our email advertisements.\n\n',
-                ),
-                Text(
-                  '### How to contact us\n\n'
-                  'If you have any questions about this privacy policy, please contact us at: q1002875@gmail.com\n\n',
-                ),
-              ],
+            body: ListView.builder(
+              itemCount: privacyPolicyContents.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                    padding:
+                        const EdgeInsets.only(left: 10, right: 10, top: 10),
+                    child: CustomText(
+                      textColor: Colors.black,
+                      align: TextAlign.start,
+                      textContent: privacyPolicyContents[index],
+                    ));
+              },
             )));
   }
 }

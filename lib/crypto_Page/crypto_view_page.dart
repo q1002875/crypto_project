@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crypto_project/account_Page/account_view.dart';
 import 'package:crypto_project/crypto_Page/bloc/cyrpto_view_bloc_bloc.dart';
 import 'package:crypto_project/crypto_Page/crypto_search_page.dart';
@@ -280,8 +279,6 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
             return edit
                 ? _editContent(fetchTickData)
                 : _mainContent(fetchTickData);
-
-          //  _
 
           case CryptoPrecess.noCreateCoin:
             return Center(

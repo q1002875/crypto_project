@@ -10,7 +10,6 @@ export 'package:flutter/widgets.dart';
 export 'package:flutter_bloc/flutter_bloc.dart';
 export 'package:google_sign_in/google_sign_in.dart';
 export 'package:http/http.dart';
-export 'package:mongo_dart/mongo_dart.dart';
 export 'package:shared_preferences/shared_preferences.dart';
 export 'package:shimmer/shimmer.dart';
 export 'package:status_bar_control/status_bar_control.dart';

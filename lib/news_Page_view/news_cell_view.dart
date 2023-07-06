@@ -23,24 +23,26 @@ class NewsCellView extends StatelessWidget {
           direction: Axis.horizontal,
           children: [
             Flexible(
-              flex: 1,
-              child: CachedNetworkImage(
-                  placeholder: (context, url) => const ShimmerBox(),
-                  fit: BoxFit.cover,
-                  imageUrl: imageUrl,
-                  height: 100,
-                  width: 100,
-                  errorWidget: (context, url, error) => Container(
-                        color: Colors.white,
-                      )),
-            ),
-            Expanded(
-                flex: 3,
+                flex: 2,
+                child: Container(
+                  padding: const EdgeInsets.only(left: 3),
+                  child: CachedNetworkImage(
+                      placeholder: (context, url) => const ShimmerBox(),
+                      fit: BoxFit.cover,
+                      imageUrl: imageUrl,
+                      height: 100,
+                      width: 100,
+                      errorWidget: (context, url, error) => Container(
+                            color: Colors.white,
+                          )),
+                )),
+            Flexible(
+                flex: 4,
                 child: Stack(
                   children: [
                     Container(
                       margin: const EdgeInsets.all(3),
-                      alignment: Alignment.center,
+                      alignment: Alignment.centerLeft,
                       height: 100,
                       color: Colors.white,
                       child: titleText.characters.length > 125
@@ -48,7 +50,7 @@ class NewsCellView extends StatelessWidget {
                               scrollDirection: Axis.vertical,
                               children: [
                                 CustomText(
-                                  textContent: titleText,
+                                  textContent: '$titleText。',
                                   textColor: Colors.black,
                                   align: TextAlign.left,
                                   fontSize: 14,
@@ -56,7 +58,7 @@ class NewsCellView extends StatelessWidget {
                               ],
                             )
                           : CustomText(
-                              textContent: titleText,
+                              textContent: '$titleText。',
                               textColor: Colors.black,
                               align: TextAlign.left,
                               fontSize: 14,
@@ -67,8 +69,9 @@ class NewsCellView extends StatelessWidget {
                         bottom: 0,
                         child: SizedBox(
                           height: 20,
-                          width: 80,
+                          width: 40,
                           child: CustomText(
+                              align: TextAlign.right,
                               textContent: '${date.month}/${date.day}',
                               textColor: Colors.grey),
                         ))

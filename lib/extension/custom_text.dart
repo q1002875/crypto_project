@@ -22,8 +22,8 @@ class CustomText extends StatelessWidget {
         fontSize: fontSize, // 字体大小
         fontWeight: FontWeight.bold, // 字体粗细
         color: textColor, // 字体颜色
-        letterSpacing: 1.5, // 字母间距
-        wordSpacing: 5.0, // 单词间距
+        letterSpacing: 1, // 字母间距
+        wordSpacing: 0, // 单词间距
         decorationStyle: TextDecorationStyle.dashed, // 装饰样式
       ),
     );

@@ -1,8 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crypto_project/bloc/bloc/news_Bloc/news_bloc.dart';
 import 'package:crypto_project/extension/custom_text.dart';
 import 'package:crypto_project/main.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 import '../common.dart';
 import '../cubit/image_cubit_cubit.dart';
@@ -55,87 +53,77 @@ class _NewsPageState extends State<NewsPage> {
                               align: TextAlign.left,
                             ),
                           ),
-                          // Container(
-                          //   padding: const EdgeInsets.only(
-                          //     left: 10,
-                          //   ),
-                          //   color: Colors.white,
-                          //   width: double.infinity,
-                          //   child: const CustomText(
-                          //     textContent: 'news from all over the world',
-                          //     textColor: Colors.grey,
-                          //     fontSize: 14,
-                          //     align: TextAlign.left,
-                          //   ),
-                          // ),
                         ]),
                   ),
-                  Padding(
-                      padding:
-                          const EdgeInsets.only(left: 8, right: 8, bottom: 8),
-                      child: Container(
-                        color: Colors.white,
-                        child: Flex(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          direction: Axis.horizontal,
-                          children: [
-                            Flexible(
-                                flex: 2,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    // Navigator.pushNamed(context, Routes.account);
-                                    print('push');
-                                  },
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: googleurl == ''
-                                            ? Colors.black
-                                            : Colors.white,
-                                        width: 2.0,
+                  Flexible(
+                    flex: 3,
+                    child: Padding(
+                        padding:
+                            const EdgeInsets.only(left: 8, right: 0, bottom: 0),
+                        child: Container(
+                          color: Colors.white,
+                          child: Flex(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            direction: Axis.horizontal,
+                            children: [
+                              Flexible(
+                                  flex: 2,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      // Navigator.pushNamed(context, Routes.account);
+                                      print('push');
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: googleurl == ''
+                                              ? Colors.black
+                                              : Colors.white,
+                                          width: 2.0,
+                                        ),
                                       ),
+                                      child: googleurl != ''
+                                          ? ClipOval(
+                                              child: CachedNetworkImage(
+                                                placeholder: (context, url) =>
+                                                    const CircularProgressIndicator(),
+                                                imageUrl: googleurl,
+                                                errorWidget: (context, url,
+                                                        error) =>
+                                                    const Icon(
+                                                        Icons.person_rounded),
+                                              ),
+                                            )
+                                          : const Icon(Icons.person_rounded),
                                     ),
-                                    child: googleurl != ''
-                                        ? ClipOval(
-                                            child: CachedNetworkImage(
-                                              placeholder: (context, url) =>
-                                                  const CircularProgressIndicator(),
-                                              imageUrl: googleurl,
-                                              errorWidget:
-                                                  (context, url, error) =>
-                                                      const Icon(
-                                                          Icons.person_rounded),
-                                            ),
-                                          )
-                                        : const Icon(Icons.person_rounded),
-                                  ),
-                                )),
-                            Expanded(
-                              flex: 10,
-                              child: Container(
-                                margin: const EdgeInsets.all(10),
-                                child: TextField(
-                                  controller: _searchController,
-                                  onChanged: null,
-                                  decoration: InputDecoration(
-                                    labelText: 'Search',
-                                    suffixIcon: IconButton(
-                                      onPressed: () {
-                                        if (_searchController.text != "") {
-                                          _searchArticles(
-                                              _searchController.text);
-                                        }
-                                      },
-                                      icon: const Icon(Icons.search),
+                                  )),
+                              Expanded(
+                                flex: 10,
+                                child: Container(
+                                  margin: const EdgeInsets.all(10),
+                                  child: TextField(
+                                    controller: _searchController,
+                                    onChanged: null,
+                                    decoration: InputDecoration(
+                                      labelText: 'Search',
+                                      suffixIcon: IconButton(
+                                        onPressed: () {
+                                          if (_searchController.text != "") {
+                                            _searchArticles(
+                                                _searchController.text);
+                                          }
+                                        },
+                                        icon: const Icon(Icons.search),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            )
-                          ],
-                        ),
-                      )),
+                              )
+                            ],
+                          ),
+                        )),
+                  ),
                   Flexible(
                       flex: 2,
                       child: Container(
@@ -219,8 +207,11 @@ class _NewsPageState extends State<NewsPage> {
                                       ? NewsHeaderView(news.image, news.title)
                                       : BlocProvider(
                                           create: (context) => ImageCubit(),
-                                          child: NewsCellView(news.image,
-                                              news.title, news.publishedAt)));
+                                          child: SizedBox(
+                                            width: screenWidth,
+                                            child: NewsCellView(news.image,
+                                                news.title, news.publishedAt),
+                                          )));
                             },
                           );
                         } else {
