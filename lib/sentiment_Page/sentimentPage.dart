@@ -1,5 +1,6 @@
 import 'package:crypto_project/extension/custom_text.dart';
-import 'package:crypto_project/sentiment_Page/sentiment_api.dart';
+import 'package:crypto_project/sentiment_Page/sentiment_api_model_file/sentiment_api.dart';
+import 'package:crypto_project/sentiment_Page/sentiment_api_model_file/sentiment_model.dart';
 import 'package:http/http.dart' as http;
 
 import '../common.dart';
@@ -70,9 +71,9 @@ class sentimentPage extends StatefulWidget {
 
 // ignore: camel_case_types
 class _sentimentPageState extends State<sentimentPage> {
-  // String _fearGreedIndex = '';
-  // final List<dynamic> _historyData = [];
-  late final SentimentApi sentiment;
+  String _fearGreedIndex = '';
+  final List<dynamic> _historyData = [];
+  //  const SentimentApi sentiment;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -107,7 +108,8 @@ class _sentimentPageState extends State<sentimentPage> {
 
   Future<void> fetchData() async {
     try {
-      await sentiment._la;
+      final FearGreedIndex data = await SentimentApi.fetchFearGreedIndex('30d');
+      debugPrint('$data');
       // 在此處處理獲取到的資料
     } catch (e) {
       // 處理錯誤
@@ -117,7 +119,7 @@ class _sentimentPageState extends State<sentimentPage> {
   @override
   void initState() {
     super.initState();
-    sentiment = SentimentApi();
+
     _loadFearGreedIndex();
     fetchData();
     // _loadFearGreedIndexHistory('30d');

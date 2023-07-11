@@ -1,24 +1,24 @@
-import 'package:http/http.dart' as http;
+import 'package:crypto_project/sentiment_Page/sentiment_api_model_file/sentiment_model.dart';
 
-import '../common.dart';
+import '../../common.dart' as http;
+import '../../common.dart';
 
+/////完整api
 class SentimentApi {
-  Future<dynamic> _loadFearGreedIndexHistory(String timeSpan) async {
-    try {
-      final response = await http.get(Uri.parse(
-          'https://api.alternative.me/fng/?limit=30&timeframe=$timeSpan'));
-      if (response.statusCode == 200) {
-        final json = jsonDecode(response.body);
-        final historyData = json['data'];
-        return historyData;
-        // setState(() {
-        //   _historyData = historyData;
-        // });
-      } else {
-        throw Exception('Failed to load fear and greed index history');
+  static Future<FearGreedIndex> fetchFearGreedIndex(String timeSpan) async {
+    final url = Uri.parse(
+        'https://api.alternative.me/fng/?limit=30&timeframe=$timeSpan');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      final data = json['data'] as List<dynamic>;
+
+      if (data.isNotEmpty) {
+        final firstItem = data.first;
+        return FearGreedIndex.fromJson(firstItem);
       }
-    } catch (e) {
-      print(e);
     }
+    throw Exception('Failed to fetch Fear and Greed Index');
   }
 }

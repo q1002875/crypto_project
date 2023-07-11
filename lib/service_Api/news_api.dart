@@ -10,7 +10,7 @@ class newsApi {
   final authkey2 = 'c12c324dfd67bb1e97dbb9787757fef8';
 //  String newUrl = 'https://gnews.io/api/v4/search?q=crypto&lang=en&country=us&max=10&apikey=$authkey';
 
-  Future<List<ArticleModel>> (String search) async {
+  Future<List<ArticleModel>> getArticleReport(String search) async {
     final api =
         'https://gnews.io/api/v4/search?q=$search&lang=en&country=us&max=10&apikey=$authkey';
     final data = httpService(baseUrl: api);
