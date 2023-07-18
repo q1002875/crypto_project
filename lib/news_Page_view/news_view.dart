@@ -184,7 +184,7 @@ class _NewsPageState extends State<NewsPage> {
                       builder: (context, state) {
                         if (state is NewsInitial) {
                           return const Center(
-                            child: Text('Wait fetch news'),
+                            child: Text('Wait fetch viwe'),
                           );
                         } else if (state is NewsLoading) {
                           return const SizedBox(

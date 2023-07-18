@@ -5,6 +5,7 @@ import 'package:crypto_project/calculate_Page/calculatePage.dart';
 import 'package:crypto_project/crypto_Page/bloc/cyrpto_view_bloc_bloc.dart';
 import 'package:crypto_project/news_Page_view/news_view.dart';
 import 'package:crypto_project/routes.dart';
+import 'package:crypto_project/sentiment_Page/bloc/sentiment_bloc.dart';
 import 'package:crypto_project/sentiment_Page/sentimentPage.dart';
 import 'package:crypto_project/service_Api/news_api.dart';
 
@@ -83,7 +84,12 @@ class _MyAppAfterSplashState extends State<MyAppAfterSplash> {
         create: (context) => CalculateBlocBloc(),
         child: const CalculatorPage(),
       ),
-      const sentimentPage(),
+      // const sentimentPage(),
+      BlocProvider(
+        create: (context) => SentimentBloc(),
+        child: const sentimentPage(),
+      ),
+
       BlocProvider(
         create: (context) => AuthenticationBloc(),
         child: AccountPage(),

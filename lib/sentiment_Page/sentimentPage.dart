@@ -1,66 +1,17 @@
+import 'package:crypto_project/extension/ShimmerText.dart';
 import 'package:crypto_project/extension/custom_text.dart';
-import 'package:crypto_project/sentiment_Page/sentiment_api_model_file/sentiment_api.dart';
-import 'package:crypto_project/sentiment_Page/sentiment_api_model_file/sentiment_model.dart';
-import 'package:http/http.dart' as http;
+import 'package:crypto_project/extension/gobal.dart';
+import 'package:crypto_project/sentiment_Page/bloc/sentiment_bloc.dart';
 
 import '../common.dart';
+import 'sentiment_dashBoard.dart';
 
-class DashboardWidget extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  // final Widget content;
+// ・0-25 是極度恐懼（Extreme Fear）
+// ・26-44 是恐懼（Fear）
+// ・45-55 是中立（Neutral）
+// ・56-74 是貪婪（Greed）
+// ・75-100 是極度貪婪（Extreme Greed）
 
-  const DashboardWidget({
-    super.key,
-    required this.title,
-    required this.subtitle,
-    // required this.content,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 2,
-            blurRadius: 3,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18.0,
-            ),
-          ),
-          const SizedBox(height: 8.0),
-          Text(
-            subtitle,
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 14.0,
-            ),
-          ),
-          const SizedBox(height: 16.0),
-          // content,
-        ],
-      ),
-    );
-  }
-}
-
-///////上面儀表板
-/////////
 // ignore: camel_case_types
 class sentimentPage extends StatefulWidget {
   const sentimentPage({super.key});
@@ -71,9 +22,7 @@ class sentimentPage extends StatefulWidget {
 
 // ignore: camel_case_types
 class _sentimentPageState extends State<sentimentPage> {
-  String _fearGreedIndex = '';
-  final List<dynamic> _historyData = [];
-  //  const SentimentApi sentiment;
+  late SentimentBloc _sentimentBloc;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -89,57 +38,106 @@ class _sentimentPageState extends State<sentimentPage> {
                 fontSize: 26,
                 textColor: Colors.white,
               ),
-              // SizedBox(height: 16),
-              // Text(
-              //   'Latest Index: $_fearGreedIndex',
-              //   style: const TextStyle(fontSize: 18, color: Colors.white),
-              // ),
             ],
           ),
         ),
-        const Expanded(
-            child: DashboardWidget(
-          subtitle: 'ddd',
-          title: 'ssss',
-        )),
+        Expanded(
+          child: ListView(
+            scrollDirection: Axis.vertical,
+            children: [
+              BlocBuilder<SentimentBloc, SentimentState>(
+                builder: (context, state) {
+                  if (state is SentimentLoading) {
+                    return const SizedBox(
+                      width: double.maxFinite,
+                      height: double.maxFinite,
+                      child: ShimmerBox(),
+                    );
+                  } else if (state is SentimentLoaded) {
+                    final data = state.feargreedindex[0];
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Container(
+                          alignment: Alignment.bottomRight,
+                          margin: const EdgeInsets.all(10),
+                          color: Colors.white,
+                          width: double.infinity,
+                          height: screenHeight / 12,
+                          child: CustomText(
+                            align: TextAlign.right,
+                            textContent: "NOW:${data.valueClassification}",
+                            textColor: Colors.black,
+                            fontSize: 18,
+                          ),
+                        ),
+                        Flex(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          direction: Axis.horizontal,
+                          children: [
+                            Flexible(
+                              flex: 8,
+                              child: Container(
+                                // margin: const EdgeInsets.all(10),
+                                width: screenWidth / 1.3,
+                                height: screenHeight / 5,
+                                color: Colors.amber,
+                                alignment: Alignment.centerLeft,
+                                child:
+                                    CarDashboard(value: int.parse(data.value)),
+                              ),
+                            ),
+                            Flexible(
+                              flex: 2,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: fetchValueColor(int.parse(data.value)),
+                                  shape: BoxShape.circle, // 設置形狀為圓形
+                                ),
+                                alignment: Alignment.center,
+                                // color: Colors.amber,
+                                width: 100,
+                                height: screenHeight / 9,
+                                child: CustomText(
+                                  align: TextAlign.center,
+                                  textContent: data.value,
+                                  textColor: Colors.white,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            )
+                          ],
+                        )
+                      ],
+                    );
+                  } else {
+                    return const Center(
+                      child: Text('Failed to fetch news'),
+                    );
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
 
-  Future<void> fetchData() async {
-    try {
-      final FearGreedIndex data = await SentimentApi.fetchFearGreedIndex('30d');
-      debugPrint('$data');
-      // 在此處處理獲取到的資料
-    } catch (e) {
-      // 處理錯誤
+  Color fetchValueColor(int value) {
+    if (value >= 60) {
+      return Colors.lightGreen;
+    } else if (value <= 40) {
+      return Colors.orangeAccent;
+    } else {
+      return const Color.fromARGB(255, 151, 130, 130);
     }
   }
 
   @override
   void initState() {
     super.initState();
-
-    _loadFearGreedIndex();
-    fetchData();
-    // _loadFearGreedIndexHistory('30d');
-  }
-
-  Future<void> _loadFearGreedIndex() async {
-    try {
-      final response =
-          await http.get(Uri.parse('https://api.alternative.me/fng/?limit=1'));
-      if (response.statusCode == 200) {
-        final json = jsonDecode(response.body);
-        final fearGreedIndex = json['data'][0]['value'];
-        setState(() {
-          _fearGreedIndex = fearGreedIndex.toString();
-        });
-      } else {
-        throw Exception('Failed to load fear and greed index');
-      }
-    } catch (e) {
-      print(e);
-    }
+    _sentimentBloc = context.read<SentimentBloc>();
+    _sentimentBloc.add(FetchFearData("1"));
   }
 }
