@@ -6,6 +6,7 @@ class SentimentInitial extends SentimentState {}
 
 class SentimentLoaded extends SentimentState {
   final List<FearGreedIndex> feargreedindex;
+  // final SentimentStatus status;
   const SentimentLoaded({required this.feargreedindex});
 
   @override

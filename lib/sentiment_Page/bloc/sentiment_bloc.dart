@@ -7,6 +7,11 @@ import '../sentiment_api_model_file/sentiment_model.dart';
 part 'sentiment_event.dart';
 part 'sentiment_state.dart';
 
+// enum SentimentStatus {
+//   fearAndGreedIndex,
+//   fearAndGreedChart,
+// }
+
 class SentimentBloc extends Bloc<SentimentEvent, SentimentState> {
   SentimentBloc() : super(SentimentInitial()) {
     on<SentimentEvent>((event, emit) async {
@@ -14,13 +19,25 @@ class SentimentBloc extends Bloc<SentimentEvent, SentimentState> {
       if (event is FetchFearData) {
         emit(SentimentLoading());
 
-        List<FearGreedIndex> feargreedindex =
-            await SentimentApi.fetchFearGreedIndex(event.day);
-
-        if (feargreedindex.isNotEmpty) {
-          emit(SentimentLoaded(feargreedindex: feargreedindex));
-        } else {
-          emit(const SentimentLoaded(feargreedindex: []));
+        switch (event.status) {
+          case SentimentStatus.fearAndGreedIndex:
+            List<FearGreedIndex> feargreedindex =
+                await SentimentApi.fetchFearGreedIndex(event.day);
+            if (feargreedindex.isNotEmpty) {
+              emit(SentimentLoaded(feargreedindex: feargreedindex));
+            } else {
+              emit(const SentimentLoaded(feargreedindex: []));
+            }
+            break;
+          case SentimentStatus.fearAndGreedChart:
+            List<FearGreedIndex> feargreedindex =
+                await SentimentApi.fetchFearGreedIndex(event.day);
+            if (feargreedindex.isNotEmpty) {
+              emit(SentimentLoaded(feargreedindex: feargreedindex));
+            } else {
+              emit(const SentimentLoaded(feargreedindex: []));
+            }
+            break;
         }
       }
     });
