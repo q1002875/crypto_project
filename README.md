@@ -1,6 +1,6 @@
 # crypto_project
 
-A new Flutter project.
+A simple crypto news infomation project app.
 
 ## Getting Started
 
