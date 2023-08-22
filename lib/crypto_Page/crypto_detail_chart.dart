@@ -315,12 +315,12 @@ class _LineChartPageState extends State<LineChartPage> {
     if (v < 0) {
       NumberFormat format = NumberFormat("#,##0.00000000", "en_US");
       String formattedPrice = format.format(value);
-      print(formattedPrice);
+      debugPrint(formattedPrice);
       return formattedPrice;
     } else {
       NumberFormat format = NumberFormat("#,##0.0000", "en_US");
       String formattedPrice = format.format(value);
-      print(formattedPrice);
+      debugPrint(formattedPrice);
       return formattedPrice;
     }
   }

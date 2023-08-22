@@ -6,7 +6,6 @@ class FetchFearData extends SentimentEvent {
   SentimentStatus status;
   FetchFearData(this.day, this.status);
 }
-
 // class FetchChartData extends SentimentEvent {
 //   String day;
 //   FetchChartData(this.day);
@@ -23,6 +22,8 @@ enum SentimentStatus {
   fearAndGreedIndex,
   fearAndGreedChart,
 }
+
+
 
 // class SearchArtcle extends NewsEvent {
 //   String quree;

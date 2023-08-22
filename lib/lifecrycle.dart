@@ -10,7 +10,6 @@ class AppLifecycleObserver with WidgetsBindingObserver {
     switch (state) {
       case AppLifecycleState.resumed:
         debugPrint('應用程式回到前景');
-        //
         break;
       case AppLifecycleState.inactive:
         debugPrint('應用程式不處於活躍狀態');
