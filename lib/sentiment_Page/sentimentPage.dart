@@ -1,36 +1,13 @@
 import 'package:crypto_project/extension/ShimmerText.dart';
 import 'package:crypto_project/extension/custom_text.dart';
 import 'package:crypto_project/extension/gobal.dart';
+import 'package:crypto_project/sentiment_Page/FearAndGreedIndexChart.dart';
 import 'package:crypto_project/sentiment_Page/bloc/sentiment_bloc.dart';
+import 'package:crypto_project/sentiment_Page/sentiment_api_model_file/sentiment_api.dart';
 import 'package:crypto_project/sentiment_Page/sentiment_api_model_file/sentiment_model.dart';
-import 'package:fl_chart/fl_chart.dart';
-// import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:http/http.dart' as http;
 
 import '../common.dart';
 import '../extension/image_url.dart';
-import 'sentiment_dashBoard.dart';
-
-class FearAndGreedData {
-  DateTime date;
-  String value;
-  String classification;
-
-  FearAndGreedData(this.date, this.value, this.classification);
-}
-
-// import 'package:flutter/material.dart';
-// import 'package:fl_chart/fl_chart.dart';
-// import 'package:http/http.dart' as http;
-// import 'dart:convert';
-
-class FearAndGreedIndexChart extends StatefulWidget {
-  String day;
-  FearAndGreedIndexChart(this.day, {super.key});
-
-  @override
-  _FearAndGreedIndexChartState createState() => _FearAndGreedIndexChartState();
-}
 
 // ・0-25 是極度恐懼（Extreme Fear）
 // ・26-44 是恐懼（Fear）
@@ -46,125 +23,14 @@ class sentimentPage extends StatefulWidget {
   State<sentimentPage> createState() => _sentimentPageState();
 }
 
-class _FearAndGreedIndexChartState extends State<FearAndGreedIndexChart> {
-  List<FearAndGreedData> _dataList = [];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('Fear and Greed Index Chart'),
-      // ),
-      body: Container(
-        padding: const EdgeInsets.all(16.0),
-        child: _buildChart(),
-      ),
-    );
-  }
-
-  @override
-  void didUpdateWidget(FearAndGreedIndexChart oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.day != widget.day) {
-      _getData(widget.day);
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _getData(widget.day);
-  }
-
-  Widget _buildChart() {
-    if (_dataList.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    List<FlSpot> spots = [];
-    for (var i = 0; i < _dataList.length; i++) {
-      spots.add(FlSpot(i.toDouble(), double.parse(_dataList[i].value)));
-    }
-
-    return LineChart(
-      LineChartData(
-        lineTouchData: LineTouchData(enabled: false),
-        gridData: FlGridData(
-          show: true,
-          drawHorizontalLine: true,
-          drawVerticalLine: false,
-          horizontalInterval: 20.0,
-          getDrawingHorizontalLine: (value) {
-            return FlLine(
-              color: Colors.grey,
-              strokeWidth: 1.0,
-            );
-          },
-        ),
-        titlesData: FlTitlesData(
-          show: true,
-          topTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: true),
-          ),
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-        ),
-        borderData: FlBorderData(
-          show: true,
-          border: Border.all(color: Colors.grey, width: 1.0),
-        ),
-        lineBarsData: [
-          LineChartBarData(
-            spots: spots,
-            isCurved: false,
-            color: Colors.orange[400],
-            barWidth: 2.0,
-            dotData: FlDotData(show: false),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.year}-${date.month}-${date.day}';
-  }
-
-  Future<void> _getData(String selectday) async {
-    var url = Uri.parse('https://api.alternative.me/fng/?limit=$selectday');
-    var response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body)['data'];
-      List<FearAndGreedData> dataList = [];
-
-      for (var item in jsonData) {
-        var timestamp = item['timestamp'];
-        final parint = int.parse(timestamp);
-        var value = item['value'];
-        var classification = item['value_classification'];
-        var date = DateTime.fromMillisecondsSinceEpoch(parint * 1000);
-        dataList.add(FearAndGreedData(date, value, classification));
-      }
-      debugPrint('${dataList.length}有幾個');
-      setState(() {
-        _dataList = dataList;
-      });
-    } else {
-      print('Request failed with status: ${response.statusCode}.');
-    }
-  }
-}
-
 // ignore: camel_case_types
 class _sentimentPageState extends State<sentimentPage> {
   late SentimentBloc _sentimentBloc;
   late List<selectSentimentDayRange> _selectrange;
   List<selectSentimentDayRange> forchartSelectrange = [];
+  List<FearAndGreedData> sevenDayData = [];
+  List<FearAndGreedData> thrtyDayData = [];
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -209,7 +75,6 @@ class _sentimentPageState extends State<sentimentPage> {
                     //   final data = state.feargreedindex[0];
                     //   return fearGreedDashBoard(data);
                     // } else {
-
                     // }
                   } else {
                     return const Center(
@@ -235,70 +100,12 @@ class _sentimentPageState extends State<sentimentPage> {
                 width: screenWidth,
                 color: _selectrange[0].select ? Colors.amber : Colors.blue,
                 child: _selectrange[0].select
-                    ? FearAndGreedIndexChart('7')
-                    : FearAndGreedIndexChart('30'),
+                    ? FearAndGreedIndexChart(sevenDayData)
+                    : FearAndGreedIndexChart(thrtyDayData),
               )
             ],
           ),
         ),
-      ],
-    );
-  }
-
-  //dashboard widget
-  Widget fearGreedDashBoard(FearGreedIndex data) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        Container(
-          alignment: Alignment.topRight,
-          margin: const EdgeInsets.only(right: 5),
-          // color: Colors.white,
-          width: double.infinity,
-          height: screenHeight / 16,
-          child: CustomText(
-            align: TextAlign.right,
-            textContent: "NOW:${data.valueClassification}",
-            textColor: Colors.black,
-            fontSize: 18,
-          ),
-        ),
-        Flex(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          direction: Axis.horizontal,
-          children: [
-            Flexible(
-              flex: 8,
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 10),
-                width: screenWidth / 1.3,
-                height: screenHeight / 5,
-                color: Colors.amber,
-                alignment: Alignment.centerLeft,
-                child: CarDashboard(value: int.parse(data.value)),
-              ),
-            ),
-            Flexible(
-              flex: 2,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: fetchValueColor(data.value),
-                  shape: BoxShape.circle, // 設置形狀為圓形
-                ),
-                alignment: Alignment.center,
-                // color: Colors.amber,
-                width: 100,
-                height: screenHeight / 9,
-                child: CustomText(
-                  align: TextAlign.center,
-                  textContent: data.value,
-                  textColor: Colors.white,
-                  fontSize: 18,
-                ),
-              ),
-            )
-          ],
-        )
       ],
     );
   }
@@ -320,12 +127,20 @@ class _sentimentPageState extends State<sentimentPage> {
     }
   }
 
+  Future<void> getsentimentData() async {
+    sevenDayData = await SentimentApi.getSentimentData("7");
+    thrtyDayData = await SentimentApi.getSentimentData("30");
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
+
     _sentimentBloc = context.read<SentimentBloc>();
     _sentimentBloc.add(FetchFearData("7", SentimentStatus.fearAndGreedIndex));
     _selectrange = selectSentimentDayRange.selectSentimentData;
+    getsentimentData();
   }
 
   Widget listViewFearAndGreed() {
@@ -345,17 +160,10 @@ class _sentimentPageState extends State<sentimentPage> {
                 child: InkWell(
                   onTap: () {
                     for (var i = 0; i < _selectrange.length; i++) {
-                      if (i == index) {
-                        _selectrange[i].select = true;
-                      } else {
-                        _selectrange[i].select = false;
-                      }
+                      _selectrange[i].select = (i == index);
                     }
-                    // cycleType = CryptoCycleTime.values[index];
                     setState(() {
                       forchartSelectrange = _selectrange;
-                      // _selectrange
-                      // data = dataResult[CryptoCycleTime.values[index]]!;
                     });
                   },
                   child: _selectrange[index].select
