@@ -54,10 +54,9 @@ class _FearAndGreedIndexChartState extends State<FearAndGreedIndexChart> {
   void didUpdateWidget(FearAndGreedIndexChart oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.data != widget.data) {
-      var list = widget.data.toList();
-      list = list.reversed.toList();
-      _dataList = list;
-      setState(() {});
+      setState(() {
+        _dataList = widget.data;
+      });
     }
   }
 
