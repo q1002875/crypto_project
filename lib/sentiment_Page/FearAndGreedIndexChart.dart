@@ -1,4 +1,5 @@
 import 'package:crypto_project/extension/ShimmerText.dart';
+import 'package:crypto_project/extension/custom_text.dart';
 import 'package:crypto_project/extension/gobal.dart';
 import 'package:fl_chart/fl_chart.dart';
 
@@ -24,29 +25,45 @@ class FearAndGreedIndexChart extends StatefulWidget {
 
 class _FearAndGreedIndexChartState extends State<FearAndGreedIndexChart> {
   List<FearAndGreedData> _dataList = [];
-
+  var selectTitle = '';
+  var selectTitleColor = Colors.black;
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
     ///這裡直接資料顛倒對調
     final dataLength = widget.data.length - value.toInt() - 1;
     final month = widget.data[dataLength].date.month;
     final resultDay = widget.data[dataLength].date.day;
     final resultText = '$month/$resultDay';
-    return Text(resultText);
+    return CustomText(
+        textContent: resultText, fontSize: 12, textColor: Colors.black);
   }
 
-////主畫面
+  ////主畫面
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('Fear and Greed Index Chart'),
-      // ),
-      body: Container(
-        margin: const EdgeInsets.all(20.0),
-        padding: const EdgeInsets.all(20.0),
-        child: _buildChart(),
-      ),
-    );
+        // appBar: AppBar(
+        //   title: const Text('Fear and Greed Index Chart'),
+        // ),
+        body: Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Flexible(
+            flex: 1,
+            child: CustomText(
+              textContent: selectTitle,
+              textColor: selectTitleColor,
+              fontSize: 19,
+            )),
+        Flexible(
+          flex: 9,
+          child: Container(
+            margin: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(20.0),
+            child: _buildChart(),
+          ),
+        )
+      ],
+    ));
   }
 
   ///當進入的資料有變化時改變畫面 適用於future 之後的資料載入
@@ -58,6 +75,44 @@ class _FearAndGreedIndexChartState extends State<FearAndGreedIndexChart> {
         _dataList = widget.data;
       });
     }
+  }
+
+  Map getSentimentLevel(int value) {
+    if (value >= 0 && value <= 25) {
+      return {'level': 'Extreme Fear', 'color': Colors.red};
+    } else if (value >= 26 && value <= 44) {
+      return {'level': 'Fear', 'color': Colors.orange};
+    } else if (value >= 45 && value <= 55) {
+      return {
+        'level': 'Neutral',
+        'color': const Color.fromARGB(255, 224, 192, 51)
+      };
+    } else if (value >= 56 && value <= 74) {
+      return {
+        'level': 'Greed',
+        'color': const Color.fromARGB(255, 138, 221, 56)
+      };
+    } else if (value >= 75 && value <= 100) {
+      return {'level': 'Extreme Greed', 'color': Colors.green};
+    } else {
+      return {
+        'level': 'Invalid input',
+        'color': const Color.fromARGB(255, 14, 234, 65)
+      };
+    }
+  }
+
+  Widget leftTitleWidgets(double value, TitleMeta meta) {
+    ///這裡直接資料顛倒對調
+    final text = value.toInt();
+    return CustomText(
+        textContent: '$text', fontSize: 12, textColor: Colors.black);
+  }
+
+  void setTitleValue(String value) {
+    setState(() {
+      selectTitle = value;
+    });
   }
 
   // @override
@@ -85,24 +140,37 @@ class _FearAndGreedIndexChartState extends State<FearAndGreedIndexChart> {
         ////觸碰顯示設定區
         lineTouchData: LineTouchData(
           enabled: true,
+          touchCallback: (p0, p1) {
+            final List<TouchLineBarSpot>? spots = p1!.lineBarSpots;
+            final spot = spots?.first;
+            final x = spot?.x;
+            final time = _dataList[_dataList.length - x!.toInt() - 1].date;
+            final value = _dataList[x.toInt() - 1].value;
+            final getgetSentimentLevelModel =
+                getSentimentLevel(int.parse(value));
+            final level = getgetSentimentLevelModel['level'];
+            final color = getgetSentimentLevelModel['color'];
+            setState(() {
+              selectTitle = '${time.year}/${time.month}/${time.day}($level)';
+              selectTitleColor = color;
+            });
+          },
           handleBuiltInTouches: true,
           touchTooltipData: LineTouchTooltipData(
             tooltipBgColor: Colors.orange[400],
             fitInsideHorizontally: true,
             fitInsideVertically: true,
             getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
+              // setTitleValue('sss');
               return touchedBarSpots.map((barSpot) {
                 // final x = barSpot.x;
+
                 final y = barSpot.y;
-                return y < 50
-                    ? LineTooltipItem(
-                        'Fear',
-                        const TextStyle(color: Colors.white),
-                      )
-                    : LineTooltipItem(
-                        'Greed',
-                        const TextStyle(color: Colors.white),
-                      );
+                final setmetint = '${y.toInt()}';
+                return LineTooltipItem(
+                  setmetint,
+                  const TextStyle(color: Colors.white),
+                );
               }).toList();
             },
           ),
@@ -112,8 +180,8 @@ class _FearAndGreedIndexChartState extends State<FearAndGreedIndexChart> {
         gridData: FlGridData(
           show: true,
           drawHorizontalLine: true,
-          drawVerticalLine: true,
-          horizontalInterval: 5.0,
+          drawVerticalLine: false,
+          horizontalInterval: 2.0,
           getDrawingHorizontalLine: (value) {
             return FlLine(
               color: Colors.grey,
@@ -129,24 +197,31 @@ class _FearAndGreedIndexChartState extends State<FearAndGreedIndexChart> {
           ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
-              interval: widget.data.length > 20 ? 3 : 1,
+              interval: widget.data.length > 20 ? 5 : 1,
               reservedSize: 20,
               showTitles: true,
               getTitlesWidget: bottomTitleWidgets,
             ),
           ),
-          leftTitles: AxisTitles(
+          rightTitles: AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
-          rightTitles: AxisTitles(
-            sideTitles:
-                SideTitles(reservedSize: 50, interval: 3, showTitles: true),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              interval: 3,
+              reservedSize: 30,
+              showTitles: true,
+              getTitlesWidget: leftTitleWidgets,
+            ),
           ),
         ),
         //框架線條設定區
         borderData: FlBorderData(
           show: true,
-          border: Border.all(color: Colors.grey, width: 3.0),
+          border: const Border(
+            bottom: BorderSide(color: Colors.grey, width: 3.0),
+            left: BorderSide(color: Colors.grey, width: 3.0),
+          ),
         ),
 
         ////數值線條設定區

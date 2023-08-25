@@ -37,30 +37,3 @@ class selectSentimentDayRange {
   bool select;
   selectSentimentDayRange({this.select = false, this.timeTitle = ""});
 }
-
-
-// class SelectTimeCycle {
-//   static List<SelectTimeCycle> selectTimeCycleData = [
-//     SelectTimeCycle(
-//         timeType: CryptoCycleTime.oneDay, timeTitle: 'Day', select: true),
-//     SelectTimeCycle(
-//         timeType: CryptoCycleTime.oneWeek, timeTitle: 'Week', select: false),
-//     SelectTimeCycle(
-//         timeType: CryptoCycleTime.oneMonth, timeTitle: 'Month', select: false),
-//     SelectTimeCycle(
-//         timeType: CryptoCycleTime.threeMonth,
-//         timeTitle: '3Months',
-//         select: false),
-//     SelectTimeCycle(
-//         timeType: CryptoCycleTime.sixMonth,
-//         timeTitle: '6Months',
-//         select: false),
-//   ];
-//   CryptoCycleTime timeType;
-//   String timeTitle;
-//   bool select;
-//   SelectTimeCycle(
-//       {this.timeType = CryptoCycleTime.oneDay,
-//       this.timeTitle = '',
-//       this.select = false});
-// }
