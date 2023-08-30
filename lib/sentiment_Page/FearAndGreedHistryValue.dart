@@ -109,20 +109,18 @@ class FearAndGreedHistoryValue extends StatelessWidget {
   }
 
   List<Widget> setHistoryCell() {
-    List<String> daytitle = ['Now', 'Yesterday', 'Last Week', 'Last Month'];
     List<Widget> data = [];
     data.add(historyCellTitle());
 
     for (int i = 0; i < this.data.length; i++) {
       final element = this.data[i];
-
-      // final day = widget.data[i].date.toString();
+      final dayTitle = FearGreedIndex.daytitle;
       final value = element.value;
       final title = element.classification;
       final getSentimentLevelModel = getSentimentLevel(int.parse(value));
       // final level = getSentimentLevelModel['level'];
       final color = getSentimentLevelModel['color'];
-      data.add(historyCellVieww(daytitle[i], title, color, value));
+      data.add(historyCellVieww(dayTitle[i], title, color, value));
     }
     return data;
   }

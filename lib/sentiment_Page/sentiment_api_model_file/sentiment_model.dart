@@ -23,9 +23,16 @@ Map getSentimentLevel(int value) {
 }
 
 class FearGreedIndex {
+  static List<String> daytitle = [
+    'Now',
+    'Yesterday',
+    'Last Week',
+    'Last Month'
+  ];
   String value;
   String valueClassification;
   DateTime timestamp;
+
   // String timeUntilUpdate;
 
   FearGreedIndex({
