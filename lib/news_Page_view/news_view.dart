@@ -37,6 +37,39 @@ class _NewsPageState extends State<NewsPage> {
             color: Colors.black, // 設置容器的背景顏色
             child: // 在這裡添加您的 UI 元素
                 Scaffold(
+              drawer: Drawer(
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: <Widget>[
+                    const DrawerHeader(
+                      decoration: BoxDecoration(
+                        color: Colors.blue,
+                      ),
+                      child: Text(
+                        '側邊選單',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                        ),
+                      ),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.home),
+                      title: const Text('首頁'),
+                      onTap: () {
+                        // 在這裡處理點擊首頁的動作
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.settings),
+                      title: const Text('設定'),
+                      onTap: () {
+                        // 在這裡處理點擊設定的動作
+                      },
+                    ),
+                  ],
+                ),
+              ),
               body: Column(
                 children: [
                   Flexible(

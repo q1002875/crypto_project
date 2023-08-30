@@ -315,13 +315,11 @@ class _CalculatorPageState extends State<CalculatorPage> {
         }),
         Flexible(
             flex: 14,
-            child: Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Flexible(flex: 14, child: calculateView()),
-                ],
-              ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(flex: 14, child: calculateView()),
+              ],
             )),
         Flexible(
             flex: 2,
@@ -344,7 +342,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
                       color: Colors.white,
                     ),
                   ),
-                  Container(
+                  SizedBox(
                     // color: Colors.red,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,

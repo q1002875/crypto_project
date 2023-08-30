@@ -4,7 +4,6 @@ import 'package:crypto_project/sentiment_Page/sentiment_api_model_file/sentiment
 import '../../common.dart' as http;
 import '../../common.dart';
 
-/////完整api
 class SentimentApi {
   static Future<List<FearGreedIndex>> fetchFearGreedIndex(
       String timeSpan) async {
@@ -39,7 +38,7 @@ class SentimentApi {
       }
       return dataList;
     } else {
-      ////拋出問題就不用?檢查
+      ////拋出問題就不用 ?檢查
       throw Exception('Failed to fetch data');
       // print('Request failed with status: ${response.statusCode}.');
     }
