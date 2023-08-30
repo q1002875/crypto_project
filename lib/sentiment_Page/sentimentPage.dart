@@ -1,6 +1,7 @@
 import 'package:crypto_project/extension/ShimmerText.dart';
 import 'package:crypto_project/extension/custom_text.dart';
 import 'package:crypto_project/extension/gobal.dart';
+import 'package:crypto_project/sentiment_Page/FearAndGreedHistryValue.dart';
 import 'package:crypto_project/sentiment_Page/FearAndGreedIndexChart.dart';
 import 'package:crypto_project/sentiment_Page/bloc/sentiment_bloc.dart';
 import 'package:crypto_project/sentiment_Page/sentiment_api_model_file/sentiment_api.dart';
@@ -28,6 +29,7 @@ class _sentimentPageState extends State<sentimentPage> {
   late SentimentBloc _sentimentBloc;
   late List<selectSentimentDayRange> _selectrange;
   List<selectSentimentDayRange> forchartSelectrange = [];
+  List<FearAndGreedData> fourDayData = [];
   List<FearAndGreedData> sevenDayData = [];
   List<FearAndGreedData> thrtyDayData = [];
 
@@ -85,7 +87,7 @@ class _sentimentPageState extends State<sentimentPage> {
               ),
               const Divider(
                 color: Colors.blueGrey,
-                thickness: 3,
+                thickness: 6,
               ),
               Container(
                 alignment: Alignment.center,
@@ -102,7 +104,17 @@ class _sentimentPageState extends State<sentimentPage> {
                 child: _selectrange[0].select
                     ? FearAndGreedIndexChart(sevenDayData)
                     : FearAndGreedIndexChart(thrtyDayData),
-              )
+              ),
+              const Divider(
+                color: Colors.blueGrey,
+                thickness: 6,
+              ),
+              Container(
+                  alignment: Alignment.center,
+                  height: screenHeight / 2,
+                  width: screenWidth,
+                  // color: _selectrange[0].select ? Colors.amber : Colors.blue,
+                  child: FearAndGreedHistoryValue(fourDayData))
             ],
           ),
         ),
@@ -128,6 +140,7 @@ class _sentimentPageState extends State<sentimentPage> {
   }
 
   Future<void> getsentimentData() async {
+    fourDayData = await SentimentApi.getSentimentData("4");
     sevenDayData = await SentimentApi.getSentimentData("7");
     thrtyDayData = await SentimentApi.getSentimentData("30");
     setState(() {});
@@ -158,44 +171,34 @@ class _sentimentPageState extends State<sentimentPage> {
                   child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 5.0),
                 child: InkWell(
-                  onTap: () {
-                    for (var i = 0; i < _selectrange.length; i++) {
-                      _selectrange[i].select = (i == index);
-                    }
-                    setState(() {
-                      forchartSelectrange = _selectrange;
-                    });
-                  },
-                  child: _selectrange[index].select
-                      ? Container(
-                          margin: const EdgeInsets.only(left: 20, right: 20),
-                          width: screenWidth / 3,
-                          height: screenWidth / 10,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: Colors.orange[400], // Light red color
-                            borderRadius:
-                                BorderRadius.circular(8.0), // Circular border
-                          ),
-                          child: CustomText(
-                            align: TextAlign.center,
-                            textContent: "${_selectrange[index].timeTitle}Day",
-                            textColor: Colors.white,
-                            fontSize: 18,
-                          ),
-                        )
-                      : Container(
-                          margin: const EdgeInsets.only(left: 20, right: 20),
-                          width: screenWidth / 3,
-                          height: screenWidth / 10,
-                          alignment: Alignment.center,
-                          child: CustomText(
-                            textContent: "${_selectrange[index].timeTitle}Day",
-                            textColor: Colors.grey,
-                            fontSize: 18,
-                          ),
-                        ),
-                ),
+                    onTap: () {
+                      for (var i = 0; i < _selectrange.length; i++) {
+                        _selectrange[i].select = (i == index);
+                      }
+                      setState(() {
+                        forchartSelectrange = _selectrange;
+                      });
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.only(left: 20, right: 20),
+                      width: screenWidth / 3,
+                      height: screenWidth / 10,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: _selectrange[index].select
+                            ? Colors.orange[400]
+                            : null,
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: CustomText(
+                        align: TextAlign.center,
+                        textContent: "${_selectrange[index].timeTitle}Day",
+                        textColor: _selectrange[index].select
+                            ? Colors.white
+                            : Colors.grey,
+                        fontSize: 18,
+                      ),
+                    )),
               ))
             ],
           ),

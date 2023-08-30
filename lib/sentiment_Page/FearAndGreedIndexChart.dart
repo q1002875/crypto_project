@@ -1,6 +1,7 @@
 import 'package:crypto_project/extension/ShimmerText.dart';
 import 'package:crypto_project/extension/custom_text.dart';
 import 'package:crypto_project/extension/gobal.dart';
+import 'package:crypto_project/sentiment_Page/sentiment_api_model_file/sentiment_model.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 import '../common.dart';
@@ -77,31 +78,6 @@ class _FearAndGreedIndexChartState extends State<FearAndGreedIndexChart> {
     }
   }
 
-  Map getSentimentLevel(int value) {
-    if (value >= 0 && value <= 25) {
-      return {'level': 'Extreme Fear', 'color': Colors.red};
-    } else if (value >= 26 && value <= 44) {
-      return {'level': 'Fear', 'color': Colors.orange};
-    } else if (value >= 45 && value <= 55) {
-      return {
-        'level': 'Neutral',
-        'color': const Color.fromARGB(255, 224, 192, 51)
-      };
-    } else if (value >= 56 && value <= 74) {
-      return {
-        'level': 'Greed',
-        'color': const Color.fromARGB(255, 138, 221, 56)
-      };
-    } else if (value >= 75 && value <= 100) {
-      return {'level': 'Extreme Greed', 'color': Colors.green};
-    } else {
-      return {
-        'level': 'Invalid input',
-        'color': const Color.fromARGB(255, 14, 234, 65)
-      };
-    }
-  }
-
   Widget leftTitleWidgets(double value, TitleMeta meta) {
     ///這裡直接資料顛倒對調
     final text = value.toInt();
@@ -141,15 +117,18 @@ class _FearAndGreedIndexChartState extends State<FearAndGreedIndexChart> {
         lineTouchData: LineTouchData(
           enabled: true,
           touchCallback: (p0, p1) {
-            final List<TouchLineBarSpot>? spots = p1!.lineBarSpots;
+            final List<TouchLineBarSpot>? spots = p1?.lineBarSpots;
             final spot = spots?.first;
-            final x = spot?.x;
-            final time = _dataList[_dataList.length - x!.toInt() - 1].date;
-            final value = _dataList[x.toInt() - 1].value;
-            final getgetSentimentLevelModel =
-                getSentimentLevel(int.parse(value));
-            final level = getgetSentimentLevelModel['level'];
-            final color = getgetSentimentLevelModel['color'];
+            var x = spot?.x;
+            var y = 0;
+            x != null ? y = x.toInt() : y = 0;
+            // final parsarX = x ;
+            debugPrint('$x');
+            final time = _dataList[_dataList.length - y - 1].date;
+            final value = _dataList[y - 1].value;
+            final getSentimentLevelModel = getSentimentLevel(int.parse(value));
+            final level = getSentimentLevelModel['level'];
+            final color = getSentimentLevelModel['color'];
             setState(() {
               selectTitle = '${time.year}/${time.month}/${time.day}($level)';
               selectTitleColor = color;
