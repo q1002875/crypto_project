@@ -39,7 +39,6 @@ class FearGreedIndex {
     required this.value,
     required this.valueClassification,
     required this.timestamp,
-    // required this.timeUntilUpdate,
   });
 
   factory FearGreedIndex.fromJson(Map<String, dynamic> json) {

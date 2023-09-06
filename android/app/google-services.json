@@ -7,12 +7,20 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:384807786158:android:f9be1da1ea8740e9297f3f",
+        "mobilesdk_app_id": "1:384807786158:android:eb95412d337d633b297f3f",
         "android_client_info": {
-          "package_name": "com.example.crypto_project"
+          "package_name": "crypto.project"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "384807786158-i80pk92s5n9fov2sbabkoovceoh1ep16.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "crypto.project",
+            "certificate_hash": "e3be57124ebf5902362c94dffbdc3eeb57ed81ff"
+          }
+        },
         {
           "client_id": "384807786158-bc0a7834h8vqsftt432fnlegsdj3ci2e.apps.googleusercontent.com",
           "client_type": 3

@@ -216,8 +216,4 @@ class _FearAndGreedIndexChartState extends State<FearAndGreedIndexChart> {
       ),
     );
   }
-
-  // String _formatDate(DateTime date) {
-  //   return '${date.year}-${date.month}-${date.day}';
-  // }
 }

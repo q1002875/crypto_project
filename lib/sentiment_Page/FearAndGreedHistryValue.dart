@@ -7,7 +7,6 @@ import 'package:crypto_project/sentiment_Page/sentiment_api_model_file/sentiment
 import '../common.dart';
 
 // ignore: must_be_immutable
-// ignore: must_be_immutable
 class FearAndGreedHistoryValue extends StatelessWidget {
   List<FearAndGreedData> data;
 

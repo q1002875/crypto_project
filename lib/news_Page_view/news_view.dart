@@ -1,4 +1,5 @@
 import 'package:crypto_project/bloc/bloc/news_Bloc/news_bloc.dart';
+import 'package:crypto_project/extension/custom_color.dart';
 import 'package:crypto_project/extension/custom_text.dart';
 import 'package:crypto_project/main.dart';
 
@@ -47,7 +48,7 @@ class _NewsPageState extends State<NewsPage> {
                         children: [
                           Container(
                             padding: const EdgeInsets.only(left: 10, top: 10),
-                            color: Colors.blueGrey
+                            color: CustomColors.mainColor
                                 .withOpacity(0.8), // Light red color,
                             width: double.infinity,
                             child: const CustomText(
@@ -179,8 +180,9 @@ class _NewsPageState extends State<NewsPage> {
                                               : screenWidth / 5,
                                           alignment: Alignment.center,
                                           decoration: BoxDecoration(
-                                            color: Colors.blueGrey.withOpacity(
-                                                0.8), // Light red color
+                                            color: CustomColors.mainColor
+                                                .withOpacity(
+                                                    0.8), // Light red color
                                             borderRadius: BorderRadius.circular(
                                                 30.0), // Circular border
                                           ),
@@ -195,7 +197,7 @@ class _NewsPageState extends State<NewsPage> {
                                           alignment: Alignment.centerLeft,
                                           child: CustomText(
                                             textContent: topicList[index].topic,
-                                            textColor: Colors.grey,
+                                            textColor: CustomColors.textGrey,
                                             fontSize: 14,
                                           ),
                                         )),
@@ -284,7 +286,8 @@ class _NewsPageState extends State<NewsPage> {
     //  StatusBar.color(const Color(0xFF00FF00));
 
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
-      statusBarColor: Colors.blueGrey.withOpacity(0.8), // , // 設置狀態列背景為透明
+      statusBarColor:
+          CustomColors.mainColor.withOpacity(0.8), // , // 設置狀態列背景為透明
       statusBarIconBrightness: Brightness.light, // 設置狀態列文字顏色為深色
     ));
 
