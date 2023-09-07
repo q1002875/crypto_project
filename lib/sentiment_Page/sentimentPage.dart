@@ -67,7 +67,8 @@ class _sentimentPageState extends State<sentimentPage> {
                     return SizedBox(
                       child: NetworkImageWithPlaceholder(
                         height: screenHeight / 2,
-                        width: 200,
+                        width: screenWidth,
+                        boxfit: BoxFit.contain,
                         imageUrl:
                             'https://alternative.me/crypto/fear-and-greed-index.png',
                       ),
@@ -97,7 +98,7 @@ class _sentimentPageState extends State<sentimentPage> {
                 child: listViewFearAndGreed(),
               ),
               Container(
-                alignment: Alignment.center,
+                // alignment: Alignment.center,
                 height: screenHeight / 2,
                 width: screenWidth,
                 color: _selectrange[0].select ? Colors.amber : Colors.blue,
@@ -192,7 +193,7 @@ class _sentimentPageState extends State<sentimentPage> {
                       ),
                       child: CustomText(
                         align: TextAlign.center,
-                        textContent: "${_selectrange[index].timeTitle}Day",
+                        textContent: "${_selectrange[index].timeTitle} Day",
                         textColor: _selectrange[index].select
                             ? Colors.white
                             : Colors.grey,

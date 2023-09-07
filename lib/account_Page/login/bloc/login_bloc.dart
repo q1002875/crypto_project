@@ -96,6 +96,7 @@ class AuthenticationBloc
         await googleSignInAccount?.authentication;
 
     if (googleSignInAuthentication != null) {
+      print('google有資料');
       // 从Google获取用户信息
       final String email = googleSignInAccount!.email;
       final String photoUrl = googleSignInAccount.photoUrl ?? '';
@@ -113,7 +114,9 @@ class AuthenticationBloc
       await _insertDataToMongo(users);
       SharedPreferencesHelper.setString('userId', mangoUseId);
       return users;
+    } else {
+      print('googlesign is null');
+      return null;
     }
-    return null;
   }
 }

@@ -6,13 +6,14 @@ class NetworkImageWithPlaceholder extends StatelessWidget {
   final String imageUrl;
   final double width;
   final double height;
+  final BoxFit boxfit;
 
-  const NetworkImageWithPlaceholder({
-    super.key,
-    required this.imageUrl,
-    required this.width,
-    required this.height,
-  });
+  const NetworkImageWithPlaceholder(
+      {super.key,
+      required this.imageUrl,
+      required this.width,
+      required this.height,
+      required this.boxfit});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +24,7 @@ class NetworkImageWithPlaceholder extends StatelessWidget {
         imageUrl,
         width: width,
         height: height,
-        fit: BoxFit.cover,
+        fit: boxfit,
         loadingBuilder: (BuildContext context, Widget child,
             ImageChunkEvent? loadingProgress) {
           if (loadingProgress == null) {

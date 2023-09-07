@@ -190,7 +190,7 @@ class _NewsPageState extends State<NewsPage> {
                                             align: TextAlign.center,
                                             textContent: topicList[index].topic,
                                             textColor: Colors.white,
-                                            fontSize: 15,
+                                            fontSize: 18,
                                           ),
                                         )
                                       : Container(
@@ -234,7 +234,9 @@ class _NewsPageState extends State<NewsPage> {
                                       ? NewsHeaderView(news.image, news.title)
                                       : BlocProvider(
                                           create: (context) => ImageCubit(),
-                                          child: SizedBox(
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            color: Colors.white,
                                             width: screenWidth,
                                             child: NewsCellView(news.image,
                                                 news.title, news.publishedAt),

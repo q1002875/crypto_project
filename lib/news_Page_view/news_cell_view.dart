@@ -23,7 +23,7 @@ class NewsCellView extends StatelessWidget {
           direction: Axis.horizontal,
           children: [
             Flexible(
-                flex: 2,
+                flex: 3,
                 child: Container(
                   padding: const EdgeInsets.only(left: 3),
                   child: CachedNetworkImage(
@@ -36,8 +36,8 @@ class NewsCellView extends StatelessWidget {
                             color: Colors.white,
                           )),
                 )),
-            Flexible(
-                flex: 4,
+            Expanded(
+                flex: 7,
                 child: Stack(
                   children: [
                     Container(

@@ -34,8 +34,11 @@ class _FearAndGreedIndexChartState extends State<FearAndGreedIndexChart> {
     final month = widget.data[dataLength].date.month;
     final resultDay = widget.data[dataLength].date.day;
     final resultText = '$month/$resultDay';
-    return CustomText(
-        textContent: resultText, fontSize: 12, textColor: Colors.black);
+    return Container(
+        alignment: Alignment.bottomCenter,
+        color: Colors.white.withOpacity(0),
+        child: CustomText(
+            textContent: resultText, fontSize: 12, textColor: Colors.black));
   }
 
   ////主畫面
@@ -58,8 +61,9 @@ class _FearAndGreedIndexChartState extends State<FearAndGreedIndexChart> {
         Flexible(
           flex: 9,
           child: Container(
-            margin: const EdgeInsets.all(20.0),
-            padding: const EdgeInsets.all(20.0),
+            // margin: const EdgeInsets.all(20.0),
+            padding:
+                const EdgeInsets.only(left: 10, right: 30, top: 20, bottom: 30),
             child: _buildChart(),
           ),
         )
@@ -81,8 +85,12 @@ class _FearAndGreedIndexChartState extends State<FearAndGreedIndexChart> {
   Widget leftTitleWidgets(double value, TitleMeta meta) {
     ///這裡直接資料顛倒對調
     final text = value.toInt();
-    return CustomText(
-        textContent: '$text', fontSize: 12, textColor: Colors.black);
+    return Container(
+        width: 20,
+        height: 30,
+        color: Colors.white.withOpacity(0),
+        child: CustomText(
+            textContent: '$text', fontSize: 12, textColor: Colors.black));
   }
 
   void setTitleValue(String value) {

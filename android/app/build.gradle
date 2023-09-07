@@ -75,9 +75,10 @@ android {
        release {
            signingConfig signingConfigs.release
        }
+       debug{
+            signingConfig signingConfigs.debug
+       }
    }
-
-  
 }
 
 flutter {
@@ -88,17 +89,4 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
-
-// bundle {
-//     language {
-//         enableSplit = false
-//     }
-//     density {
-//         enableSplit = false
-//     }
-//     abi {
-//         enableSplit = false
-//     }
-// }
-
 

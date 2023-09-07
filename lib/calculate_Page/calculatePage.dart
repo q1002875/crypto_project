@@ -23,6 +23,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        // backgroundColor: Colors.grey,
         // appBar: AppBar(backgroundColor: Colors.blueGrey),
         body: BlocBuilder<CalculateBlocBloc, CalculateBlocState>(
       builder: (context, state) {
@@ -296,76 +297,76 @@ class _CalculatorPageState extends State<CalculatorPage> {
   }
 
   Widget mainView(String output1, String output2) {
-    return Flex(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      direction: Axis.vertical,
-      children: [
-        const SizedBox(
-          height: 20,
-        ),
-        coinSection(true, _coin1Id, output1, () {
-          _calculateBloc.add(PressChangeCoin(context, '0'));
-        }),
-        Container(
-          color: Colors.grey,
-          height: 1,
-        ),
-        coinSection(false, _coin2Id, output2, () {
-          _calculateBloc.add(PressChangeCoin(context, '1'));
-        }),
-        Flexible(
-            flex: 14,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Flexible(flex: 14, child: calculateView()),
-              ],
-            )),
-        Flexible(
-            flex: 2,
-            child: Container(
-              color: Colors.grey[700],
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      //按下匯率更新
-                      _calculateBloc.add(FetchInitData());
-                    },
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.grey),
-                    ),
-                    child: const Icon(
-                      Icons.replay_sharp,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(
-                    // color: Colors.red,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CustomText(
-                          textContent: fetchData(_coin1Id.changePercent),
-                          align: TextAlign.center,
-                          textColor: Colors.greenAccent,
-                          fontSize: 12,
+    return Container(
+        color: Colors.grey,
+        child: Flex(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          direction: Axis.vertical,
+          children: [
+            Container(
+              color: Colors.white,
+              height: 20,
+            ),
+            coinSection(true, _coin1Id, output1, () {
+              _calculateBloc.add(PressChangeCoin(context, '0'));
+            }),
+            coinSection(false, _coin2Id, output2, () {
+              _calculateBloc.add(PressChangeCoin(context, '1'));
+            }),
+            Flexible(
+                flex: 14,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Flexible(flex: 14, child: calculateView()),
+                  ],
+                )),
+            Flexible(
+                flex: 2,
+                child: Container(
+                  color: Colors.grey[700],
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          //按下匯率更新
+                          _calculateBloc.add(FetchInitData());
+                        },
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all<Color>(Colors.grey),
                         ),
-                        CustomText(
-                          textContent:
-                              '1 ${_coin1Id.symbolData.coin.toUpperCase()} = ${(_coin1Id.price / _coin2Id.price).toStringAsFixed(4)} ${_coin2Id.symbolData.coin.toUpperCase()}',
-                          textColor: const Color.fromARGB(255, 198, 191, 191),
-                          fontSize: 12,
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            )),
-      ],
-    );
+                        child: const Icon(
+                          Icons.replay_sharp,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(
+                        // color: Colors.red,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CustomText(
+                              textContent: fetchData(_coin1Id.changePercent),
+                              align: TextAlign.center,
+                              textColor: Colors.greenAccent,
+                              fontSize: 12,
+                            ),
+                            CustomText(
+                              textContent:
+                                  '1 ${_coin1Id.symbolData.coin.toUpperCase()} = ${(_coin1Id.price / _coin2Id.price).toStringAsFixed(4)} ${_coin2Id.symbolData.coin.toUpperCase()}',
+                              textColor:
+                                  const Color.fromARGB(255, 198, 191, 191),
+                              fontSize: 12,
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                )),
+          ],
+        ));
   }
 }

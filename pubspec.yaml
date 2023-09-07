@@ -43,7 +43,7 @@ dependencies:
   intl: ^0.18.1
   flutter_launcher_icons: ^0.13.1
   flutter_native_splash: ^2.2.19
-  google_sign_in: ^6.1.0
+  google_sign_in: ^6.1.5
   shared_preferences: ^2.1.0
   # firebase_core: ^2.11.0
   # firebase_auth: ^4.2.2

@@ -19,6 +19,7 @@ class NewsHeaderView extends StatelessWidget {
             imageUrl: image_url,
             width: double.infinity,
             height: 200,
+            boxfit: BoxFit.cover,
           ),
         ),
         Positioned(
