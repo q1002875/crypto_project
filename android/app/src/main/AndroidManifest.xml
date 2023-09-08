@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.crypto_project">
+    package="crypto.project">
    <application
         android:label="crypto_project"
         android:name="${applicationName}"

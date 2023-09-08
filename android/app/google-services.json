@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "384807786158-i80pk92s5n9fov2sbabkoovceoh1ep16.apps.googleusercontent.com",
+          "client_id": "384807786158-e08igthgalf642i37cj861dpjrpl1713.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "crypto.project",
-            "certificate_hash": "e3be57124ebf5902362c94dffbdc3eeb57ed81ff"
+            "certificate_hash": "b6ca0ed320749825bab7831697122a14541022b3"
           }
         },
         {
@@ -28,7 +28,7 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCUyIXL3vLgA2B3u1xa-EXRZbXdq000B54"
+          "current_key": "AIzaSyDImzxoT3yEJ8G9WWdsNWSA1ioFuIm8OqI"
         }
       ],
       "services": {
