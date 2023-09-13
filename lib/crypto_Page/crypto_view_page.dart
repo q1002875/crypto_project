@@ -296,28 +296,51 @@ class _BinanceWebSocketState extends State<BinanceWebSocket> {
           case CryptoPrecess.noUserId:
             return RefreshIndicator(
                 onRefresh: _refreshData,
-                child: Center(
-                    child: TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => BlocProvider(
-                              create: (context) => AuthenticationBloc(),
-                              child: AccountPage(
-                                needtologin: true,
-                              ))),
-                    ).then((value) {
-                      if (value != null) {
-                        _refreshData();
-                      }
-                    });
-                  },
-                  child: const CustomText(
-                    textContent: 'Not yet login',
-                    textColor: Colors.blueGrey,
-                  ),
-                )));
+                child: ListView(
+                  children: [
+                    Container(
+                        width: screenWidth,
+                        height: screenHeight,
+                        // color: Colors.red,
+                        alignment: Alignment.center,
+                        child: TextButton(
+                            style: ButtonStyle(
+                              overlayColor:
+                                  MaterialStateProperty.all(Colors.transparent),
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => BlocProvider(
+                                        create: (context) =>
+                                            AuthenticationBloc(),
+                                        child: AccountPage(
+                                          needtologin: true,
+                                        ))),
+                              ).then((value) {
+                                if (value != null) {
+                                  _refreshData();
+                                }
+                              });
+                            },
+                            child: const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ClipOval(
+                                    child: Icon(
+                                  Icons.person,
+                                  size: 200,
+                                  color: Colors.blueGrey,
+                                )),
+                                CustomText(
+                                  textContent: 'Login start crypto Market',
+                                  textColor: Colors.blueGrey,
+                                ),
+                              ],
+                            )))
+                  ],
+                ));
         }
 
       case CyrptoViewBlocError:

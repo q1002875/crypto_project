@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.crypto_project">
    <application
-        android:label="crypto.project"
+        android:label="crypto_project"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity
