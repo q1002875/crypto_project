@@ -69,7 +69,7 @@ class NewsCellView extends StatelessWidget {
                         bottom: 0,
                         child: SizedBox(
                           height: 20,
-                          width: 40,
+                          width: 60,
                           child: CustomText(
                               align: TextAlign.right,
                               textContent: '${date.month}/${date.day}',

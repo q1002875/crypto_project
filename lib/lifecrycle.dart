@@ -24,6 +24,9 @@ class AppLifecycleObserver with WidgetsBindingObserver {
         mongodb.close();
         // 應用程式完全停止運行
         break;
+      case AppLifecycleState.hidden:
+        // TODO: Handle this case.
+        break;
     }
   }
 }

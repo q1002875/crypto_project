@@ -18,7 +18,7 @@ class AccoundAbout extends StatelessWidget {
         children: const <Widget>[
           ListTile(
             title: Text('Version'),
-            trailing: Text('1.0.0'), // 將這裡的 '1.0.0' 替換為您的實際版本號
+            trailing: Text('1.0.2'), // 將這裡的 '1.0.0' 替換為您的實際版本號
           ),
         ],
       ),
