@@ -21,3 +21,7 @@ class newsApi {
     return jsonMap.articles;
   }
 }
+
+
+///final運行時
+///const編譯時

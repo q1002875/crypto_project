@@ -72,6 +72,7 @@ class _AccountPageState extends State<AccountPage> {
                                   onTap: () {
                                     if (entry.key == 'Feedback') {
                                       _sendFeedbackEmail();
+
                                     } else if (entry.key == 'Delete Account') {
                                       _authBloc.add(LogoutEvent());
                                     } else {
@@ -308,6 +309,8 @@ class _AccountPageState extends State<AccountPage> {
           //         ))
         ]);
   }
+
+  // void _tesst([a = 222]) {}
 
   void _sendFeedbackEmail() async {
     final Uri emailLaunchUri = Uri(
